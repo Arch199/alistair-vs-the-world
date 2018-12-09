@@ -113,6 +113,9 @@ class World {
 		// TODO: update this when towers are actually implemented
 		Tower tow = towers.get(0);
 		tow.teleport((float)mousex, (float)mousey);
+		
+		// Set the tower to be red if it's touching a non-wall tile
+		// to test the collision system
 		tow.setColor(Color.white);
 		outer:
 		for (Tile[] column : tiles) {
@@ -150,14 +153,11 @@ class World {
 		}
 	}
 	
-	void writeCentered(Graphics g, String str, float x, float y) {
-		int end = str.length()/2;
-    	int offset = g.getFont().getWidth(str.substring(0, end));
-    	if (str.length() % 2 == 1) {
-    		offset += g.getFont().getWidth(str.substring(end, end+1))/2;
-    	}
+	static void writeCentered(Graphics g, String str, float x, float y) {
+    	int offset = g.getFont().getWidth(str)/2;
     	g.drawString(str, x-offset, y);
     }
+	
 	
 	Tower tow() {  // TODO: remove
 		return towers.get(0);

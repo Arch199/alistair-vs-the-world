@@ -19,11 +19,11 @@ public class App extends BasicGame {
 	private static final int
 		WINDOW_W = 960,  // was 640
 		WINDOW_H = 672,  // was 480, then 720
-		TILE_SIZE = 48,  // 48 for tiles, 32 for towers, enemies, etc.
+		TILE_SIZE = 48,  // 48 for tiles; 32 for towers, enemies, etc.
 		GRID_W = WINDOW_W/TILE_SIZE,  // 20
 		GRID_H = WINDOW_H/TILE_SIZE;  // 14, was 15
 	
-	World world; // hmmmmmmmmmmmmm -- privacy level? TODO: consider privacy levels more
+	private World world;
 	
     public static void main(String[] args) {
         try {
