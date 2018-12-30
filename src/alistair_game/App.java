@@ -17,27 +17,28 @@ import org.newdawn.slick.SlickException;
 
 public class App extends BasicGame {
 	private static final int
-		WINDOW_W = 960,  // was 640
-		WINDOW_H = 672,  // was 480, then 720
-		TILE_SIZE = 48,  // 48 for tiles; 32 for towers, enemies, etc.
-		GRID_W = WINDOW_W/TILE_SIZE,  // 20
-		GRID_H = WINDOW_H/TILE_SIZE;  // 14, was 15
+		// OLD vals: 960/672/48/20/15
+		WINDOW_W = 960,
+		WINDOW_H = 672,
+		TILE_SIZE = 48,
+		GRID_W = WINDOW_W/TILE_SIZE,
+		GRID_H = WINDOW_H/TILE_SIZE;
 	
 	private World world;
 	
     public static void main(String[] args) {
         try {
-            System.err.println("Yeet, starting main");
+            Print.print("Yeet, starting main");
 
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
             appgc.setDisplayMode(WINDOW_W, WINDOW_H, false);
 			appgc.start();
-			
-            System.err.println("Yeet, game exited");  // never reaches this line?
+
+            System.err.println("GAME STATE: Game forced exit");
         } catch (SlickException e) {
+        	// Log exception
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
-            // ^ copied this code from somewhere, not sure what it does tbh -James
         }
     }
 
@@ -47,12 +48,15 @@ public class App extends BasicGame {
 
     @Override
     public void init(GameContainer gc) throws SlickException {
-        System.err.println("Initialising game...");
+        Print.print("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
         
         // Initialise level from file and create world object
         try {
+        	// 2D grid array
         	int[][] level = new int[GRID_W][GRID_H];
+
+        	// Load map info file
 			Scanner scanner = new Scanner(new File("assets\\levels\\level1.txt"));
 			for (int y = 0; y < GRID_H; y++) {
 				assert(scanner.hasNext());
@@ -64,9 +68,12 @@ public class App extends BasicGame {
 					level[x++][y] = Character.getNumericValue(c);
 				}
 			}
+
+			// Enemy spawn location
 			float startx = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
 			float starty = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
 			scanner.close();
+
 			world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -93,10 +100,10 @@ public class App extends BasicGame {
     	
     	world.drawGUI(g);
     }
-    
+
     @Override
     public boolean closeRequested() {  
-    	System.err.println("Exiting game...");
+    	Print.print("GAME STATE: Exiting game");
     	System.exit(0);
     	return false;
     }
