@@ -11,8 +11,9 @@ abstract class Enemy extends Sprite {
 		this.dir = dir;
 	}
 	
-	void advance(float speed, Tile[][] tiles, World world) {  // TODO: remove tiles	
+	void advance(float speed, World world) {
 		int tlen = world.getTileSize()/4;  // hmmm TODO: optimise this value
+		Tile[][] tiles = world.getTiles();
 		float xdist = (float)(tlen * Math.cos(dir));
 		float ydist = (float)(tlen * -Math.sin(dir));
 		while (touchingWall(0, 0, tiles, world)) {

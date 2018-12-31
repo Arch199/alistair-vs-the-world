@@ -104,7 +104,7 @@ class World {
 		Iterator<Enemy> itr = enemies.iterator();
 		while (itr.hasNext()) {
 			Enemy e = itr.next();
-			e.advance(enemy_speed, tiles, this);
+			e.advance(enemy_speed, this);
 			if (e.checkCollision(alistair)) {
 				takeDamage(e.getDamage());
 				itr.remove();
@@ -178,4 +178,5 @@ class World {
 	}
 	
 	int getTileSize() { return tsize; }
+	Tile[][] getTiles() { return tiles; }
 }
