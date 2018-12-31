@@ -13,6 +13,7 @@ class World {
 	private int w, h, tsize, gridw, gridh;
 	private float startx, starty, enemy_speed = 0.1f;
 	private Tile[][] tiles;
+	private int[][][] path;  // Directions to move for each tile
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
 	private int timer = 0, spawn_time = 2000, health = 100;
@@ -43,7 +44,7 @@ class World {
 	World(int w, int h, int tsize, float startx, float starty, int[][] level) {
 		this.w = w;
 		this.h = h;
-		this.tsize = tsize;  // TODO: decide if we want this field or not
+		this.tsize = tsize;
 		this.gridw = w/tsize;
 		this.gridh = h/tsize;
 		this.startx = startx;
@@ -60,7 +61,46 @@ class World {
 			}
 		}
 		
-		// Temp tower mouse hover test
+		// Traverse the path and store direction values in a grid
+		path = new int[gridw][gridh][2];
+		int x = toGrid(startx), y = toGrid(starty);
+		int i = x < 0 ? 1 : (x >= gridw ? -1 : 0);
+		int j = y < 0 ? 1 : (y >= gridh ? -1 : 0);
+		while (x < 0 || x >= gridw || y < 0 || y >= gridh) {
+			x += i;
+			y += j;
+		}
+		while (toPos(x) != alistair.getX() || toPos(y) != alistair.getY()) {
+			// Move along the path			
+			// Check if we've hit a wall yet
+			if (x+i < 0 || x+i >= gridw || y+j < 0 || y+j >= gridh || tiles[x+i][y+j].isWall()) {
+				// OK, try turning left (anti-clockwise)
+				int old_i = i;
+				i = j;
+				j = -old_i;
+				
+				// Check again
+				if (tiles[x+i][y+j].isWall()) {
+					// Failed, turn right then (need to do a 180)
+					i = -i;
+					j = -j;
+				}
+			}
+			// Update x, y and our direction
+			path[x][y][0] = i;
+			path[x][y][1] = j;
+			x += i;
+			y += j;
+		}
+		
+		for (int j1 = 0; j1 < gridh; j1++) {
+			for (int i1 = 0; i1 < gridw; i1++) {
+				System.out.printf("(%d,%d) ", path[i1][j1][0], path[i1][j1][1]);
+			}
+			System.out.println();
+		}
+		
+		// Temp tower mouse hover test -- TODO: remove/replace with working towers
 		towers = new ArrayList<Tower>();
 		try {
 			towers.add(new Tower(w/2, h/2, new Image("assets\\alistair32.png")));
@@ -177,6 +217,17 @@ class World {
 		}
 	}
 	
+	// Convert from literal position to position on grid
+	int toGrid(float pos) {
+		return (int)((pos-tsize/2)/tsize);
+	}
+	
+	// Convert from grid position to literal coordinates
+	float toPos(int gridval) {
+		return gridval*tsize + tsize/2;
+	}
+	
 	int getTileSize() { return tsize; }
 	Tile[][] getTiles() { return tiles; }
+	int[][][] getPath() { return path; }
 }

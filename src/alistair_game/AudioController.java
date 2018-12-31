@@ -9,6 +9,7 @@ public class AudioController  {
 
     private static Sound[] intro = new Sound[1];
     private static Sound[] gameover = new Sound[1];
+    
     AudioController() {
         // Initialize sounds
         try {

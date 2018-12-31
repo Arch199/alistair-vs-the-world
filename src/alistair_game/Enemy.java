@@ -12,8 +12,12 @@ abstract class Enemy extends Sprite {
 	}
 	
 	void advance(float speed, World world) {
-		int tlen = world.getTileSize()/4;  // hmmm TODO: optimise this value
 		Tile[][] tiles = world.getTiles();
+		
+		
+		
+		// Note: here is the original method for pathfinding, not in use rn
+		/*int tlen = world.getTileSize()/4;  // hmmm TODO: optimise this value
 		float xdist = (float)(tlen * Math.cos(dir));
 		float ydist = (float)(tlen * -Math.sin(dir));
 		while (touchingWall(0, 0, tiles, world)) {
@@ -31,7 +35,7 @@ abstract class Enemy extends Sprite {
 		}
 		xdist = (float)(speed * Math.cos(dir));
 		ydist = (float)(speed * -Math.sin(dir));
-		move(xdist, ydist);
+		move(xdist, ydist);*/
 	}
 
 	boolean touchingWall(float xmove, float ymove, Tile[][] tiles, World world) {

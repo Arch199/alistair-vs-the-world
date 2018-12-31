@@ -70,7 +70,7 @@ public class App extends BasicGame {
 			// Enemy spawn location
 			float startx = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
 			float starty = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
-			scanner.close();
+			scanner.close();			
 
 			world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
 		} catch (FileNotFoundException e) {
