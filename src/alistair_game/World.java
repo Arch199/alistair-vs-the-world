@@ -64,8 +64,8 @@ class World {
 		// Traverse the path and store direction values in a grid
 		path = new int[gridw][gridh][2];
 		int x = toGrid(startx), y = toGrid(starty);
-		int i = x < 0 ? 1 : (x >= gridw ? -1 : 0);
-		int j = y < 0 ? 1 : (y >= gridh ? -1 : 0);
+		int i = defaultDir(x);
+		int j = defaultDir(y);
 		while (x < 0 || x >= gridw || y < 0 || y >= gridh) {
 			x += i;
 			y += j;
@@ -93,13 +93,6 @@ class World {
 			y += j;
 		}
 		
-		for (int j1 = 0; j1 < gridh; j1++) {
-			for (int i1 = 0; i1 < gridw; i1++) {
-				System.out.printf("(%d,%d) ", path[i1][j1][0], path[i1][j1][1]);
-			}
-			System.out.println();
-		}
-		
 		// Temp tower mouse hover test -- TODO: remove/replace with working towers
 		towers = new ArrayList<Tower>();
 		try {
@@ -123,7 +116,8 @@ class World {
 	}
 	
 	void spawnEnemy(float x, float y) {
-		double dir;
+		// Note: currently not using dir with Enemies, here for reference
+		/*double dir;
 		if (y < 0) {
 			// Above top of screen, go down
 			dir = Math.PI*3/2;
@@ -136,8 +130,8 @@ class World {
 		} else {
 			// Default, go right
 			dir = 0;
-		}
-		enemies.add(new EnemyPython(x, y, dir));
+		}*/
+		enemies.add(new EnemyPython(x, y, enemy_speed*defaultDir(x), enemy_speed*defaultDir(y)));
 	}
 	
 	void moveEnemies() {
@@ -219,12 +213,27 @@ class World {
 	
 	// Convert from literal position to position on grid
 	int toGrid(float pos) {
-		return (int)((pos-tsize/2)/tsize);
+		// Choose closest grid position
+		return Math.round((pos-tsize/2)/tsize);
 	}
 	
 	// Convert from grid position to literal coordinates
 	float toPos(int gridval) {
 		return gridval*tsize + tsize/2;
+	}
+	
+	boolean inGridBounds(int x, int y) {
+		return x >= 0 && y >= 0 && x < gridw && y < gridh;
+	}
+	
+	// Returns a grid direction to point inwards from the current position
+	int defaultDir(int gridval) {
+		return gridval < 0 ? 1 : (gridval >= gridw ? -1 : 0);
+	}
+	
+	// Returns a literal direction to point inwards
+	float defaultDir(float pos) {
+		return pos < 0 ? 1 : (pos >= gridw*tsize ? -1 : 0);
 	}
 	
 	int getTileSize() { return tsize; }
