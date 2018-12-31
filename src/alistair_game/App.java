@@ -23,7 +23,7 @@ public class App extends BasicGame {
 	
     public static void main(String[] args) {
         try {
-            Print.print("Yeet, starting main");
+            System.out.println("Yeet, starting main");
 
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
@@ -43,7 +43,7 @@ public class App extends BasicGame {
 
     @Override
     public void init(GameContainer gc) throws SlickException {
-        Print.print("GAME STATE: Initialising game...");
+        System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
 
         // Initialise sound controller
@@ -101,7 +101,7 @@ public class App extends BasicGame {
 
     @Override
     public boolean closeRequested() {  
-    	Print.print("GAME STATE: Exiting game");
+    	System.out.println("GAME STATE: Exiting game");
     	System.exit(0);
     	return false;
     }
