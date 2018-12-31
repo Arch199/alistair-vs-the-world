@@ -8,12 +8,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 public class App extends BasicGame {
 	private static final int
@@ -50,7 +45,10 @@ public class App extends BasicGame {
     public void init(GameContainer gc) throws SlickException {
         Print.print("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
-        
+
+        // Initialise sound controller
+        AudioController ac = new AudioController();
+
         // Initialise level from file and create world object
         try {
         	// 2D grid array

@@ -67,6 +67,9 @@ class World {
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
+
+		// Intro sound
+		AudioController.play("intro");
 	}
 	
 	void tick(int delta) {
@@ -168,7 +171,8 @@ class World {
 	void takeDamage(int damage) {
 		health -= damage;
 		if (health <= 0) {
-			System.err.println("we ded");
+			Print.print("we ded");
+			AudioController.play("gameover");
 			// TODO: add handling for game overs (SEGFAULTS!)
 		}
 	}
