@@ -23,11 +23,13 @@ class World {
 	private static final int ALISTAIR_INDEX = 2;
 	static {
 		// Initialise tileset and tile names
+		// Meaning of integers in level file
 		tile_names = new String[3];  // TODO: add all this to a file (?)
 		tile_names[0] = "wall";
 		tile_names[1] = "path";
 		tile_names[2] = "alistair";
-		
+
+		// Assign ints to images
 		tileset = new Image[tile_names.length];
 		try {
 			for (int i = 0; i < tileset.length; i++) {
@@ -65,6 +67,9 @@ class World {
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
+
+		// Intro sound
+		AudioController.play("intro");
 	}
 	
 	void tick(int delta) {
@@ -166,7 +171,8 @@ class World {
 	void takeDamage(int damage) {
 		health -= damage;
 		if (health <= 0) {
-			System.err.println("we ded");
+			System.out.println("we ded");
+			AudioController.play("gameover");
 			// TODO: add handling for game overs (SEGFAULTS!)
 		}
 	}
