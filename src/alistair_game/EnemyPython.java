@@ -14,8 +14,8 @@ class EnemyPython extends Enemy {
 		}
 	}
 	
-	EnemyPython(float startx, float starty, double dir) {
-		super(startx, starty, dir, im);
+	EnemyPython(float startx, float starty, float hsp, float vsp) {
+		super(startx, starty, hsp, vsp, im);
 	}	
 }
 

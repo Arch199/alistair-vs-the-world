@@ -11,6 +11,11 @@ import java.util.logging.Logger;
 import org.newdawn.slick.*;
 
 public class App extends BasicGame {
+	/** Main handler for the game as a program.
+	 * Creates a World to handle the gameplay itself.
+	 * Will later create a Menu first (when we have a main menu).
+	 */
+	
 	private static final int
 		// OLD vals: 960/672/48/20/15
 		WINDOW_W = 960,
@@ -47,7 +52,7 @@ public class App extends BasicGame {
         gc.setShowFPS(false);
 
         // Initialise sound controller
-        AudioController ac = new AudioController();
+        AudioController.init();
 
         // Initialise level from file and create world object
         try {
@@ -70,7 +75,7 @@ public class App extends BasicGame {
 			// Enemy spawn location
 			float startx = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
 			float starty = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
-			scanner.close();
+			scanner.close();			
 
 			world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
 		} catch (FileNotFoundException e) {
@@ -86,7 +91,7 @@ public class App extends BasicGame {
     	world.moveEnemies();
     	
     	Input input = gc.getInput();
-    	world.processTowers(input.getMouseX(), input.getMouseY());
+    	world.processTowers(input);
     }
 
     @Override
@@ -98,7 +103,7 @@ public class App extends BasicGame {
     	
     	world.drawGUI(g);
     }
-
+    
     @Override
     public boolean closeRequested() {  
     	System.out.println("GAME STATE: Exiting game");

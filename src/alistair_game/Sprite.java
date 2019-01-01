@@ -6,7 +6,7 @@ import org.newdawn.slick.Image;
 class Sprite {
 	private float x, y;
 	private Image im;
-	private Color col = Color.white;  // TODO: work out what's going with this: red w/o this??
+	private Color col = Color.white;
 	
 	Sprite(float x, float y, Image im) {
 		this.x = x;
@@ -14,7 +14,7 @@ class Sprite {
 		this.im = im;
 	}
 
-	void drawSelf() {  // Public or package-private or protected? (we should talk about this)
+	void drawSelf() {  // Public or package-private or protected? (TODO: we should talk about this)
 		im.draw(x-im.getWidth()/2, y-im.getHeight()/2, col);
 	}
 	
@@ -41,6 +41,7 @@ class Sprite {
 	float getX() { return x; }
 	float getY() { return y; }
 	Image getImage() { return im; }
+	Color getColor() { return col; }
 	
 	void setColor(Color col) { this.col = col; }
 }

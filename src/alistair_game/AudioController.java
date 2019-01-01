@@ -5,7 +5,7 @@ import java.util.*;
 
 public class AudioController  {
     /** Handles the game audio.
-     * Initialized in App.init.
+     * Initialized in App.init().
      * To play a sound, call play(event) */
 
     private static Sound[] intro = new Sound[2];
