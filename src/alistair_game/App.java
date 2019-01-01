@@ -86,7 +86,7 @@ public class App extends BasicGame {
     	world.moveEnemies();
     	
     	Input input = gc.getInput();
-    	world.processTowers(input.getMouseX(), input.getMouseY());
+    	world.processTowers(input);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class App extends BasicGame {
     	
     	world.drawGUI(g);
     }
-
+    
     @Override
     public boolean closeRequested() {  
     	System.out.println("GAME STATE: Exiting game");

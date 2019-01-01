@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 class World {
@@ -18,6 +20,7 @@ class World {
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
 	private int timer = 0, spawn_time = 2000, health = 100;
 	private Tile alistair;
+	private Tower new_tower;
 	
 	private static Image[] tileset;
 	private static String[] tile_names;
@@ -94,7 +97,8 @@ class World {
 		// Temp tower mouse hover test -- TODO: remove/replace with working towers
 		towers = new ArrayList<Tower>();
 		try {
-			towers.add(new Tower(w/2, h/2, new Image("assets\\alistair32.png")));
+			new_tower = new Tower(w/2, h/2, new Image("assets\\alistair32.png"));
+			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
@@ -144,23 +148,29 @@ class World {
 		}
 	}
 
-	void processTowers(int mousex, int mousey) {
-		// Temporarily just move the single tower to the mouse position
-		// (for the purposes of collision testing)
-		// TODO: update this when towers are actually implemented
-		Tower tow = towers.get(0);
-		tow.teleport((float)mousex, (float)mousey);
+	void processTowers(Input input) {
+		int mousex = input.getMouseX(), mousey = input.getMouseY();
+		boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
 		
-		// Set the tower to be red if it's touching a non-wall tile
-		// to test the collision system
-		tow.setColor(Color.white);
-		outer:
-		for (Tile[] column : tiles) {
-			for (Tile tile : column) {
-				if (!tile.isWall() && tile.checkCollision(tow)) {
-					tow.setColor(Color.red);
-					break outer;
+		// If we're placing a tower, move it to the mouse position
+		if (isPlacingTower()) {		
+			new_tower.teleport((float)mousex, (float)mousey);
+			
+			// Set the tower to be red if it's touching a non-wall tile
+			new_tower.setColor(Color.white);
+			outer:
+			for (Tile[] column : tiles) {
+				for (Tile tile : column) {
+					if (!tile.isWall() && tile.checkCollision(new_tower)) {						
+						new_tower.setColor(Color.red);
+						break outer;
+					}
 				}
+			}
+			// If the user clicked and it's not colliding with anything, place it
+			if (clicked && new_tower.getColor() == Color.white) {
+				new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
+				new_tower = null;
 			}
 		}
 	}
@@ -234,6 +244,7 @@ class World {
 		return pos < 0 ? 1 : (pos >= gridw*tsize ? -1 : 0);
 	}
 	
+	boolean isPlacingTower() { return new_tower != null; }
 	int getTileSize() { return tsize; }
 	Tile[][] getTiles() { return tiles; }
 	int[][][] getPath() { return path; }
