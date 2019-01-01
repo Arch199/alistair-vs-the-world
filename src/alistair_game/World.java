@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -12,6 +11,10 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 class World {
+	/** Handles all the game logic for a level.
+	 * Created by App.
+	 */
+	
 	private int tsize, gridw, gridh;
 	private float startx, starty, enemy_speed = 0.1f;
 	private Tile[][] tiles;
@@ -204,11 +207,6 @@ class World {
     	int offset = g.getFont().getWidth(str)/2;
     	g.drawString(str, x-offset, y);
     }
-	
-	
-	Tower tow() {  // TODO: remove
-		return towers.get(0);
-	}
 	
 	void takeDamage(int damage) {
 		health -= damage;

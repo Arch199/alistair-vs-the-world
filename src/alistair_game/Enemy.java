@@ -2,7 +2,7 @@ package alistair_game;
 
 import org.newdawn.slick.Image;
 
-abstract class Enemy extends Sprite {
+abstract class Enemy extends Sprite {	
 	//private double dir;  // Direction: radians anti-clockwise from east TODO: remove
 	private int damage = 5;
 	float hsp = 0, vsp = 0;
@@ -34,7 +34,7 @@ abstract class Enemy extends Sprite {
 		move(hsp, vsp);
 				
 		// Note: here is the original method for pathfinding, not in use rn
-		/*int tlen = world.getTileSize()/4;  // hmmm TODO: optimise this value
+		/*int tlen = world.getTileSize()/4;
 		float xdist = (float)(tlen * Math.cos(dir));
 		float ydist = (float)(tlen * -Math.sin(dir));
 		while (touchingWall(0, 0, tiles, world)) {
@@ -54,19 +54,19 @@ abstract class Enemy extends Sprite {
 		ydist = (float)(speed * -Math.sin(dir));
 		move(xdist, ydist);*/
 	}
-
-	boolean touchingWall(float xmove, float ymove, Tile[][] tiles, World world) {
+	
+	// Note: this is no longer in use but may be helpful later
+	boolean touchingWall(float xmove, float ymove, World world) {
 		boolean result = false;
 		move(xmove, ymove);
-		for (Tile[] col : tiles) {
-			for (Tile t : col) {  // ??? TODO: help
+		for (Tile[] col : world.getTiles()) {
+			for (Tile t : col) {
 				if (t.isWall() && checkCollision(t)) {
 					result = true;
 					break;
 				}
 			}
 		}
-		//return checkCollision(world.tow());
 		move(-xmove, -ymove);
 		return result;
 	}

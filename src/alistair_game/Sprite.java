@@ -6,7 +6,7 @@ import org.newdawn.slick.Image;
 class Sprite {
 	private float x, y;
 	private Image im;
-	private Color col = Color.white;  // TODO: work out what's going with this: red w/o this??
+	private Color col = Color.white;
 	
 	Sprite(float x, float y, Image im) {
 		this.x = x;

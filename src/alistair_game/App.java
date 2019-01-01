@@ -11,6 +11,11 @@ import java.util.logging.Logger;
 import org.newdawn.slick.*;
 
 public class App extends BasicGame {
+	/** Main handler for the game as a program.
+	 * Creates a World to handle the gameplay itself.
+	 * Will later create a Menu first (when we have a main menu).
+	 */
+	
 	private static final int
 		// OLD vals: 960/672/48/20/15
 		WINDOW_W = 960,
