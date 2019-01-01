@@ -4,13 +4,13 @@ import org.newdawn.slick.*;
 
 public class AudioController  {
     /** Handles the game audio.
-     * Initialized in App.init.
+     * Initialized in App.init().
      * To play a sound, call play(event) */
 
     private static Sound[] intro = new Sound[1];
     private static Sound[] gameover = new Sound[1];
     
-    AudioController() {
+    static void init() {
         // Initialize sounds
         try {
             intro[0] = new Sound("assets\\Audio\\Intro.ogg");

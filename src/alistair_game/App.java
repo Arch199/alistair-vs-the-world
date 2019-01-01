@@ -47,7 +47,7 @@ public class App extends BasicGame {
         gc.setShowFPS(false);
 
         // Initialise sound controller
-        AudioController ac = new AudioController();
+        AudioController.init();
 
         // Initialise level from file and create world object
         try {
