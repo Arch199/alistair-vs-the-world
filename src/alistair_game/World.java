@@ -10,7 +10,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 class World {
-	private int w, h, tsize, gridw, gridh;
+	private int tsize, gridw, gridh;
 	private float startx, starty, enemy_speed = 0.1f;
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
@@ -42,8 +42,6 @@ class World {
 	}
 	
 	World(int w, int h, int tsize, float startx, float starty, int[][] level) {
-		this.w = w;
-		this.h = h;
 		this.tsize = tsize;
 		this.gridw = w/tsize;
 		this.gridh = h/tsize;
