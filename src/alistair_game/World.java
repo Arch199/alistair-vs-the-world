@@ -99,12 +99,8 @@ class World {
 		
 		// Temp tower mouse hover test -- TODO: remove/replace with working towers
 		towers = new ArrayList<Tower>();
-		try {
-			new_tower = new Tower(w/2, h/2, new Image("assets\\alistair32.png"));
-			towers.add(new_tower);
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
+
+		newTower();
 
 		// Intro sound
 		AudioController.play("intro");
@@ -174,10 +170,20 @@ class World {
 			if (clicked && new_tower.getColor() == Color.white) {
 				new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
 				new_tower = null;
+				newTower();
 			}
 		}
 	}
-	
+
+	void newTower() {
+		try {
+			new_tower = new Tower(0, 0, new Image("assets\\alistair32.png"));
+			towers.add(new_tower);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+
 	void drawGUI(Graphics g) {
 		// Display Alistair's health
 		writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
