@@ -2,6 +2,7 @@ package alistair_game;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Color;
 
 class Tower extends Sprite {
 	boolean placed = false;
@@ -20,8 +21,12 @@ class Tower extends Sprite {
 	void drawRange(Graphics g) {
 		/* Draws a range circle around towers */
 		// Top-left corner of the circle
-		float xcorner = this.getX() - this.range, ycorner = this.getY() - this.range;
-		g.drawOval(xcorner, ycorner, this.range*2, range*2);
+		float xcorner = getX() - range, ycorner = getY() - range;
+		// Draw circumference
+		g.drawOval(xcorner, ycorner, range*2, range*2);
+		// Fill with a shade of grey (can change vals depending on contrast w/ textures)
+		g.setColor(new Color(80, 80, 80, 80));
+		g.fillOval(xcorner, ycorner, range*2, range*2);
 	}
 
 	boolean isPlaced() {
