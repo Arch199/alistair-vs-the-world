@@ -203,9 +203,12 @@ class World {
 		}
 	}
 	
-	void renderTowers() {
+	void renderTowers(Graphics g) {
 		for (Tower t : towers) {
 			t.drawSelf();
+			if(!t.isPlaced()) {
+				t.drawRange(g);
+			}
 		}
 	}
 	

@@ -99,7 +99,7 @@ public class App extends BasicGame {
     	// Draw all the sprites
     	world.renderTiles();
     	world.renderEnemies();
-    	world.renderTowers();
+    	world.renderTowers(g);
     	
     	world.drawGUI(g);
     }
