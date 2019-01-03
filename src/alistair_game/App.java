@@ -51,6 +51,10 @@ public class App extends BasicGame {
         System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
 
+        // Game update speed
+		gc.setMaximumLogicUpdateInterval(20);
+		gc.setMinimumLogicUpdateInterval(20);
+
         // Initialise sound controller
         AudioController.init();
 
