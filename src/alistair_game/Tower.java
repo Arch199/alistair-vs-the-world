@@ -8,6 +8,10 @@ class Tower extends Sprite {
 	boolean placed = false;
 	// Range is radius from center
 	float range = 150;
+	// 50 = 1 sec
+	float fireRate = 50;
+	// Updates since last fire
+	int lastShot = 0;
 
 	Tower(float startx, float starty, Image im) {
 		super(startx, starty, im);
@@ -16,6 +20,16 @@ class Tower extends Sprite {
 	void place(float x, float y) {
 		teleport(x, y);
 		placed = true;
+	}
+
+	/* Returns true if enough updates have passed to shoot */
+	boolean readyToShoot() {
+		lastShot++;
+		if(fireRate == lastShot) {
+			lastShot = 0;
+			return true;
+		}
+		return false;
 	}
 
 	void drawRange(Graphics g) {
@@ -36,9 +50,11 @@ class Tower extends Sprite {
 		// Reset color
 		// MATT: How do colours work, and why does not resetting it break other graphics operations?
 		g.setColor(oldcol);
-
 	}
 
+	void updateLastShot(int lastShot) {
+		this.lastShot = lastShot;
+	}
 	boolean isPlaced() {
 		return placed;
 	}

@@ -20,7 +20,7 @@ class World {
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
-	private LinkedList<Projectile> projectiles = new LinkedList<>();
+	private ArrayList<Projectile> projectiles = new ArrayList<>();
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
 	private int timer = 0, spawn_time = 2000, health = 100;
 	private Tile alistair;
@@ -131,6 +131,16 @@ class World {
 		}
 	}
 
+	void moveProjectiles() {
+		// Copied from above. TODO: Merge w/ above?
+		Iterator<Projectile> itr = projectiles.iterator();
+		while(itr.hasNext()) {
+			Projectile p = itr.next();
+			p.advance(1,1);
+			// TODO: cleanup upon screen exit
+		}
+	}
+
 	void processTowers(Input input) {
 		int mousex = input.getMouseX(), mousey = input.getMouseY();
 		boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
@@ -168,6 +178,30 @@ class World {
 		}
 	}
 
+	/** Makes the shot. Generates a projectile. */
+	void shoot(Tower tower) {
+		try {
+			Projectile new_proj;
+			Image im = new Image("assets\\othersprites\\towerDefense_tile272.png");
+			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
+			new_proj = new Projectile((int)tower.getX(), (int)tower.getY(), 0.1f, 0.1f, im);
+			projectiles.add(new_proj);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** Calls each tower's counter every update cycle. Shoots if ready */
+	void fireRateCounter() {
+		// Placed
+		for(Tower t: towers) {
+			// Short-circuit AND
+			if (t.isPlaced() && t.readyToShoot()) {
+				shoot(t);
+			}
+		}
+	}
+
 	void drawGUI(Graphics g) {
 		// Display Alistair's health
 		writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
@@ -191,8 +225,15 @@ class World {
 		for (Tower t : towers) {
 			t.drawSelf();
 			if(!t.isPlaced()) {
+				// In hand
 				t.drawRange(g);
 			}
+		}
+	}
+
+	void renderProjectiles() {
+		for (Projectile p : projectiles) {
+			p.drawSelf();
 		}
 	}
 	
