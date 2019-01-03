@@ -16,7 +16,7 @@ class World {
 	 */
 	
 	private int tsize, gridw, gridh;
-	private float startx, starty, enemy_speed = 0.1f;
+	private float startx, starty, enemy_speed = 1f;
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
@@ -100,7 +100,7 @@ class World {
 		// Temp tower mouse hover test -- TODO: remove/replace with working towers
 		towers = new ArrayList<Tower>();
 
-		newTower();
+		newTower(w/2, h/2);
 
 		// Intro sound
 		AudioController.play("intro");
@@ -170,14 +170,14 @@ class World {
 			if (clicked && new_tower.getColor() == Color.white) {
 				new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
 				new_tower = null;
-				newTower();
+				newTower(mousex, mousey);
 			}
 		}
 	}
 
-	void newTower() {
+	void newTower(float xpos, float ypos) {
 		try {
-			new_tower = new Tower(0, 0, new Image("assets\\alistair32.png"));
+			new_tower = new Tower(xpos, ypos, new Image("assets\\alistair32.png"));
 			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();
