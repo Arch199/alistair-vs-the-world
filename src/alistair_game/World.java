@@ -20,6 +20,7 @@ class World {
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
+	private LinkedList<Projectile> projectiles = new LinkedList<>();
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
 	private int timer = 0, spawn_time = 2000, health = 100;
 	private Tile alistair;
@@ -96,10 +97,8 @@ class World {
 			x += i;
 			y += j;
 		}
-		
-		// Temp tower mouse hover test -- TODO: remove/replace with working towers
-		towers = new ArrayList<Tower>();
 
+		// Tower in hand to start TODO: Add a sidebar?
 		newTower(w/2, h/2);
 
 		// Intro sound
@@ -117,21 +116,6 @@ class World {
 	}
 	
 	void spawnEnemy(float x, float y) {
-		// Note: currently not using dir with Enemies, here for reference
-		/*double dir;
-		if (y < 0) {
-			// Above top of screen, go down
-			dir = Math.PI*3/2;
-		} else if (y > h) {
-			// Below bottom of screen, go up
-			dir = Math.PI/2;
-		} else if (x > w) {
-			// Right of screen, go left
-			dir = Math.PI;
-		} else {
-			// Default, go right
-			dir = 0;
-		}*/
 		enemies.add(new EnemyPython(x, y, enemy_speed*defaultDir(x), enemy_speed*defaultDir(y)));
 	}
 	
