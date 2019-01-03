@@ -5,13 +5,13 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {
-	boolean placed = false;
+	private boolean placed = false;
 	// Range is radius from center
-	float range = 150;
+	private float range = 150;
 	// 50 = 1 sec
-	float fireRate = 50;
+	private float fireRate = 50;
 	// Updates since last fire
-	int lastShot = 0;
+	private int lastShot = 0;
 
 	Tower(float startx, float starty, Image im) {
 		super(startx, starty, im);
