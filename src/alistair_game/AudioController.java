@@ -68,6 +68,12 @@ public class AudioController  {
                 break;
             case "python":
                 python.play();
+                break;
+            case "alcohol":
+            	alcohol.play();
+            	break;
+            case "commercestudent":
+            	commerceStudent.play();
         }
     }
 
