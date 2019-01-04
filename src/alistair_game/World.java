@@ -15,7 +15,7 @@ class World {
 	 * Created by App.
 	 */
 	
-	private int tsize, gridw, gridh;
+	private int w, h, tsize, gridw, gridh;
 	private float startx, starty, enemy_speed = 1f;
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
@@ -49,6 +49,8 @@ class World {
 	}
 	
 	World(int w, int h, int tsize, float startx, float starty, int[][] level) {
+		this.w = w;
+		this.h = h;
 		this.tsize = tsize;
 		this.gridw = w/tsize;
 		this.gridh = h/tsize;
@@ -132,12 +134,13 @@ class World {
 	}
 
 	void moveProjectiles() {
-		// Copied from above. TODO: Merge w/ above?
 		Iterator<Projectile> itr = projectiles.iterator();
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			Projectile p = itr.next();
-			p.advance(1,1);
-			// TODO: cleanup upon screen exit
+			p.advance();
+			if (p.isOffScreen(w, h)) {
+	        	itr.remove();
+	        }
 		}
 	}
 
@@ -235,13 +238,13 @@ class World {
 		}
 	}
 	
-	// Convert from literal position to position on grid
+	/** Converts from literal position to position on grid */
 	int toGrid(float pos) {
 		// Choose closest grid position
 		return Math.round((pos-tsize/2)/tsize);
 	}
 	
-	// Convert from grid position to literal coordinates
+	/** Converts from grid position to literal coordinates */
 	float toPos(int gridval) {
 		return gridval*tsize + tsize/2;
 	}
@@ -250,12 +253,12 @@ class World {
 		return x >= 0 && y >= 0 && x < gridw && y < gridh;
 	}
 	
-	// Returns a grid direction to point inwards from the current position
+	/** Returns a grid direction to point inwards from the current position */
 	int defaultDir(int gridval) {
 		return gridval < 0 ? 1 : (gridval >= gridw ? -1 : 0);
 	}
 	
-	// Returns a literal direction to point inwards
+	/** Returns a literal direction to point inwards */
 	float defaultDir(float pos) {
 		return pos < 0 ? 1 : (pos >= gridw*tsize ? -1 : 0);
 	}

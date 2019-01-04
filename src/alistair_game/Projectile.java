@@ -7,20 +7,15 @@ public class Projectile extends Sprite {
 
     Projectile(float startx, float starty, float hsp, float vsp, Image im) {
         super(startx, starty, im);
-        //this.dir = dir;
         this.hsp = hsp;
         this.vsp = vsp;
     }
 
-    void advance(float xdist, float ydist) {
-        move(xdist, ydist);
+    /** Move according to current speed */
+    void advance() {
+        move(hsp, vsp);
     }
 
-    float getXSpeed() {
-        return this.hsp;
-    }
-
-    float getYSpeed() {
-        return this.vsp;
-    }
+    float getXSpeed() { return this.hsp; }
+    float getYSpeed() { return this.vsp; }
 }
