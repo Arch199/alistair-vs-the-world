@@ -191,7 +191,7 @@ class World {
 
 	void drawGUI(Graphics g) {
 		// Display Alistair's health
-		writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
+		Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
 	}
 	
 	void renderTiles() {
@@ -223,11 +223,6 @@ class World {
 			p.drawSelf();
 		}
 	}
-	
-	static void writeCentered(Graphics g, String str, float x, float y) {
-    	int offset = g.getFont().getWidth(str)/2;
-    	g.drawString(str, x-offset, y);
-    }
 	
 	void takeDamage(int damage) {
 		health -= damage;

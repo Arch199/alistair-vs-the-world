@@ -1,7 +1,6 @@
 package alistair_game;
 
 import org.newdawn.slick.*;
-import java.util.*;
 
 public class AudioController  {
     /** Handles the game audio.
@@ -46,13 +45,13 @@ public class AudioController  {
 
     public static void play(String event) {
         // TODO: Add pitch and volume control
-        // Intro sound
+    	// TODO: put the sounds in a hash map
         switch (event) {
             case "intro":
-                intro[rand(2)].play();
+                intro[Util.rand(intro.length)].play();
                 break;
             case "gameover":
-                gameover[rand(2)].play();
+                gameover[Util.rand(gameover.length)].play();
                 break;
             case "victory":
                 victory.play();
@@ -75,12 +74,5 @@ public class AudioController  {
             case "commercestudent":
             	commerceStudent.play();
         }
-    }
-
-    private static int rand(int sounds) {
-        /* Generates an int 0- (sounds-1) */
-        Random gen = new Random(System.nanoTime());
-        int choice = gen.nextInt(sounds);
-        return choice;
     }
 }
