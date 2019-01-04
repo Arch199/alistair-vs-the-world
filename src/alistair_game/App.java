@@ -55,9 +55,6 @@ public class App extends BasicGame {
 		gc.setMaximumLogicUpdateInterval(20);
 		gc.setMinimumLogicUpdateInterval(20);
 
-        // Initialise sound controller
-        AudioController.init();
-
         // Initialise level from file and create world object
         try {
         	// 2D grid array
