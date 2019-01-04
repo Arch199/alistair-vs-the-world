@@ -51,6 +51,10 @@ public class App extends BasicGame {
         System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
 
+        // Game update speed. 1 tick every 20 ms (50/sec)
+		gc.setMaximumLogicUpdateInterval(20);
+		gc.setMinimumLogicUpdateInterval(20);
+
         // Initialise sound controller
         AudioController.init();
 
@@ -89,9 +93,11 @@ public class App extends BasicGame {
     	// something about speed -- increment it given the delta I guess
     	world.tick(delta);
     	world.moveEnemies();
-    	
+    	world.moveProjectiles();
+
     	Input input = gc.getInput();
     	world.processTowers(input);
+    	world.fireRateCounter();
     }
 
     @Override
@@ -100,7 +106,8 @@ public class App extends BasicGame {
     	world.renderTiles();
     	world.renderEnemies();
     	world.renderTowers(g);
-    	
+    	world.renderProjectiles();
+
     	world.drawGUI(g);
     }
     

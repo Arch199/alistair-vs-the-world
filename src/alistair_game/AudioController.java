@@ -12,7 +12,7 @@ public class AudioController  {
     private static Sound[] gameover = new Sound[2];
     private static Sound victory, quickSort, python, mergeSort, insertionSort, commerceStudent, alcohol;
 
-    AudioController() {
+    static void init() {
         try {
             String path = "assets\\Audio\\";
 

@@ -16,10 +16,11 @@ class World {
 	 */
 	
 	private int tsize, gridw, gridh;
-	private float startx, starty, enemy_speed = 0.1f;
+	private float startx, starty, enemy_speed = 1f;
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
+	private ArrayList<Projectile> projectiles = new ArrayList<>();
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
 	private int timer = 0, spawn_time = 2000, health = 100;
 	private Tile alistair;
@@ -96,11 +97,9 @@ class World {
 			x += i;
 			y += j;
 		}
-		
-		// Temp tower mouse hover test -- TODO: remove/replace with working towers
-		towers = new ArrayList<Tower>();
 
-		newTower();
+		// Tower in hand to start TODO: Add a sidebar?
+		newTower(w/2, h/2);
 
 		// Intro sound
 		AudioController.play("intro");
@@ -117,21 +116,6 @@ class World {
 	}
 	
 	void spawnEnemy(float x, float y) {
-		// Note: currently not using dir with Enemies, here for reference
-		/*double dir;
-		if (y < 0) {
-			// Above top of screen, go down
-			dir = Math.PI*3/2;
-		} else if (y > h) {
-			// Below bottom of screen, go up
-			dir = Math.PI/2;
-		} else if (x > w) {
-			// Right of screen, go left
-			dir = Math.PI;
-		} else {
-			// Default, go right
-			dir = 0;
-		}*/
 		enemies.add(new EnemyPython(x, y, enemy_speed*defaultDir(x), enemy_speed*defaultDir(y)));
 	}
 	
@@ -144,6 +128,16 @@ class World {
 				takeDamage(e.getDamage());
 				itr.remove();
 			}
+		}
+	}
+
+	void moveProjectiles() {
+		// Copied from above. TODO: Merge w/ above?
+		Iterator<Projectile> itr = projectiles.iterator();
+		while(itr.hasNext()) {
+			Projectile p = itr.next();
+			p.advance(1,1);
+			// TODO: cleanup upon screen exit
 		}
 	}
 
@@ -170,17 +164,41 @@ class World {
 			if (clicked && new_tower.getColor() == Color.white) {
 				new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
 				new_tower = null;
-				newTower();
+				newTower(mousex, mousey);
 			}
 		}
 	}
 
-	void newTower() {
+	void newTower(float xpos, float ypos) {
 		try {
-			new_tower = new Tower(0, 0, new Image("assets\\alistair32.png"));
+			new_tower = new Tower(xpos, ypos, new Image("assets\\alistair32.png"));
 			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/** Makes the shot. Generates a projectile. */
+	void shoot(Tower tower) {
+		try {
+			Projectile new_proj;
+			Image im = new Image("assets\\othersprites\\towerDefense_tile272.png");
+			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
+			new_proj = new Projectile((int)tower.getX(), (int)tower.getY(), 0.1f, 0.1f, im);
+			projectiles.add(new_proj);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** Calls each tower's counter every update cycle. Shoots if ready */
+	void fireRateCounter() {
+		// Placed
+		for(Tower t: towers) {
+			// Short-circuit AND
+			if (t.isPlaced() && t.readyToShoot()) {
+				shoot(t);
+			}
 		}
 	}
 
@@ -207,8 +225,15 @@ class World {
 		for (Tower t : towers) {
 			t.drawSelf();
 			if(!t.isPlaced()) {
+				// In hand
 				t.drawRange(g);
 			}
+		}
+	}
+
+	void renderProjectiles() {
+		for (Projectile p : projectiles) {
+			p.drawSelf();
 		}
 	}
 	

@@ -32,27 +32,6 @@ abstract class Enemy extends Sprite {
 			}
 		}
 		move(hsp, vsp);
-				
-		// Note: here is the original method for pathfinding, not in use rn
-		/*int tlen = world.getTileSize()/4;
-		float xdist = (float)(tlen * Math.cos(dir));
-		float ydist = (float)(tlen * -Math.sin(dir));
-		while (touchingWall(0, 0, tiles, world)) {
-			move(-Math.signum(xdist), -Math.signum(ydist));
-		}
-		// ^ NOTE: this causes it to phase through walls if it somehow backs into one
-		
-		// Try anti-clockwise, then clockwise, then just do a 180 as a last resort
-		double[] attempts = {dir-Math.PI/2, dir+Math.PI/2, dir+Math.PI};
-		for (int i = 0; i < attempts.length && touchingWall(xdist, ydist, tiles, world); i++) {
-			dir = attempts[i];
-			xdist = (float)(tlen * Math.cos(dir));
-			ydist = (float)(tlen * -Math.sin(dir));
-			
-		}
-		xdist = (float)(speed * Math.cos(dir));
-		ydist = (float)(speed * -Math.sin(dir));
-		move(xdist, ydist);*/
 	}
 	
 	// Note: this is no longer in use but may be helpful later
