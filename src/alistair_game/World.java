@@ -167,6 +167,14 @@ class World {
 				newTower(mousex, mousey);
 			}
 		}
+		
+		// Call each tower's counter and shoot if ready
+		for (Tower t: towers) {
+			// Short-circuit AND
+			if (t.isPlaced() && t.readyToShoot()) {
+				t.shoot(projectiles);
+			}
+		}
 	}
 
 	void newTower(float xpos, float ypos) {
@@ -175,30 +183,6 @@ class World {
 			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();
-		}
-	}
-
-	/** Makes the shot. Generates a projectile. */
-	void shoot(Tower tower) {
-		try {
-			Projectile new_proj;
-			Image im = new Image("assets\\othersprites\\towerDefense_tile272.png");
-			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
-			new_proj = new Projectile((int)tower.getX(), (int)tower.getY(), 0.1f, 0.1f, im);
-			projectiles.add(new_proj);
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/** Calls each tower's counter every update cycle. Shoots if ready */
-	void fireRateCounter() {
-		// Placed
-		for(Tower t: towers) {
-			// Short-circuit AND
-			if (t.isPlaced() && t.readyToShoot()) {
-				shoot(t);
-			}
 		}
 	}
 
@@ -224,7 +208,7 @@ class World {
 	void renderTowers(Graphics g) {
 		for (Tower t : towers) {
 			t.drawSelf();
-			if(!t.isPlaced()) {
+			if (!t.isPlaced()) {
 				// In hand
 				t.drawRange(g);
 			}

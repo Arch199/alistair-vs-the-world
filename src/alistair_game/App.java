@@ -97,7 +97,6 @@ public class App extends BasicGame {
 
     	Input input = gc.getInput();
     	world.processTowers(input);
-    	world.fireRateCounter();
     }
 
     @Override

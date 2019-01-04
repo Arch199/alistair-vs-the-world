@@ -1,20 +1,34 @@
 package alistair_game;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Graphics;
+
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {
 	private boolean placed = false;
-	// Range is radius from center
-	private float range = 150;
-	// 50 = 1 sec
-	private float fireRate = 50;
-	// Updates since last fire
-	private int lastShot = 0;
+	private float range = 150; // Range is radius from center
+	private float fireRate = 50; // 50 = 1 sec
+	private int lastShot = 0; // Updates since last fire
 
 	Tower(float startx, float starty, Image im) {
 		super(startx, starty, im);
+	}
+	
+	/** Makes the shot. Generates a projectile. */
+	void shoot(ArrayList<Projectile> projectiles) {
+		try {
+			Projectile new_proj;
+			Image im = new Image("assets\\othersprites\\towerDefense_tile272.png");
+			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
+			new_proj = new Projectile((int)getX(), (int)getY(), 0.1f, 0.1f, im);
+			projectiles.add(new_proj);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	void place(float x, float y) {
@@ -22,7 +36,7 @@ class Tower extends Sprite {
 		placed = true;
 	}
 
-	/* Returns true if enough updates have passed to shoot */
+	/** Returns true if enough updates have passed to shoot. */
 	boolean readyToShoot() {
 		lastShot++;
 		if(fireRate == lastShot) {
@@ -32,8 +46,8 @@ class Tower extends Sprite {
 		return false;
 	}
 
+	/** Draws a range circle around towers. */
 	void drawRange(Graphics g) {
-		/* Draws a range circle around towers */
 		Color oldcol = g.getColor();
 
 		// Top-left corner of the circle
@@ -51,13 +65,8 @@ class Tower extends Sprite {
 		// MATT: How do colours work, and why does not resetting it break other graphics operations?
 		g.setColor(oldcol);
 	}
-
-	void updateLastShot(int lastShot) {
-		this.lastShot = lastShot;
-	}
-	boolean isPlaced() {
-		return placed;
-	}
-
-	// TODO: add extra functionality to this
+	
+	boolean isPlaced() { return placed; }
+	
+	void setLastShot(int lastShot) { this.lastShot = lastShot; }
 }

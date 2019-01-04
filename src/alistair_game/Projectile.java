@@ -1,8 +1,6 @@
 package alistair_game;
 
-import org.lwjgl.Sys;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 public class Projectile extends Sprite {
     private float hsp = 0, vsp = 0;
