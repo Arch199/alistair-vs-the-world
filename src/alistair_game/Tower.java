@@ -22,9 +22,9 @@ class Tower extends Sprite {
 	void shoot(ArrayList<Projectile> projectiles) {
 		try {
 			Projectile new_proj;
-			Image im = new Image("assets\\othersprites\\towerDefense_tile272.png");
+			Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
 			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
-			new_proj = new Projectile((int)getX(), (int)getY(), 0.1f, 0.1f, im);
+			new_proj = new Projectile((int)getX(), (int)getY(), 1f, 1f, im);
 			projectiles.add(new_proj);
 		} catch (SlickException e) {
 			e.printStackTrace();

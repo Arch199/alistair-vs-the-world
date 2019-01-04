@@ -14,23 +14,23 @@ public class AudioController  {
 
     static void init() {
         try {
-            String path = "assets\\Audio\\";
+            String path = "assets\\audio\\";
 
             // Sounds
-            intro[0] = new Sound(path+"Intro.ogg");
-            intro[1] = new Sound(path+"Intro2.ogg");
-            gameover[0] = new Sound(path+"GameOver.ogg");
-            gameover[1] = new Sound(path+"Gameover2.ogg");
+            intro[0] = new Sound(path + "Intro.ogg");
+            intro[1] = new Sound(path + "Intro2.ogg");
+            gameover[0] = new Sound(path + "GameOver.ogg");
+            gameover[1] = new Sound(path + "Gameover2.ogg");
 
-            Sound victory = new Sound(path + "Victory.ogg");
+            victory = new Sound(path + "Victory.ogg");
 
-            Sound alcohol = new Sound(path + "Alcohol.ogg");
-            Sound commerceStudent = new Sound(path + "CommerceStudent.ogg");
-            Sound python = new Sound(path + "Python.ogg");
+            alcohol = new Sound(path + "Alcohol.ogg");
+            commerceStudent = new Sound(path + "CommerceStudent.ogg");
+            python = new Sound(path + "Python.ogg");
 
-            Sound insertionSort = new Sound(path + "InsertionSort.ogg");
-            Sound mergeSort = new Sound(path + "MergeSort.ogg");
-            Sound quickSort = new Sound(path + "QuickSort.ogg");
+            insertionSort = new Sound(path + "InsertionSort.ogg");
+            mergeSort = new Sound(path + "MergeSort.ogg");
+            quickSort = new Sound(path + "QuickSort.ogg");
 
             // Music
             // TODO: Find some music? Can add an array of songs to a musicLoop() method.

@@ -41,7 +41,7 @@ class World {
 		tileset = new Image[tile_names.length];
 		try {
 			for (int i = 0; i < tileset.length; i++) {
-				tileset[i] = new Image("assets\\tiles\\" + tile_names[i] + ".png");
+				tileset[i] = new Image("assets\\sprites\\tiles\\" + tile_names[i] + ".png");
 			}
 		} catch (SlickException e) {
 			e.printStackTrace();
@@ -182,7 +182,7 @@ class World {
 
 	void newTower(float xpos, float ypos) {
 		try {
-			new_tower = new Tower(xpos, ypos, new Image("assets\\alistair32.png"));
+			new_tower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"));
 			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();

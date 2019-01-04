@@ -8,7 +8,7 @@ class EnemyPython extends Enemy {
 	
 	static {
 		try {
-			im = new Image("assets\\enemies\\python-icon.png");
+			im = new Image("assets\\sprites\\enemies\\python-icon.png");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
