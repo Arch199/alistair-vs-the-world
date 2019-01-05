@@ -22,7 +22,8 @@ class World {
 	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
 	private ArrayList<Projectile> projectiles = new ArrayList<>();
 	private ArrayList<Tower> towers = new ArrayList<Tower>();
-	private int timer = 0, spawn_time = 2000, health = 100;
+	private int spawn_time = 2000, next_spawn = spawn_time, health = 100;
+	private long timer = 0;
 	private Tile alistair;
 	private Tower new_tower;
 	
@@ -106,15 +107,37 @@ class World {
 		// Intro sound
 		AudioController.play("intro");
 	}
-	
+
+	/**
+	 * Keeps track of the time (in ms) from the start of the wave. Spawns enemies and projectiles accordingly.
+	 */
 	void tick(int delta) {
-		// Handle advancing the timer / spawning enemies
 		timer += delta;
-		while (timer >= spawn_time) {
-			timer -= spawn_time;
+
+		// Enemy spawning
+		while (timer >= next_spawn) {
+			next_spawn += spawn_time;
 			spawnEnemy(startx, starty);
 		}
 		// TODO: increase speed and decrease spawn time over time (or per wave?)
+
+		// Tower shots
+		System.out.println("time is " + timer);
+		for (Tower t: towers) {
+			if (t.isPlaced() && t.readyToShoot(timer)) {
+				t.shoot(projectiles);
+			}
+		}
+	}
+
+	/** Currently unused. Call every time a new wave starts */
+	void newWave() {
+		timer = 0;
+		for (Tower t: towers) {
+			if (t.isPlaced()) {
+				t.waveReset();
+			}
+		}
 	}
 	
 	void spawnEnemy(float x, float y) {
@@ -144,6 +167,9 @@ class World {
 		}
 	}
 
+	/**
+	 * Handles placing towers
+	 */
 	void processTowers(Input input) {
 		int mousex = input.getMouseX(), mousey = input.getMouseY();
 		boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
@@ -170,19 +196,12 @@ class World {
 				newTower(mousex, mousey);
 			}
 		}
-		
-		// Call each tower's counter and shoot if ready
-		for (Tower t: towers) {
-			// Short-circuit AND
-			if (t.isPlaced() && t.readyToShoot()) {
-				t.shoot(projectiles);
-			}
-		}
 	}
 
 	void newTower(float xpos, float ypos) {
 		try {
-			new_tower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"));
+			new_tower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
+			new_tower.setSpawnTime(timer);
 			towers.add(new_tower);
 		} catch (SlickException e) {
 			e.printStackTrace();
