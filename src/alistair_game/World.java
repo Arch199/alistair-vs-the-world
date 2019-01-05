@@ -167,9 +167,7 @@ class World {
 		}
 	}
 
-	/**
-	 * Handles placing towers
-	 */
+	/** Handles placing towers */
 	void processTowers(Input input) {
 		int mousex = input.getMouseX(), mousey = input.getMouseY();
 		boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);

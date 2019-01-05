@@ -46,10 +46,7 @@ class Tower extends Sprite {
 	/** Returns true if enough time has passed to shoot. */
 	boolean readyToShoot(long time) {
 		long timeAlive = time - spawnTime;
-		if (timeAlive >= nextShot) {
-			return true;
-		}
-		return false;
+		return timeAlive >= nextShot;
 	}
 
 	/** Draws a range circle around towers. */
@@ -72,14 +69,12 @@ class Tower extends Sprite {
 		g.setColor(oldcol);
 	}
 
-	void setSpawnTime(long time) {
-		spawnTime = time;
-	}
-
 	void waveReset() {
 		nextShot = 0;
 		spawnTime = 0;
 	}
 
 	boolean isPlaced() { return placed; }
+	
+	void setSpawnTime(long time) { spawnTime = time; }
 }
