@@ -11,21 +11,28 @@ import org.newdawn.slick.Color;
 class Tower extends Sprite {
 	private boolean placed = false;
 	private float range = 150; // Range is radius from center
-	private float fireRate = 50; // 50 = 1 sec
-	private int lastShot = 0; // Updates since last fire
+	private int fireRate = 0; // In ms
+	private int nextShot = 0; // Time of next fire (in ms from start of wave)
+	private long spawnTime = 0; // Reset every wave
 
-	Tower(float startx, float starty, Image im) {
+	Tower(float startx, float starty, Image im, int fireRate) {
 		super(startx, starty, im);
+		this.fireRate = fireRate;
+		nextShot = 0;
 	}
-	
-	/** Makes the shot. Generates a projectile. */
+
+	/** Makes the shot. Generates a projectile and sets a new time. */
 	void shoot(ArrayList<Projectile> projectiles) {
 		try {
+			// Make a new projectile
 			Projectile new_proj;
 			Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
 			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
 			new_proj = new Projectile((int)getX(), (int)getY(), 1f, 1f, im);
 			projectiles.add(new_proj);
+
+			// Determine the time of the next shot
+			nextShot += fireRate;
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
@@ -36,11 +43,10 @@ class Tower extends Sprite {
 		placed = true;
 	}
 
-	/** Returns true if enough updates have passed to shoot. */
-	boolean readyToShoot() {
-		lastShot++;
-		if(fireRate == lastShot) {
-			lastShot = 0;
+	/** Returns true if enough time has passed to shoot. */
+	boolean readyToShoot(long time) {
+		long timeAlive = time - spawnTime;
+		if (timeAlive >= nextShot) {
 			return true;
 		}
 		return false;
@@ -65,8 +71,15 @@ class Tower extends Sprite {
 		// MATT: How do colours work, and why does not resetting it break other graphics operations?
 		g.setColor(oldcol);
 	}
-	
+
+	void setSpawnTime(long time) {
+		spawnTime = time;
+	}
+
+	void waveReset() {
+		nextShot = 0;
+		spawnTime = 0;
+	}
+
 	boolean isPlaced() { return placed; }
-	
-	void setLastShot(int lastShot) { this.lastShot = lastShot; }
 }
