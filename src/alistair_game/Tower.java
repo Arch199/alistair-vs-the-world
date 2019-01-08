@@ -13,8 +13,8 @@ class Tower extends Sprite {
 	private boolean placed = false;
 	private float range = 150; // Range is radius from center
 	private int fireRate = 0; // In ms
-	private int nextShot = 0; // Time of next fire (in ms from start of wave)
-	private long spawnTime = 0; // Reset every wave
+	private int nextShot; // Time of next fire (in ms from start of wave)
+	private long spawnTime; // Reset every wave
 
 	Tower(float startx, float starty, Image im, int fireRate) {
 		super(startx, starty, im);
