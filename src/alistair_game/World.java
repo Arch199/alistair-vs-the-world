@@ -19,9 +19,9 @@ class World {
 	private float startx, starty, enemy_speed = 1f;
 	private Tile[][] tiles;
 	private int[][][] path;  // Directions to move for each tile
-	private LinkedList<Enemy> enemies = new LinkedList<Enemy>();
+	private LinkedList<Enemy> enemies = new LinkedList<>();
 	private ArrayList<Projectile> projectiles = new ArrayList<>();
-	private ArrayList<Tower> towers = new ArrayList<Tower>();
+	private ArrayList<Tower> towers = new ArrayList<>();
 	private int spawn_time = 2000, next_spawn = spawn_time, health = 100;
 	private long timer = 0;
 	private Tile alistair;
@@ -125,7 +125,7 @@ class World {
 		System.out.println("time is " + timer);
 		for (Tower t: towers) {
 			if (t.isPlaced() && t.readyToShoot(timer)) {
-				t.shoot(projectiles);
+				t.shoot(this);
 			}
 		}
 	}
@@ -279,4 +279,6 @@ class World {
 	int getTileSize() { return tsize; }
 	Tile[][] getTiles() { return tiles; }
 	int[][][] getPath() { return path; }
+	LinkedList<Enemy> getEnemies() { return enemies; }
+	ArrayList<Projectile> getProjectiles() { return projectiles; }
 }

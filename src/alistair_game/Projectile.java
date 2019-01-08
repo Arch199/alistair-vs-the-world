@@ -3,19 +3,18 @@ package alistair_game;
 import org.newdawn.slick.Image;
 
 public class Projectile extends Sprite {
-    private float hsp = 0, vsp = 0;
+    private Vector v;
 
-    Projectile(float startx, float starty, float hsp, float vsp, Image im) {
+    Projectile(float startx, float starty, Vector vec, Image im) {
         super(startx, starty, im);
-        this.hsp = hsp;
-        this.vsp = vsp;
+        v = vec;
     }
 
     /** Move according to current speed */
     void advance() {
-        move(hsp, vsp);
+        move(v.hsp, v.vsp);
     }
 
-    float getXSpeed() { return this.hsp; }
-    float getYSpeed() { return this.vsp; }
+    float getXSpeed() { return v.hsp; }
+    float getYSpeed() { return v.vsp; }
 }

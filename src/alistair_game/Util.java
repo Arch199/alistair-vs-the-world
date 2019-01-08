@@ -22,4 +22,20 @@ public class Util {
     	int offset = g.getFont().getWidth(str)/2;
     	g.drawString(str, x-offset, y);
     }
+
+	/** Calculates the distance between two x-y coordinates. */
+	public static float dist(float x1, float y1, float x2, float y2) {
+		// Euclidean distance (COMP20008 method)
+		return (float) Math.sqrt(Math.pow((x1-x2),2) + Math.pow((y1-y2),2));
+	}
+}
+
+class Vector {
+	/** Holds projectile speeds and orientation */
+	float vsp;
+	float hsp;
+	Vector(float vsp, float hsp) {
+		this.vsp = vsp;
+		this.hsp = hsp;
+	}
 }
