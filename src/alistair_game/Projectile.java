@@ -15,6 +15,11 @@ public class Projectile extends Sprite {
         move(v.hsp, v.vsp);
     }
 
-    float getXSpeed() { return v.hsp; }
-    float getYSpeed() { return v.vsp; }
+    float getXSpeed() {
+        return v.hsp;
+    }
+
+    float getYSpeed() {
+        return v.vsp;
+    }
 }

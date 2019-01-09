@@ -11,21 +11,17 @@ import java.util.logging.Logger;
 import org.newdawn.slick.*;
 
 public class App extends BasicGame {
-	/** Main handler for the game as a program.
-	 * Creates a World to handle the gameplay itself.
-	 * Will later create a Menu first (when we have a main menu).
-	 */
-	
-	private static final int
-		// OLD vals: 960/672/48/20/15
-		WINDOW_W = 960,
-		WINDOW_H = 672,
-		TILE_SIZE = 48,
-		GRID_W = WINDOW_W/TILE_SIZE,
-		GRID_H = WINDOW_H/TILE_SIZE;
-	
-	private World world;
-	
+    /**
+     * Main handler for the game as a program. Creates a World to handle the
+     * gameplay itself. Will later create a Menu first (when we have a main menu).
+     */
+
+    private static final int
+    // OLD vals: 960/672/48/20/15
+    WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48, GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
+
+    private World world;
+
     public static void main(String[] args) {
         try {
             System.out.println("Yeet, starting main");
@@ -33,11 +29,11 @@ public class App extends BasicGame {
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
             appgc.setDisplayMode(WINDOW_W, WINDOW_H, false);
-			appgc.start();
+            appgc.start();
 
             System.err.println("GAME STATE: Game forced exit");
         } catch (SlickException e) {
-        	// Log exception
+            // Log exception
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
         }
     }
@@ -52,65 +48,66 @@ public class App extends BasicGame {
         gc.setShowFPS(false);
 
         // Game update speed. 1 tick every 20 ms (50/sec)
-		gc.setMaximumLogicUpdateInterval(20);
-		gc.setMinimumLogicUpdateInterval(20);
+        gc.setMaximumLogicUpdateInterval(20);
+        gc.setMinimumLogicUpdateInterval(20);
 
         // Initialise level from file and create world object
         try {
-        	// 2D grid array
-        	int[][] level = new int[GRID_W][GRID_H];
+            // 2D grid array
+            int[][] level = new int[GRID_W][GRID_H];
 
-        	// Load map info file
-			Scanner scanner = new Scanner(new File("assets\\levels\\level1.txt"));
-			for (int y = 0; y < GRID_H; y++) {
-				assert(scanner.hasNext());
-				char[] line = scanner.next().toCharArray();
-				int x = 0;
-				for (char c : line) {
-					if (x >= GRID_W) break;
-					assert(Character.isDigit(c));
-					level[x++][y] = Character.getNumericValue(c);
-				}
-			}
+            // Load map info file
+            Scanner scanner = new Scanner(new File("assets\\levels\\level1.txt"));
+            for (int y = 0; y < GRID_H; y++) {
+                assert (scanner.hasNext());
+                char[] line = scanner.next().toCharArray();
+                int x = 0;
+                for (char c : line) {
+                    if (x >= GRID_W)
+                        break;
+                    assert (Character.isDigit(c));
+                    level[x++][y] = Character.getNumericValue(c);
+                }
+            }
 
-			// Enemy spawn location
-			float startx = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
-			float starty = (float)scanner.nextInt()*TILE_SIZE+TILE_SIZE/2;
-			scanner.close();			
+            // Enemy spawn location
+            float startx = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
+            float starty = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
+            scanner.close();
 
-			world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-        
+            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
-    	// something about speed -- increment it given the delta I guess
-    	world.tick(delta);
-    	world.moveEnemies();
-    	world.moveProjectiles();
+        // something about speed -- increment it given the delta I guess
+        world.tick(delta);
+        world.moveEnemies();
+        world.moveProjectiles();
 
-    	Input input = gc.getInput();
-    	world.processTowers(input);
+        Input input = gc.getInput();
+        world.processTowers(input);
     }
 
     @Override
-    public void render(GameContainer gc, Graphics g) throws SlickException {    	
-    	// Draw all the sprites
-    	world.renderTiles();
-    	world.renderEnemies();
-    	world.renderTowers(g);
-    	world.renderProjectiles();
+    public void render(GameContainer gc, Graphics g) throws SlickException {
+        // Draw all the sprites
+        world.renderTiles();
+        world.renderEnemies();
+        world.renderTowers(g);
+        world.renderProjectiles();
 
-    	world.drawGUI(g);
+        world.drawGUI(g);
     }
-    
+
     @Override
-    public boolean closeRequested() {  
-    	System.out.println("GAME STATE: Exiting game");
-    	System.exit(0);
-    	return false;
+    public boolean closeRequested() {
+        System.out.println("GAME STATE: Exiting game");
+        System.exit(0);
+        return false;
     }
 }
