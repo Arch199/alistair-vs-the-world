@@ -13,7 +13,7 @@ class Tower extends Sprite {
     private int fireRate = 0; // In ms
     private int nextShot; // Time of next fire (in ms from start of wave)
     private long spawnTime; // Reset every wave
-    private float proj_speed = 4f;
+    private float projSpeed = 4f;
 
     Tower(float startx, float starty, Image im, int fireRate) {
         super(startx, starty, im);
@@ -26,12 +26,17 @@ class Tower extends Sprite {
         try {
             // Target
             float xpos = getX(), ypos = getY();
-            Vector2f vec = target(world, xpos, ypos, proj_speed);
+            Vector2f vec;
+            if (world.getEnemies().isEmpty()) {
+                vec = new Vector2f(projSpeed, 0);
+            } else {
+                vec = targetNext(world.getEnemies().getFirst(), xpos, ypos, projSpeed);
+            }
 
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
-            Projectile new_proj = new Projectile(xpos, ypos, vec, im);
-            world.getProjectiles().add(new_proj);
+            Projectile newProj = new Projectile(xpos, ypos, vec, im);
+            world.getProjectiles().add(newProj);
 
             // Determine the time of the next shot
             nextShot += fireRate;
@@ -41,24 +46,16 @@ class Tower extends Sprite {
     }
 
     /** Returns a unit vector to hit the next enemy from the tower's position. */
-    private Vector2f target(World world, float xpos, float ypos, float speed) {
-        if (!world.getEnemies().isEmpty()) {
-            // Target the next enemy
-            Enemy target = world.getEnemies().getFirst();
-            float tx = target.getX(), ty = target.getY();
-            Vector2f vec = new Vector2f(tx-xpos, ty-ypos);
-            vec.normalise().scale(speed);
-            
-            // Assume it keeps moving in a straight line
-            int[] tsp = world.getPath()[world.toGrid(tx)][world.toGrid(ty)];
-            vec.x += tsp[0];
-            vec.y += tsp[1];
-            
-            return vec;
-        } else {
-            // Aim in an arbitrary direction (right)
-            return new Vector2f(speed, 0);
-        }
+    private Vector2f targetNext(Enemy target, float xpos, float ypos, float speed) {
+        // Target the next enemy
+        float tx = target.getX(), ty = target.getY();
+        Vector2f vec = new Vector2f(tx-xpos, ty-ypos);
+        vec.normalise().scale(speed);
+        
+        // Assume it keeps moving in a straight line
+        vec.add(target.getV());
+        
+        return vec;
     }
     
     /** Places the tower. */

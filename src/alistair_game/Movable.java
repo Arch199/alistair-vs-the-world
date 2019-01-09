@@ -20,6 +20,10 @@ abstract class Movable extends Sprite {
         move(v.x, v.y);
     }
     
-    float getXSpeed() { return v.x; }
-    float getYSpeed() { return v.y; }
+    Vector2f getV() { return v; }
+    
+    void setV(float x, float y) {
+        v.x = x;
+        v.y = y;
+    }
 }

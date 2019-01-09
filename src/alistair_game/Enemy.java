@@ -5,7 +5,6 @@ import org.newdawn.slick.geom.Vector2f;
 
 abstract class Enemy extends Movable {
     private int damage = 5;
-    private Vector2f v;
 
     Enemy(float startx, float starty, Vector2f vec, Image im) {
         super(startx, starty, vec, im);
@@ -16,19 +15,17 @@ abstract class Enemy extends Movable {
         int[][][] path = world.getPath();
 
         // If we're about to hit a wall, change direction
-        int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(v.x));
-        int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(v.y));
+        int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(getV().x));
+        int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(getV().y));
         if (!world.inGridBounds(nextx, nexty) || world.getTiles()[nextx][nexty].isWall()) {
             int gridx = world.toGrid(getX()), gridy = world.toGrid(getY());
             if (world.inGridBounds(gridx, gridy)) {
-                v.x = speed * path[gridx][gridy][0];
-                v.y = speed * path[gridx][gridy][1];
+                setV(speed * path[gridx][gridy][0], speed * path[gridx][gridy][1]);
             } else {
-                v.x = speed * world.defaultDir(gridx);
-                v.y = speed * world.defaultDir(gridy);
+                setV(speed * world.defaultDir(gridx), speed * world.defaultDir(gridy));
             }
         }
-        move(v.x, v.y);
+        super.advance();
     }
 
     // Note: this is no longer in use but may be helpful later
