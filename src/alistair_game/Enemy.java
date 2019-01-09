@@ -1,37 +1,34 @@
 package alistair_game;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Vector2f;
 
-abstract class Enemy extends Sprite {
-    // private double dir; // Direction: radians anti-clockwise from east TODO:
-    // remove
+abstract class Enemy extends Movable {
     private int damage = 5;
-    float hsp = 0, vsp = 0;
+    private Vector2f v;
 
-    Enemy(float startx, float starty, float hsp, float vsp, Image im) {
-        super(startx, starty, im);
-        this.hsp = hsp;
-        this.vsp = vsp;
+    Enemy(float startx, float starty, Vector2f vec, Image im) {
+        super(startx, starty, vec, im);
     }
-
+    
+    /** Moves along the precalculated path. */
     void advance(float speed, World world) {
         int[][][] path = world.getPath();
 
-        // Follow the pre-calculated path
         // If we're about to hit a wall, change direction
-        int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(hsp));
-        int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(vsp));
+        int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(v.x));
+        int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(v.y));
         if (!world.inGridBounds(nextx, nexty) || world.getTiles()[nextx][nexty].isWall()) {
             int gridx = world.toGrid(getX()), gridy = world.toGrid(getY());
             if (world.inGridBounds(gridx, gridy)) {
-                hsp = speed * path[gridx][gridy][0];
-                vsp = speed * path[gridx][gridy][1];
+                v.x = speed * path[gridx][gridy][0];
+                v.y = speed * path[gridx][gridy][1];
             } else {
-                hsp = speed * world.defaultDir(gridx);
-                vsp = speed * world.defaultDir(gridy);
+                v.x = speed * world.defaultDir(gridx);
+                v.y = speed * world.defaultDir(gridy);
             }
         }
-        move(hsp, vsp);
+        move(v.x, v.y);
     }
 
     // Note: this is no longer in use but may be helpful later
@@ -50,7 +47,5 @@ abstract class Enemy extends Sprite {
         return result;
     }
 
-    int getDamage() {
-        return damage;
-    }
+    int getDamage() { return damage; }
 }

@@ -9,6 +9,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 
 class World {
     /**
@@ -141,7 +142,8 @@ class World {
     }
 
     void spawnEnemy(float x, float y) {
-        enemies.add(new EnemyPython(x, y, enemy_speed * defaultDir(x), enemy_speed * defaultDir(y)));
+        Vector2f vec = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemy_speed);
+        enemies.add(new EnemyPython(x, y, vec));
     }
 
     void moveEnemies() {

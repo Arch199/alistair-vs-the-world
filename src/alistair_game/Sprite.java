@@ -49,4 +49,5 @@ class Sprite {
     Color getColor() { return col; }
 
     void setColor(Color col) { this.col = col; }
+    void setImage(Image im) { this.im = im; }
 }

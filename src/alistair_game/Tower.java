@@ -5,18 +5,15 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Graphics;
 
-import java.util.List;
-
 import org.newdawn.slick.Color;
 
-class Tower extends Sprite {
-    private static float PROJ_SPEED = 4f;
-    
+class Tower extends Sprite {   
     private boolean placed = false;
     private float range = 150; // Range is radius from center
     private int fireRate = 0; // In ms
     private int nextShot; // Time of next fire (in ms from start of wave)
     private long spawnTime; // Reset every wave
+    private float proj_speed = 4f;
 
     Tower(float startx, float starty, Image im, int fireRate) {
         super(startx, starty, im);
@@ -29,7 +26,7 @@ class Tower extends Sprite {
         try {
             // Target
             float xpos = getX(), ypos = getY();
-            Vector2f vec = target(world, xpos, ypos, PROJ_SPEED);
+            Vector2f vec = target(world, xpos, ypos, proj_speed);
 
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
@@ -60,7 +57,7 @@ class Tower extends Sprite {
             return vec;
         } else {
             // Aim in an arbitrary direction (right)
-            return new Vector2f(1, 0);
+            return new Vector2f(speed, 0);
         }
     }
     
