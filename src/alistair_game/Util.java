@@ -25,14 +25,3 @@ public class Util {
         return (float) Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 }
-
-class Vector {
-    /** Holds projectile speeds and orientation */
-    float vsp;
-    float hsp;
-
-    Vector(float vsp, float hsp) {
-        this.vsp = vsp;
-        this.hsp = hsp;
-    }
-}

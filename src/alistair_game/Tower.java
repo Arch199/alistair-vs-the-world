@@ -2,6 +2,7 @@ package alistair_game;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Graphics;
 
 import org.newdawn.slick.Color;
@@ -23,8 +24,8 @@ class Tower extends Sprite {
     void shoot(World world) {
         try {
             // Target
-            int xpos = (int) getX(), ypos = (int) getY();
-            Vector vec = new Vector(1, 1);
+            float xpos = getX(), ypos = getY();
+            Vector2f vec = target(xpos, ypos);
 
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
@@ -39,10 +40,11 @@ class Tower extends Sprite {
     }
 
     /** Returns a vector to hit the enemy from the tower's position */
-    /*
-     * private Vector target(int xpos, int ypos, ) { // TODO: pass in a list of
-     * enemies and path }
-     */
+    private Vector2f target(float xpos, float ypos) {
+        // TODO: pass in a list of enemies and path
+        Vector2f vec = new Vector2f(1, 1);
+        return vec;
+    }
 
     void place(float x, float y) {
         teleport(x, y);
