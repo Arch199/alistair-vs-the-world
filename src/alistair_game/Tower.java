@@ -5,6 +5,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Graphics;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.newdawn.slick.Color;
 
@@ -12,8 +13,8 @@ class Tower extends Sprite {
 	private boolean placed = false;
 	private float range = 150; // Range is radius from center
 	private int fireRate = 0; // In ms
-	private int nextShot = 0; // Time of next fire (in ms from start of wave)
-	private long spawnTime = 0; // Reset every wave
+	private int nextShot; // Time of next fire (in ms from start of wave)
+	private long spawnTime; // Reset every wave
 
 	Tower(float startx, float starty, Image im, int fireRate) {
 		super(startx, starty, im);
@@ -22,14 +23,16 @@ class Tower extends Sprite {
 	}
 
 	/** Makes the shot. Generates a projectile and sets a new time. */
-	void shoot(ArrayList<Projectile> projectiles) {
+	void shoot(World world) {
 		try {
-			// Make a new projectile
-			Projectile new_proj;
+			// Target
+			int xpos = (int)getX(), ypos = (int)getY();
+			Vector vec = new Vector(1, 1);
+
+			// Create projectile
 			Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
-			// TODO: A targeting function should be called here. Returns hsp/vsp to pass in below.
-			new_proj = new Projectile((int)getX(), (int)getY(), 1f, 1f, im);
-			projectiles.add(new_proj);
+			Projectile new_proj = new Projectile(xpos, ypos, vec, im);
+			world.getProjectiles().add(new_proj);
 
 			// Determine the time of the next shot
 			nextShot += fireRate;
@@ -37,6 +40,12 @@ class Tower extends Sprite {
 			e.printStackTrace();
 		}
 	}
+
+	/** Returns a vector to hit the enemy from the tower's position */
+	/*
+	private Vector target(int xpos, int ypos, ) {
+		// TODO: pass in a list of enemies and path
+	}*/
 	
 	void place(float x, float y) {
 		teleport(x, y);
