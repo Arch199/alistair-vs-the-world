@@ -290,6 +290,10 @@ class World {
     boolean isPlacingTower() {
         return new_tower != null;
     }
+    
+    void newProjectile(float x, float y, Vector2f vec, Image im) {
+        projectiles.add(new Projectile(x, y, vec, im));
+    }
 
     int getGridWidth() { return gridw; }
     int getGridHeight() { return gridh; }

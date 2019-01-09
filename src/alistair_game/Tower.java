@@ -36,8 +36,7 @@ class Tower extends Sprite {
             
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
-            Projectile newProj = new Projectile(getX(), getY(), vec, im);
-            world.getProjectiles().add(newProj);
+            world.newProjectile(getX(), getY(), vec, im);
 
             // Determine the time of the next shot
             nextShot += fireRate;
