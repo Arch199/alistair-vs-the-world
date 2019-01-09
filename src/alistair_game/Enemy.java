@@ -10,7 +10,6 @@ abstract class Enemy extends Sprite {
 
     Enemy(float startx, float starty, float hsp, float vsp, Image im) {
         super(startx, starty, im);
-        // this.dir = dir;
         this.hsp = hsp;
         this.vsp = vsp;
     }

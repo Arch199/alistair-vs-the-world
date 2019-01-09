@@ -11,7 +11,7 @@ public class Projectile extends Sprite {
         v = vec;
     }
 
-    /** Move according to current speed */
+    /** Move according to current speed. */
     void advance() {
         move(v.x, v.y);
     }

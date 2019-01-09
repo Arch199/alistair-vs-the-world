@@ -4,8 +4,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 class EnemyPython extends Enemy {
-    private static Image im; // shadowing Sprite's im
-
+    private static Image im;
     static {
         try {
             im = new Image("assets\\sprites\\enemies\\python-icon.png");
@@ -13,7 +12,7 @@ class EnemyPython extends Enemy {
             e.printStackTrace();
         }
     }
-
+    
     EnemyPython(float startx, float starty, float hsp, float vsp) {
         super(startx, starty, hsp, vsp, im);
     }

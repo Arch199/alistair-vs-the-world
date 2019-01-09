@@ -279,23 +279,9 @@ class World {
         return new_tower != null;
     }
 
-    int getTileSize() {
-        return tsize;
-    }
-
-    Tile[][] getTiles() {
-        return tiles;
-    }
-
-    int[][][] getPath() {
-        return path;
-    }
-
-    LinkedList<Enemy> getEnemies() {
-        return enemies;
-    }
-
-    ArrayList<Projectile> getProjectiles() {
-        return projectiles;
-    }
+    int getTileSize() { return tsize; }
+    Tile[][] getTiles() { return tiles; }
+    int[][][] getPath() { return path; }
+    LinkedList<Enemy> getEnemies() { return enemies; }
+    ArrayList<Projectile> getProjectiles() { return projectiles; }
 }

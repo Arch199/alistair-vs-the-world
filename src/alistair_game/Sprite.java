@@ -43,23 +43,10 @@ class Sprite {
         y = desty;
     }
 
-    float getX() {
-        return x;
-    }
+    float getX() { return x; }
+    float getY() { return y; }
+    Image getImage() { return im; }
+    Color getColor() { return col; }
 
-    float getY() {
-        return y;
-    }
-
-    Image getImage() {
-        return im;
-    }
-
-    Color getColor() {
-        return col;
-    }
-
-    void setColor(Color col) {
-        this.col = col;
-    }
+    void setColor(Color col) { this.col = col; }
 }

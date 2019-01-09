@@ -39,13 +39,14 @@ class Tower extends Sprite {
         }
     }
 
-    /** Returns a vector to hit the enemy from the tower's position */
+    /** Returns a vector to hit the enemy from the tower's position. */
     private Vector2f target(float xpos, float ypos) {
         // TODO: pass in a list of enemies and path
         Vector2f vec = new Vector2f(1, 1);
         return vec;
     }
-
+    
+    /** Places the tower. */
     void place(float x, float y) {
         teleport(x, y);
         placed = true;
@@ -82,11 +83,7 @@ class Tower extends Sprite {
         spawnTime = 0;
     }
 
-    boolean isPlaced() {
-        return placed;
-    }
+    boolean isPlaced() { return placed; }
 
-    void setSpawnTime(long time) {
-        spawnTime = time;
-    }
+    void setSpawnTime(long time) { spawnTime = time; }
 }
