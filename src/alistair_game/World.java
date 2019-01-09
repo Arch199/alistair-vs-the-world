@@ -1,8 +1,10 @@
 package alistair_game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -289,9 +291,12 @@ class World {
         return new_tower != null;
     }
 
+    int getGridWidth() { return gridw; }
+    int getGridHeight() { return gridh; }
     int getTileSize() { return tsize; }
-    Tile[][] getTiles() { return tiles; }
-    int[][][] getPath() { return path; }
-    LinkedList<Enemy> getEnemies() { return enemies; }
-    ArrayList<Projectile> getProjectiles() { return projectiles; }
+    Tile getTile(int x, int y) { return tiles[x][y]; }
+    int getPathXDir(int x, int y) { return path[x][y][0]; }
+    int getPathYDir(int x, int y) { return path[x][y][1]; }
+    List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
+    List<Projectile> getProjectiles() { return Collections.unmodifiableList(projectiles); }
 }

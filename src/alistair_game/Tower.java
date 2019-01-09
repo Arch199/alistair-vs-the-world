@@ -5,12 +5,12 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Graphics;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {   
-    private boolean placed = false, waiting = false;
+    private boolean placed = false;
     private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
     private long nextShot; // Time of next fire (in ms from start of wave)
@@ -47,7 +47,7 @@ class Tower extends Sprite {
     }
 
     /** Returns a velocity vector to hit the first enemy in range. */
-    private Vector2f targetNext(LinkedList<Enemy> enemies) {
+    private Vector2f targetNext(List<Enemy> enemies) {
         // Target the first enemy in range
         Enemy target = null;
         for (Enemy e : enemies) {
@@ -80,7 +80,7 @@ class Tower extends Sprite {
     /** Returns true if enough time has passed to shoot. */
     boolean readyToShoot(long time) {
         long timeAlive = time - spawnTime;
-        return waiting || timeAlive >= nextShot;
+        return timeAlive >= nextShot;
     }
 
     /** Draws a range circle around towers. */
