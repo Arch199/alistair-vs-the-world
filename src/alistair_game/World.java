@@ -176,9 +176,10 @@ class World {
         if (isPlacingTower()) {
             new_tower.teleport((float) mousex, (float) mousey);
 
-            // Set the tower to be red if it's touching a non-wall tile
+            // Set the tower to be red if it's touching a non-wall tile or tower
             new_tower.setColor(Color.white);
-            outer: for (Tile[] column : tiles) {
+            outer:
+            for (Tile[] column : tiles) {
                 for (Tile tile : column) {
                     if (!tile.isWall() && tile.checkCollision(new_tower)) {
                         new_tower.setColor(Color.red);
@@ -186,6 +187,14 @@ class World {
                     }
                 }
             }
+            outer:
+            for (Tower t : towers) {
+                if (t.isPlaced() && t.checkCollision(new_tower)) {
+                    new_tower.setColor(Color.red);
+                    break outer;
+                }
+            }
+                
             // If the user clicked and it's not colliding with anything, place it
             if (clicked && new_tower.getColor() == Color.white) {
                 new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));

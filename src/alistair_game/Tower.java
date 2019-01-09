@@ -5,9 +5,13 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Graphics;
 
+import java.util.List;
+
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {
+    private static float PROJ_SPEED = 4f;
+    
     private boolean placed = false;
     private float range = 150; // Range is radius from center
     private int fireRate = 0; // In ms
@@ -25,7 +29,7 @@ class Tower extends Sprite {
         try {
             // Target
             float xpos = getX(), ypos = getY();
-            Vector2f vec = target(xpos, ypos);
+            Vector2f vec = target(world, xpos, ypos, PROJ_SPEED);
 
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
@@ -39,11 +43,25 @@ class Tower extends Sprite {
         }
     }
 
-    /** Returns a vector to hit the enemy from the tower's position. */
-    private Vector2f target(float xpos, float ypos) {
-        // TODO: pass in a list of enemies and path
-        Vector2f vec = new Vector2f(1, 1);
-        return vec;
+    /** Returns a unit vector to hit the next enemy from the tower's position. */
+    private Vector2f target(World world, float xpos, float ypos, float speed) {
+        if (!world.getEnemies().isEmpty()) {
+            // Target the next enemy
+            Enemy target = world.getEnemies().getFirst();
+            float tx = target.getX(), ty = target.getY();
+            Vector2f vec = new Vector2f(tx-xpos, ty-ypos);
+            vec.normalise().scale(speed);
+            
+            // Assume it keeps moving in a straight line
+            int[] tsp = world.getPath()[world.toGrid(tx)][world.toGrid(ty)];
+            vec.x += tsp[0];
+            vec.y += tsp[1];
+            
+            return vec;
+        } else {
+            // Aim in an arbitrary direction (right)
+            return new Vector2f(1, 0);
+        }
     }
     
     /** Places the tower. */
