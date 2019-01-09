@@ -13,8 +13,7 @@ class Tower extends Sprite {
     private boolean placed = false;
     private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
-    private long nextShot; // Time of next fire (in ms from start of wave)
-    private long spawnTime; // Reset every wave
+    private long nextShot; // Time until next fire (in ms)
     private float projSpeed = 4f;
 
     Tower(float startx, float starty, Image im, int fireRate) {
@@ -24,13 +23,12 @@ class Tower extends Sprite {
     }
 
     /** Makes the shot. Generates a projectile and sets a new time. */
-    void shoot(World world, long nextTickTime) {
+    void shoot(World world) {
         try {
             // Target the next enemy in range
             Vector2f vec = targetNext(world.getEnemies());
             if (vec == null) {
                 // Instead of firing, just wait and try again next tick
-                nextShot = nextTickTime;
                 return;
             }
             
@@ -38,8 +36,8 @@ class Tower extends Sprite {
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
             world.newProjectile(getX(), getY(), vec, im);
 
-            // Determine the time of the next shot
-            nextShot += fireRate;
+            // Reset the timer for the next shot
+            nextShot = fireRate;
         } catch (SlickException e) {
             e.printStackTrace();
         }
@@ -60,8 +58,7 @@ class Tower extends Sprite {
             return null;
         }
         
-        float tx = target.getX(), ty = target.getY();
-        Vector2f vec = new Vector2f(tx-getX(), ty-getY());
+        Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
         vec.normalise().scale(projSpeed);
         
         // Assume it keeps moving in a straight line
@@ -75,12 +72,15 @@ class Tower extends Sprite {
         teleport(x, y);
         placed = true;
     }
-
-    /** Returns true if enough time has passed to shoot. */
-    boolean readyToShoot(long time) {
-        long timeAlive = time - spawnTime;
-        return timeAlive >= nextShot;
+    
+    /** Counts down the shot timer.
+     * Returns true if enough time has passed to shoot. */
+    boolean countDown(int delta) {
+        nextShot -= delta;
+        return nextShot <= 0;
     }
+    // ^ This could be split into two functions rather than
+    // being a check with side effects
 
     /** Draws a range circle around towers. */
     void drawRange(Graphics g) {
@@ -104,10 +104,7 @@ class Tower extends Sprite {
 
     void waveReset() {
         nextShot = 0;
-        spawnTime = 0;
     }
 
     boolean isPlaced() { return placed; }
-
-    void setSpawnTime(long time) { spawnTime = time; }
 }

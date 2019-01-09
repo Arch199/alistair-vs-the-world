@@ -127,8 +127,8 @@ class World {
 
         // Tower shots
         for (Tower t : towers) {
-            if (t.isPlaced() && t.readyToShoot(timer)) {
-                t.shoot(this, timer+delta);
+            if (t.isPlaced() && t.countDown(delta)) {
+                t.shoot(this);
             }
         }
     }
@@ -211,7 +211,6 @@ class World {
     void newTower(float xpos, float ypos) {
         try {
             myTower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
-            myTower.setSpawnTime(timer);
             towers.add(myTower);
         } catch (SlickException e) {
             e.printStackTrace();
