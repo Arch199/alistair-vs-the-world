@@ -10,10 +10,10 @@ import java.util.LinkedList;
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {   
-    private boolean placed = false;
+    private boolean placed = false, waiting = false;
     private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
-    private int nextShot; // Time of next fire (in ms from start of wave)
+    private long nextShot; // Time of next fire (in ms from start of wave)
     private long spawnTime; // Reset every wave
     private float projSpeed = 4f;
 
@@ -24,11 +24,16 @@ class Tower extends Sprite {
     }
 
     /** Makes the shot. Generates a projectile and sets a new time. */
-    void shoot(World world) {
+    void shoot(World world, long nextTickTime) {
         try {
             // Target the next enemy in range
             Vector2f vec = targetNext(world.getEnemies());
-
+            if (vec == null) {
+                // Instead of firing, just wait and try again next tick
+                nextShot = nextTickTime;
+                return;
+            }
+            
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
             Projectile newProj = new Projectile(getX(), getY(), vec, im);
@@ -51,9 +56,9 @@ class Tower extends Sprite {
                 break;
             }
         }
-        // If there is none, fire in an arbitrary direction
+        // If there is none, return null and handle above
         if (target == null) {
-            return new Vector2f(projSpeed, 0);
+            return null;
         }
         
         float tx = target.getX(), ty = target.getY();
@@ -75,7 +80,7 @@ class Tower extends Sprite {
     /** Returns true if enough time has passed to shoot. */
     boolean readyToShoot(long time) {
         long timeAlive = time - spawnTime;
-        return timeAlive >= nextShot;
+        return waiting || timeAlive >= nextShot;
     }
 
     /** Draws a range circle around towers. */

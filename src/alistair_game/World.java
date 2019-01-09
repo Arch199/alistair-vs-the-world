@@ -126,7 +126,7 @@ class World {
         // Tower shots
         for (Tower t : towers) {
             if (t.isPlaced() && t.readyToShoot(timer)) {
-                t.shoot(this);
+                t.shoot(this, timer+delta);
             }
         }
     }
