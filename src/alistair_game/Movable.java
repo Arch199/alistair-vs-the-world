@@ -22,8 +22,5 @@ abstract class Movable extends Sprite {
     
     Vector2f getV() { return v; }
     
-    void setV(float x, float y) {
-        v.x = x;
-        v.y = y;
-    }
+    void setV(float x, float y) { v.x = x; v.y = y; }
 }

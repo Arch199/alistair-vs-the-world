@@ -5,11 +5,13 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Graphics;
 
+import java.util.LinkedList;
+
 import org.newdawn.slick.Color;
 
 class Tower extends Sprite {   
     private boolean placed = false;
-    private float range = 150; // Range is radius from center
+    private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
     private int nextShot; // Time of next fire (in ms from start of wave)
     private long spawnTime; // Reset every wave
@@ -24,18 +26,12 @@ class Tower extends Sprite {
     /** Makes the shot. Generates a projectile and sets a new time. */
     void shoot(World world) {
         try {
-            // Target
-            float xpos = getX(), ypos = getY();
-            Vector2f vec;
-            if (world.getEnemies().isEmpty()) {
-                vec = new Vector2f(projSpeed, 0);
-            } else {
-                vec = targetNext(world.getEnemies().getFirst(), xpos, ypos, projSpeed);
-            }
+            // Target the next enemy in range
+            Vector2f vec = targetNext(world.getEnemies());
 
             // Create projectile
             Image im = new Image("assets\\sprites\\defaultproj.png"); // TODO: move this reference elsewhere
-            Projectile newProj = new Projectile(xpos, ypos, vec, im);
+            Projectile newProj = new Projectile(getX(), getY(), vec, im);
             world.getProjectiles().add(newProj);
 
             // Determine the time of the next shot
@@ -45,12 +41,24 @@ class Tower extends Sprite {
         }
     }
 
-    /** Returns a unit vector to hit the next enemy from the tower's position. */
-    private Vector2f targetNext(Enemy target, float xpos, float ypos, float speed) {
-        // Target the next enemy
+    /** Returns a velocity vector to hit the first enemy in range. */
+    private Vector2f targetNext(LinkedList<Enemy> enemies) {
+        // Target the first enemy in range
+        Enemy target = null;
+        for (Enemy e : enemies) {
+            if (distanceTo(e) <= range) {
+                target = e;
+                break;
+            }
+        }
+        // If there is none, fire in an arbitrary direction
+        if (target == null) {
+            return new Vector2f(projSpeed, 0);
+        }
+        
         float tx = target.getX(), ty = target.getY();
-        Vector2f vec = new Vector2f(tx-xpos, ty-ypos);
-        vec.normalise().scale(speed);
+        Vector2f vec = new Vector2f(tx-getX(), ty-getY());
+        vec.normalise().scale(projSpeed);
         
         // Assume it keeps moving in a straight line
         vec.add(target.getV());

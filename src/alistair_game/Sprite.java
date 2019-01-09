@@ -27,6 +27,10 @@ class Sprite {
         return (x + w >= x2 - w2 && x2 + w2 >= x - w && y + h >= y2 - h2 && y2 + h2 >= y - h);
         // I'm honestly amazed this works -James
     }
+    
+    float distanceTo(Sprite other) {
+        return Util.dist(x, y, other.getX(), other.getY());
+    }
 
     boolean isOffScreen(int window_w, int window_h) {
         int w = im.getWidth() / 2, h = im.getHeight() / 2;
