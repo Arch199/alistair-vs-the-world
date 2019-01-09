@@ -28,7 +28,7 @@ class World {
     private int spawn_time = 2000, next_spawn = spawn_time, health = 100;
     private long timer = 0;
     private Tile alistair;
-    private Tower new_tower;
+    private Tower myTower; // Tower currently being placed
 
     private static Image[] tileset;
     private static String[] tile_names;
@@ -178,31 +178,31 @@ class World {
 
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
-            new_tower.teleport((float) mousex, (float) mousey);
+            myTower.teleport((float) mousex, (float) mousey);
 
             // Set the tower to be red if it's touching a non-wall tile or tower
-            new_tower.setColor(Color.white);
+            myTower.setColor(Color.white);
             outer:
             for (Tile[] column : tiles) {
                 for (Tile tile : column) {
-                    if (!tile.isWall() && tile.checkCollision(new_tower)) {
-                        new_tower.setColor(Color.red);
+                    if (!tile.isWall() && tile.checkCollision(myTower)) {
+                        myTower.setColor(Color.red);
                         break outer;
                     }
                 }
             }
             outer:
             for (Tower t : towers) {
-                if (t.isPlaced() && t.checkCollision(new_tower)) {
-                    new_tower.setColor(Color.red);
+                if (t.isPlaced() && t.checkCollision(myTower)) {
+                    myTower.setColor(Color.red);
                     break outer;
                 }
             }
                 
             // If the user clicked and it's not colliding with anything, place it
-            if (clicked && new_tower.getColor() == Color.white) {
-                new_tower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
-                new_tower = null;
+            if (clicked && myTower.getColor() == Color.white) {
+                myTower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
+                myTower = null;
                 newTower(mousex, mousey);
             }
         }
@@ -210,9 +210,9 @@ class World {
 
     void newTower(float xpos, float ypos) {
         try {
-            new_tower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
-            new_tower.setSpawnTime(timer);
-            towers.add(new_tower);
+            myTower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
+            myTower.setSpawnTime(timer);
+            towers.add(myTower);
         } catch (SlickException e) {
             e.printStackTrace();
         }
@@ -288,7 +288,7 @@ class World {
     }
 
     boolean isPlacingTower() {
-        return new_tower != null;
+        return myTower != null;
     }
     
     void newProjectile(float x, float y, Vector2f vec, Image im) {

@@ -32,9 +32,9 @@ class Sprite {
         return Util.dist(x, y, other.getX(), other.getY());
     }
 
-    boolean isOffScreen(int window_w, int window_h) {
+    boolean isOffScreen(int windowW, int windowH) {
         int w = im.getWidth() / 2, h = im.getHeight() / 2;
-        return x - w >= window_w || x + w < 0 || y - h >= window_h || y + h < 0;
+        return x - w >= windowW || x + w < 0 || y - h >= windowH || y + h < 0;
     }
 
     void move(float xdist, float ydist) {

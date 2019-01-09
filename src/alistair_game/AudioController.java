@@ -12,8 +12,8 @@ public class AudioController {
      * play(event)
      */
 
-    private static HashMap<String, Sound> single_sounds = new HashMap<String, Sound>();
-    private static HashMap<String, Sound[]> list_sounds = new HashMap<String, Sound[]>();
+    private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
+    private static HashMap<String, Sound[]> listSounds = new HashMap<String, Sound[]>();
     static {
         // Load audio files
         File folder = new File("assets\\audio");
@@ -23,7 +23,7 @@ public class AudioController {
                     // Get file name without extension
                     String name = f.getName().replaceFirst("[.][^.]+$", "");
                     // Add the sound to the hash map
-                    single_sounds.put(name.toLowerCase(), new Sound(f.getPath()));
+                    singleSounds.put(name.toLowerCase(), new Sound(f.getPath()));
                 } else {
                     // Add all the sounds in the subfolder to an array
                     Sound[] new_sounds = Arrays.stream(f.listFiles()).filter(file -> file.isFile()).map(file -> {
@@ -34,7 +34,7 @@ public class AudioController {
                             return null;
                         }
                     }).toArray(Sound[]::new);
-                    list_sounds.put(f.getName().toLowerCase(), new_sounds);
+                    listSounds.put(f.getName().toLowerCase(), new_sounds);
                 }
             }
         } catch (SlickException e) {
@@ -46,11 +46,11 @@ public class AudioController {
 
     public static void play(String event) {
         // TODO: Add pitch and volume control
-        Sound[] list = list_sounds.get(event);
+        Sound[] list = listSounds.get(event);
         if (list != null) {
             list[Util.rand(list.length)].play();
         } else {
-            Sound single = single_sounds.get(event);
+            Sound single = singleSounds.get(event);
             if (single != null) {
                 single.play();
             } else {
