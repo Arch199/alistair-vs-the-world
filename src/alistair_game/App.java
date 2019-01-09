@@ -108,6 +108,6 @@ public class App extends BasicGame {
     public boolean closeRequested() {
         System.out.println("GAME STATE: Exiting game");
         System.exit(0);
-        return false;
+        return false; // only here to placate the compiler
     }
 }
