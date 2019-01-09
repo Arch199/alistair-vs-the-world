@@ -123,7 +123,6 @@ class World {
         // TODO: increase speed and decrease spawn time over time (or per wave?)
 
         // Tower shots
-        System.out.println("time is " + timer);
         for (Tower t : towers) {
             if (t.isPlaced() && t.readyToShoot(timer)) {
                 t.shoot(this);
