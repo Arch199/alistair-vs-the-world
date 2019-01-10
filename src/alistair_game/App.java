@@ -4,6 +4,7 @@ package alistair_game;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +19,8 @@ public class App extends BasicGame {
 
     private static final int
     // OLD vals: 960/672/48/20/15
-    WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48, GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
+    WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48, GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE,
+            MAXWAVES = 50, MAXSPAWNS = 1000;
 
     private World world;
 
@@ -75,7 +77,45 @@ public class App extends BasicGame {
             float starty = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
             scanner.close();
 
+            // TODO: Will refactor this - MATT
+            // Load in wave info
+            Scanner scanner2 = new Scanner(new File("assets\\waves\\game1.txt"));
+            // Read line-by-line
+            scanner2.useDelimiter("[\\r\\n;]+");
+            // waves[wavenum][instruction]
+            Object[][] waves = new Object[MAXWAVES][MAXSPAWNS];
+            int wavenum = 1;
+
+            while(scanner2.hasNext()) {
+                String wave = scanner2.next();
+                int spawnNum = 0;
+
+                // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
+                String[] spawnSequences = wave.split(" ");
+                int seqs = spawnSequences.length;
+
+                for (int i = seqs-1; i >= 0; i--) {
+                    String seq = spawnSequences[i];
+
+                    // Split into info parts
+                    String[] seqInfo = seq.split("/");
+                    String enemy = seqInfo[0];
+                    int enemyNum = Integer.parseInt(seqInfo[1]);
+                    float spawnRate = Float.parseFloat(seqInfo[2]), spawnTime = Float.parseFloat(seqInfo[3]);
+
+                    // Generate and add spawn instructions
+                    for(int j = enemyNum; j>= 0; j--) {
+                        waves[wavenum][spawnNum] = new SpawnInstruction(enemy, spawnTime*1000);
+                        spawnTime += spawnRate;
+                        spawnNum++;
+                    }
+                }
+                wavenum++;
+            }
+
             world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
+            world.setWaves(waves);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
