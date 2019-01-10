@@ -11,9 +11,9 @@ abstract class Movable extends Sprite {
     private Vector2f v;
     private int damage;
     
-    Movable(float startx, float starty, Vector2f vec, Image im, int damage) {
+    Movable(float startx, float starty, Vector2f v, Image im, int damage) {
         super(startx, starty, im);
-        v = vec;
+        this.v = v;
         this.damage = damage;
     }
     

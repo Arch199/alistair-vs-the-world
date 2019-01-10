@@ -35,11 +35,6 @@ class SpawnInstruction {
         this.spawnTime = spawnTime;
     }
 
-    String getEnemy() {
-        return this.enemy;
-    }
-
-    float getSpawnTime() {
-        return this.spawnTime;
-    }
+    String getEnemy() { return this.enemy; }
+    float getSpawnTime() { return this.spawnTime; }
 }

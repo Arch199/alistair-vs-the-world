@@ -19,7 +19,7 @@ class World {
      */
 
     private int w, h, tSize, gridW, gridH;
-    private float startx, starty, enemy_speed = 1f;
+    private float startx, starty, enemySpeed = 1f;
     private Tile[][] tiles;
     private Object[][] waves;
     private int[][][] path; // Directions to move for each tile
@@ -154,15 +154,15 @@ class World {
     }
 
     void spawnEnemy(float x, float y) {
-        Vector2f vec = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemy_speed);
-        enemies.add(new EnemyPython(x, y, vec));
+        Vector2f v = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemySpeed);
+        enemies.add(new Enemy(x, y, v, "python"));
     }
 
     void moveEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
-            e.advance(enemy_speed, this);
+            e.advance(enemySpeed, this);
             if (e.checkCollision(alistair)) {
                 takeDamage(e.getDamage());
                 itr.remove();

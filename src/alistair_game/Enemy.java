@@ -3,13 +3,30 @@ package alistair_game;
 import java.util.Iterator;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
-abstract class Enemy extends Movable {
-    private int health = 1;
+class Enemy extends Movable {
+    private String name;
+    private int health;
     
-    Enemy(float startx, float starty, Vector2f vec, Image im, int damage) {
-        super(startx, starty, vec, im, damage);
+    Enemy(float startx, float starty, Vector2f v, String name) {
+        super(startx, starty, v, null, 0);
+        this.name = name;
+        String imPath = "assets\\sprites\\enemies\\";
+        switch (name) {
+            case "python":
+                imPath += "python-icon.png";
+                setDamage(5);
+                break;
+            default:
+                throw new IllegalArgumentException("No such enemy '" + name + "'");
+        }
+        try {
+            setImage(new Image(imPath));
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
     }
     
     /** Moves along the precalculated path. */
@@ -51,4 +68,6 @@ abstract class Enemy extends Movable {
             itr.remove();
         }
     }
+    
+    String getName() { return name; }
 }
