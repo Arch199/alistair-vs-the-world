@@ -75,6 +75,36 @@ public class App extends BasicGame {
             float starty = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
             scanner.close();
 
+            // Load in wave info
+            Scanner scanner2 = new Scanner(new File("assets\\waves\\game1.txt"));
+            // Read line-by-line
+            scanner2.useDelimiter("[\\r\\n;]+");
+            Object[][] waves;
+            int wavenum = 1;
+
+            while(scanner2.hasNext()) {
+                String wave = scanner2.next();
+
+                // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
+                String[] spawnSequences = wave.split(" ");
+
+                for(String seq: spawnSequences) {
+                    // Split into in
+                    String[] seqInfo = seq.split("/");
+                    String enemy = seqInfo[0];
+                    int enemyNum = Integer.parseInt(seqInfo[1]);
+                    float spawnRate = Float.parseFloat(seqInfo[2]), spawnTime = Float.parseFloat(seqInfo[3]);
+                }
+
+                System.out.println("got a line");
+                try {
+                    System.out.println(spawnSequences[1]);
+                } catch (Exception e) {
+                }
+                wavenum++;
+            }
+
+
             world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
