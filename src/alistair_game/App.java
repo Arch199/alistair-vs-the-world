@@ -4,7 +4,6 @@ package alistair_game;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,9 +17,9 @@ public class App extends BasicGame {
      */
 
     private static final int
-    // OLD vals: 960/672/48/20/15
-    WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48, GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE,
-            MAXWAVES = 50, MAXSPAWNS = 1000;
+        WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48,
+        GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE,
+        MAXWAVES = 50, MAXSPAWNS = 1000;
 
     private World world;
 
@@ -79,15 +78,15 @@ public class App extends BasicGame {
 
             // TODO: Will refactor this - MATT
             // Load in wave info
-            Scanner scanner2 = new Scanner(new File("assets\\waves\\game1.txt"));
+            scanner = new Scanner(new File("assets\\waves\\game1.txt"));
             // Read line-by-line
-            scanner2.useDelimiter("[\\r\\n;]+");
+            scanner.useDelimiter("[\\r\\n;]+");
             // waves[wavenum][instruction]
             Object[][] waves = new Object[MAXWAVES][MAXSPAWNS];
             int wavenum = 1;
 
-            while(scanner2.hasNext()) {
-                String wave = scanner2.next();
+            while (scanner.hasNext()) {
+                String wave = scanner.next();
                 int spawnNum = 0;
 
                 // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
@@ -104,7 +103,7 @@ public class App extends BasicGame {
                     float spawnRate = Float.parseFloat(seqInfo[2]), spawnTime = Float.parseFloat(seqInfo[3]);
 
                     // Generate and add spawn instructions
-                    for(int j = enemyNum; j>= 0; j--) {
+                    for (int j = enemyNum; j>= 0; j--) {
                         waves[wavenum][spawnNum] = new SpawnInstruction(enemy, spawnTime*1000);
                         spawnTime += spawnRate;
                         spawnNum++;
@@ -112,6 +111,7 @@ public class App extends BasicGame {
                 }
                 wavenum++;
             }
+            scanner.close();
 
             world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
             world.setWaves(waves);

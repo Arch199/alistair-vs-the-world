@@ -1,7 +1,5 @@
 package alistair_game;
 
-import java.util.Iterator;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 

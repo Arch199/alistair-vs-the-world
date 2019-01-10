@@ -18,7 +18,7 @@ class World {
      * Handles all the game logic for a level. Created by App.
      */
 
-    private int w, h, tsize, gridw, gridh;
+    private int w, h, tSize, gridW, gridH;
     private float startx, starty, enemy_speed = 1f;
     private Tile[][] tiles;
     private Object[][] waves;
@@ -26,7 +26,7 @@ class World {
     private LinkedList<Enemy> enemies = new LinkedList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     private ArrayList<Tower> towers = new ArrayList<>();
-    private int spawn_time = 2000, next_spawn = spawn_time, health = 100, wavenum = 1;
+    private int spawnTime = 2000, nextSpawn = spawnTime, health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower; // Tower currently being placed
@@ -53,39 +53,39 @@ class World {
         }
     }
 
-    World(int w, int h, int tsize, float startx, float starty, int[][] level) {
+    World(int w, int h, int tSize, float startx, float starty, int[][] level) {
         this.w = w;
         this.h = h;
-        this.tsize = tsize;
-        this.gridw = w / tsize;
-        this.gridh = h / tsize;
+        this.tSize = tSize;
+        this.gridW = w / tSize;
+        this.gridH = h / tSize;
         this.startx = startx;
         this.starty = starty;
 
         // Initialise tile sprites from level + tileset
-        tiles = new Tile[gridw][gridh];
+        tiles = new Tile[gridW][gridH];
         for (int x = 0; x < level.length; x++) {
             for (int y = 0; y < level[x].length; y++) {
                 int i = level[x][y];
-                tiles[x][y] = new Tile((x + 0.5f) * tsize, (y + 0.5f) * tsize, tileset[i], tile_names[i]);
+                tiles[x][y] = new Tile((x + 0.5f) * tSize, (y + 0.5f) * tSize, tileset[i], tile_names[i]);
                 if (i == ALISTAIR_INDEX)
                     alistair = tiles[x][y];
             }
         }
 
         // Traverse the path and store direction values in a grid
-        path = new int[gridw][gridh][2];
+        path = new int[gridW][gridH][2];
         int x = toGrid(startx), y = toGrid(starty);
         int i = defaultDir(x);
         int j = defaultDir(y);
-        while (x < 0 || x >= gridw || y < 0 || y >= gridh) {
+        while (x < 0 || x >= gridW || y < 0 || y >= gridH) {
             x += i;
             y += j;
         }
         while (toPos(x) != alistair.getX() || toPos(y) != alistair.getY()) {
             // Move along the path
             // Check if we've hit a wall yet
-            if (x + i < 0 || x + i >= gridw || y + j < 0 || y + j >= gridh || tiles[x + i][y + j].isWall()) {
+            if (x + i < 0 || x + i >= gridW || y + j < 0 || y + j >= gridH || tiles[x + i][y + j].isWall()) {
                 // OK, try turning left (anti-clockwise)
                 int old_i = i;
                 i = j;
@@ -126,8 +126,8 @@ class World {
             spawnEnemy(startx, starty);
         }*/
 
-        for (int i = 0; waves[wavenum][i] != null; i++) {
-            SpawnInstruction instruction = (SpawnInstruction) waves[wavenum][i];
+        for (int i = 0; waves[waveNum][i] != null; i++) {
+            SpawnInstruction instruction = (SpawnInstruction) waves[waveNum][i];
             if (timer == instruction.getSpawnTime()) {
                 spawnEnemy(startx, starty);
             }
@@ -285,26 +285,26 @@ class World {
     /** Converts from literal position to position on grid */
     int toGrid(float pos) {
         // Choose closest grid position
-        return Math.round((pos - tsize / 2) / tsize);
+        return Math.round((pos - tSize / 2) / tSize);
     }
 
     /** Converts from grid position to literal coordinates */
     float toPos(int gridval) {
-        return gridval * tsize + tsize / 2;
+        return gridval * tSize + tSize / 2;
     }
 
     boolean inGridBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < gridw && y < gridh;
+        return x >= 0 && y >= 0 && x < gridW && y < gridH;
     }
 
     /** Returns a grid direction to point inwards from the current position */
     int defaultDir(int gridval) {
-        return gridval < 0 ? 1 : (gridval >= gridw ? -1 : 0);
+        return gridval < 0 ? 1 : (gridval >= gridW ? -1 : 0);
     }
 
     /** Returns a literal direction to point inwards */
     float defaultDir(float pos) {
-        return pos < 0 ? 1 : (pos >= gridw * tsize ? -1 : 0);
+        return pos < 0 ? 1 : (pos >= gridW * tSize ? -1 : 0);
     }
 
     boolean isPlacingTower() {
@@ -319,9 +319,9 @@ class World {
         this.waves = waves;
     }
 
-    int getGridWidth() { return gridw; }
-    int getGridHeight() { return gridh; }
-    int getTileSize() { return tsize; }
+    int getGridWidth() { return gridW; }
+    int getGridHeight() { return gridH; }
+    int getTileSize() { return tSize; }
     Tile getTile(int x, int y) { return tiles[x][y]; }
     int getPathXDir(int x, int y) { return path[x][y][0]; }
     int getPathYDir(int x, int y) { return path[x][y][1]; }
