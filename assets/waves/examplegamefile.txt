@@ -1,0 +1,15 @@
+// Each line is the wave number. This is wave 1.
+/* L1: */
+
+// The format for each spawn sequence is enemyname/enemynum/spawnrate/spawntime
+// enemynum is int, spawnrate and spawntime are floats IN SECONDS.
+/* L2: */ python/10/2.0/0.0
+
+// Use the space delimiter to delimit sequences.
+// The following line for wave 3 spawns 10 enemies every two seconds, then five more every half a second after twelve.
+/* L3: */  python/10/2.0/0.0 python/5/.5/12.0
+
+// So the file for this test game is:
+L1:
+L2: python/10/2.0/0.0
+L3: python/10/2.0/0.0 python/5/.5/12.0
