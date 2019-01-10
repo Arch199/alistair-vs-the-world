@@ -127,9 +127,7 @@ class World {
         }*/
 
         for (int i = 0; waves[wavenum][i] != null; i++) {
-            System.out.println(i);
             SpawnInstruction instruction = (SpawnInstruction) waves[wavenum][i];
-            System.out.println(instruction.getSpawnTime());
             if (timer == instruction.getSpawnTime()) {
                 spawnEnemy(startx, starty);
             }
