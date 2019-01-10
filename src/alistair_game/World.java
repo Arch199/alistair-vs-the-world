@@ -168,6 +168,16 @@ class World {
             if (p.isOffScreen(w, h)) {
                 itr.remove();
             }
+
+            // Projectile hit
+            for (Enemy e: enemies) {
+                if (p.checkCollision(e)) {
+                    enemies.remove(e);
+                    itr.remove();
+                    /*projectiles.remove(p);*/
+                    break;
+                }
+            }
         }
     }
 
