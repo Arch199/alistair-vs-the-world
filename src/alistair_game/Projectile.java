@@ -5,6 +5,6 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class Projectile extends Movable {
     Projectile(float startx, float starty, Vector2f vec, Image im) {
-        super(startx, starty, vec, im);
+        super(startx, starty, vec, im, 1);
     }
 }

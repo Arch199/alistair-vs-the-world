@@ -1,13 +1,15 @@
 package alistair_game;
 
+import java.util.Iterator;
+
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
 abstract class Enemy extends Movable {
-    private int damage = 5;
-
-    Enemy(float startx, float starty, Vector2f vec, Image im) {
-        super(startx, starty, vec, im);
+    private int health = 1;
+    
+    Enemy(float startx, float starty, Vector2f vec, Image im, int damage) {
+        super(startx, starty, vec, im, damage);
     }
     
     /** Moves along the precalculated path. */
@@ -42,6 +44,11 @@ abstract class Enemy extends Movable {
         move(-xmove, -ymove);
         return result;
     }
-
-    int getDamage() { return damage; }
+    
+    void takeDamage(int damage, Iterator<Enemy> itr) {
+        health -= damage;
+        if (health <= 0) {
+            itr.remove();
+        }
+    }
 }

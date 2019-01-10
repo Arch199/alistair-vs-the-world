@@ -169,12 +169,13 @@ class World {
                 itr.remove();
             }
 
-            // Projectile hit
-            for (Enemy e: enemies) {
+            // Hitting enemies
+            Iterator<Enemy> eItr = enemies.iterator();
+            while (eItr.hasNext()) {
+                Enemy e = eItr.next();
                 if (p.checkCollision(e)) {
-                    enemies.remove(e);
+                    e.takeDamage(p.getDamage(), eItr);
                     itr.remove();
-                    /*projectiles.remove(p);*/
                     break;
                 }
             }

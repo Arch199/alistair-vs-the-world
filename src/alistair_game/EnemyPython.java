@@ -16,7 +16,7 @@ class EnemyPython extends Enemy {
     }
 
     EnemyPython(float startx, float starty, Vector2f vec) {
-        super(startx, starty, vec, im);
+        super(startx, starty, vec, im, 5);
     }
 }
 
