@@ -2,7 +2,7 @@
 /* L1: */
 
 // The format for each spawn sequence is enemyname/enemynum/spawnrate/spawntime
-// enemynum is int, spawnrate and spawntime are floats IN SECONDS, and should be a multiple of 20ms (0.02 sec).
+// enemynum is int, spawnrate and spawntime are floats IN SECONDS, and multiples of 1ms (0.001) sec).
 /* L2: */ python/10/2.0/0.0
 
 // Use the space delimiter to delimit sequences.
