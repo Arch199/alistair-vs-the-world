@@ -21,7 +21,7 @@ class World {
     private int w, h, tSize, gridW, gridH;
     private float startx, starty, enemySpeed = 1f;
     private Tile[][] tiles;
-    private Object[][] waves;
+    private ArrayList<Wave> waves = new ArrayList<>();
     private int[][][] path; // Directions to move for each tile
     private LinkedList<Enemy> enemies = new LinkedList<>();
     private ArrayList<Projectile> projectiles = new ArrayList<>();
@@ -119,21 +119,22 @@ class World {
     void tick(int delta) {
         timer += delta;
 
-        // Enemy spawning
-        /*
-        while (timer >= next_spawn) {
-            next_spawn += spawn_time;
-            spawnEnemy(startx, starty);
-        }*/
-
-        for (int i = 0; waves[waveNum][i] != null; i++) {
-            SpawnInstruction instruction = (SpawnInstruction) waves[waveNum][i];
-            if (timer == instruction.getSpawnTime()) {
-                spawnEnemy(startx, starty);
+        // Find the correct wave
+        for (Wave w: waves) {
+            if (w.waveNum == waveNum) {
+                // Correct wave
+                ArrayList<SpawnInstruction> instructions = w.getInstructions();
+                for (SpawnInstruction i: instructions) {
+                    if (timer >= i.getSpawnTime()) {
+                        i.setParsed(true);
+                        // TODO: Add enemy types
+                        spawnEnemy(startx, starty);
+                    }
+                }
+                w.clearOldInstructions();
+                break;
             }
         }
-
-        // TODO: increase speed and decrease spawn time over time (or per wave?)
 
         // Tower shots
         for (Tower t : towers) {
@@ -315,7 +316,7 @@ class World {
         projectiles.add(new Projectile(x, y, vec, im));
     }
 
-    void setWaves(Object[][] waves) {
+    void setWaves(ArrayList<Wave> waves) {
         this.waves = waves;
     }
 

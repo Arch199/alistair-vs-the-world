@@ -4,6 +4,7 @@ package alistair_game;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +35,6 @@ public class App extends BasicGame {
 
             System.err.println("GAME STATE: Game forced exit");
         } catch (SlickException e) {
-            // Log exception
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
         }
     }
@@ -76,18 +76,20 @@ public class App extends BasicGame {
             float starty = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
             scanner.close();
 
-            // TODO: Will refactor this - MATT
+
             // Load in wave info
             scanner = new Scanner(new File("assets\\waves\\game1.txt"));
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
-            // waves[wavenum][instruction]
-            Object[][] waves = new Object[MAXWAVES][MAXSPAWNS];
-            int wavenum = 1;
 
+            ArrayList<Wave> waves = new ArrayList<>();
+            int wavenum = 1, k = 0;
+
+            // Wave-by-wave
             while (scanner.hasNext()) {
                 String wave = scanner.next();
-                int spawnNum = 0;
+                Wave currWave = new Wave(wavenum);
+                waves.add(currWave);
 
                 // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
                 String[] spawnSequences = wave.split(" ");
@@ -96,17 +98,16 @@ public class App extends BasicGame {
                 for (int i = seqs-1; i >= 0; i--) {
                     String seq = spawnSequences[i];
 
-                    // Split into info parts
+                    // Extract info
                     String[] seqInfo = seq.split("/");
                     String enemy = seqInfo[0];
                     int enemyNum = Integer.parseInt(seqInfo[1]);
                     float spawnRate = Float.parseFloat(seqInfo[2]), spawnTime = Float.parseFloat(seqInfo[3]);
 
-                    // Generate and add spawn instructions
-                    for (int j = enemyNum; j>= 0; j--) {
-                        waves[wavenum][spawnNum] = new SpawnInstruction(enemy, spawnTime*1000);
+                    // Generate and add spawn individual instructions
+                    for (int j = enemyNum; j >= 1; j--) {
+                        currWave.addInstruction(new SpawnInstruction(enemy, spawnTime*1000));
                         spawnTime += spawnRate;
-                        spawnNum++;
                     }
                 }
                 wavenum++;
