@@ -55,7 +55,6 @@ public class Menu {
     
     void renderTitle() {
         TITLE_TTF.drawString((w/2) - (TITLE_TTF.getWidth(title)/2), 125, title, TITLE_COL);
-        
     }
     
     void renderOptions() {
