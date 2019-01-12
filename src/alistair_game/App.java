@@ -11,11 +11,12 @@ import java.util.logging.Logger;
 
 import org.newdawn.slick.*;
 
+/**
+ * Main handler for the game as a program.
+ *
+ * Creates a World to handle the gameplay itself.
+ */
 public class App extends BasicGame {
-    /**
-     * Main handler for the game as a program. Creates a World to handle the
-     * gameplay itself. Will later create a Menu first (when we have a main menu).
-     */
 
     private static final int
         WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48,
@@ -43,6 +44,10 @@ public class App extends BasicGame {
         super(title);
     }
 
+    /** Calls world to initializes all game object before the game begins.
+     *
+     * Sets game parametrs and loads up files.
+     * */
     @Override
     public void init(GameContainer gc) throws SlickException {
         System.out.println("GAME STATE: Initialising game...");
@@ -123,6 +128,10 @@ public class App extends BasicGame {
 
     }
 
+    /**
+     * Should be called every 20ms. Executes a 'tick' operations.
+     * @throws SlickException
+     */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
         // something about speed -- increment it given the delta I guess
@@ -134,6 +143,10 @@ public class App extends BasicGame {
         world.processTowers(input);
     }
 
+    /**
+     * Responsible for drawing sprites. Called regularly automatically.
+     * @throws SlickException
+     */
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
         // Draw all the sprites
@@ -145,6 +158,9 @@ public class App extends BasicGame {
         world.drawGUI(g);
     }
 
+    /**
+     * Closes the game
+     */
     @Override
     public boolean closeRequested() {
         System.out.println("GAME STATE: Exiting game");

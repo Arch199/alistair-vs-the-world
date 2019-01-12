@@ -7,13 +7,18 @@ import org.newdawn.slick.Graphics;
 public class Util {
     /** Contains utility methods for use throughout the project. */
 
-    /** Returns a random int from 0 to num-1 (inclusive). */
+    /** Random number generator
+     * @param num Closed maximum value
+     * @return random value 0-num
+     * */
     public static int rand(int num) {
         Random r = new Random(System.nanoTime());
         return r.nextInt(num);
     }
 
-    /** Writes horizontally centered text. */
+    /** Writes horizontally centered text.
+     * @param str String to write
+     * */
     public static void writeCentered(Graphics g, String str, float x, float y) {
         int offset = g.getFont().getWidth(str) / 2;
         g.drawString(str, x - offset, y);

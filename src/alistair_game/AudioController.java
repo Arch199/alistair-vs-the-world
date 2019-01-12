@@ -6,14 +6,14 @@ import java.util.HashMap;
 
 import org.newdawn.slick.*;
 
+/**
+ * Stores all sound files, and provides a method to play them.
+ */
 public class AudioController {
-    /**
-     * Handles the game audio. Initialized in App.init(). To play a sound, call
-     * play(event)
-     */
 
     private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
     private static HashMap<String, Sound[]> listSounds = new HashMap<String, Sound[]>();
+
     static {
         // Load audio files
         File folder = new File("assets\\audio");
@@ -44,6 +44,11 @@ public class AudioController {
         // TODO: Find some music? Can add an array of songs to a musicLoop() method.
     }
 
+    /**
+     * Plays a sound.
+     *
+     * @param event The name of the game event, and the sound in assets/audio to play. Can specify a folder.
+     */
     public static void play(String event) {
         // TODO: Add pitch and volume control
         Sound[] list = listSounds.get(event);

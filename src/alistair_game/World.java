@@ -13,19 +13,26 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
+/**
+ * Handles all the game logic for a level. Created by App.
+ */
 class World {
-    /**
-     * Handles all the game logic for a level. Created by App.
-     */
 
     private int w, h, tSize, gridW, gridH;
     private float startx, starty, enemySpeed = 1f;
+
     private Tile[][] tiles;
+    /** A complete list of waves, each with set of spawn instructions */
     private ArrayList<Wave> waves = new ArrayList<>();
-    private int[][][] path; // Directions to move for each tile
+    /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move move */
+    private int[][][] path;
+    /** List of enemies in crder of creation (oldest first) */
     private LinkedList<Enemy> enemies = new LinkedList<>();
+    /** Dynamic list of all projectiles */
     private ArrayList<Projectile> projectiles = new ArrayList<>();
+    /** Dynamic list of all towers */
     private ArrayList<Tower> towers = new ArrayList<>();
+
     private int spawnTime = 2000, nextSpawn = spawnTime, health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
@@ -53,6 +60,15 @@ class World {
         }
     }
 
+    /**
+     * Create the world.
+     * @param w Map width
+     * @param h Map height
+     * @param tSize Pixels in a tile
+     * @param startx Enemy origin (x-axis)
+     * @param starty Enemy origin (y-axis)
+     * @param level Map layout
+     */
     World(int w, int h, int tSize, float startx, float starty, int[][] level) {
         this.w = w;
         this.h = h;
@@ -115,10 +131,12 @@ class World {
     /**
      * Keeps track of the time (in ms) from the start of the wave. Spawns enemies
      * and projectiles accordingly.
+     * @param delta ms from last tick
      */
     void tick(int delta) {
         timer += delta;
 
+        // Enemy spawning
         // Find the correct wave
         for (Wave w: waves) {
             if (w.waveNum == waveNum) {
@@ -144,7 +162,7 @@ class World {
         }
     }
 
-    /** Currently unused. Call every time a new wave starts */
+    /** Call every time a new wave starts */
     void newWave() {
         timer = 0;
         for (Tower t : towers) {
@@ -154,11 +172,13 @@ class World {
         }
     }
 
+    /** Create a new enemy at the given position */
     void spawnEnemy(float x, float y) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemySpeed);
         enemies.add(new Enemy(x, y, v, "python"));
     }
 
+    /** Update enemy positons */
     void moveEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
@@ -171,6 +191,7 @@ class World {
         }
     }
 
+    /** Update projectile positions */
     void moveProjectiles() {
         Iterator<Projectile> itr = projectiles.iterator();
         while (itr.hasNext()) {
@@ -230,6 +251,7 @@ class World {
         }
     }
 
+    /** Create a new tower at the given position */
     void newTower(float xpos, float ypos) {
         try {
             myTower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
@@ -239,6 +261,7 @@ class World {
         }
     }
 
+    /** Draw game interface */
     void drawGUI(Graphics g) {
         // Display Alistair's health
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
@@ -274,6 +297,9 @@ class World {
         }
     }
 
+    /** Make alistair take damage
+     * @param damage Health reduction, <=100
+     * */
     void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
@@ -294,6 +320,7 @@ class World {
         return gridval * tSize + tSize / 2;
     }
 
+    /** Check coordinate against game boundaries */
     boolean inGridBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < gridW && y < gridH;
     }
@@ -311,7 +338,13 @@ class World {
     boolean isPlacingTower() {
         return myTower != null;
     }
-    
+
+    /** Create a new projectile
+     * @param x Initial x-coord
+     * @param y Initial y-coord
+     * @param vec Initial movement vector
+     * @param im Sprite image
+     */
     void newProjectile(float x, float y, Vector2f vec, Image im) {
         projectiles.add(new Projectile(x, y, vec, im));
     }
