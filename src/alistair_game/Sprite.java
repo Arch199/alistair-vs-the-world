@@ -26,7 +26,7 @@ class Sprite {
     }
 
     /**
-     * Checks if this sprite is touching another
+     * Check if this sprite is touching another (using rectangular collision boxes).
      * @param other Sprite to check against
      * @return Returns true if touching
      */

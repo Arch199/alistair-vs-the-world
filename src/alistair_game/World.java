@@ -17,9 +17,12 @@ import org.newdawn.slick.geom.Vector2f;
  * Handles all the game logic for a level. Created by App.
  */
 class World {
-
     private int w, h, tSize, gridW, gridH;
     private float startx, starty, enemySpeed = 1f;
+    private int health = 100, waveNum = 1;
+    private long timer = 0;
+    private Tile alistair;
+    private Tower myTower; // Tower currently being placed
 
     private Tile[][] tiles;
     /** A complete list of waves, each with set of spawn instructions */
@@ -32,11 +35,6 @@ class World {
     private ArrayList<Projectile> projectiles = new ArrayList<>();
     /** Dynamic list of all towers */
     private ArrayList<Tower> towers = new ArrayList<>();
-
-    private int spawnTime = 2000, nextSpawn = spawnTime, health = 100, waveNum = 1;
-    private long timer = 0;
-    private Tile alistair;
-    private Tower myTower; // Tower currently being placed
 
     private static Image[] tileset;
     private static String[] tile_names;

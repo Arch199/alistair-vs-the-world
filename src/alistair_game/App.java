@@ -20,8 +20,7 @@ public class App extends BasicGame {
 
     private static final int
         WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48,
-        GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE,
-        MAXWAVES = 50, MAXSPAWNS = 1000;
+        GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
 
     private World world;
 
@@ -88,7 +87,7 @@ public class App extends BasicGame {
             scanner.useDelimiter("[\\r\\n;]+");
 
             ArrayList<Wave> waves = new ArrayList<>();
-            int wavenum = 1, k = 0;
+            int wavenum = 1;
 
             // Wave-by-wave
             while (scanner.hasNext()) {

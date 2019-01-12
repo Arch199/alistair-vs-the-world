@@ -7,9 +7,9 @@ import org.newdawn.slick.Graphics;
 /** Contains utility methods for use throughout the project. */
 public class Util {
 
-    /** Random number generator
+    /** Random number generator.
      * @param num Closed maximum value
-     * @return random value 0-num
+     * @return Random value 0-num
      * */
     public static int rand(int num) {
         Random r = new Random(System.nanoTime());

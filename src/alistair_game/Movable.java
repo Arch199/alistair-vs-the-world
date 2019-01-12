@@ -12,7 +12,7 @@ abstract class Movable extends Sprite {
     private int damage;
 
     /**
-     * Create a sprite that can move
+     * Create a sprite that can move.
      * @param startx start x-coord
      * @param starty start y-coord
      * @param v initial velocity
