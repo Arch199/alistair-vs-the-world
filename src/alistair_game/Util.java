@@ -25,16 +25,3 @@ public class Util {
         return (float) Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 }
-
-class SpawnInstruction {
-    private String enemy;
-    private float spawnTime;
-
-    SpawnInstruction(String enemy, float spawnTime) {
-        this.enemy = enemy;
-        this.spawnTime = spawnTime;
-    }
-
-    String getEnemy() { return this.enemy; }
-    float getSpawnTime() { return this.spawnTime; }
-}
