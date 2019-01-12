@@ -17,17 +17,15 @@ import org.newdawn.slick.*;
  * Creates a World to handle the gameplay itself.
  */
 public class App extends BasicGame {
-
     private static final int
         WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48,
         GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
-
-    private World world;
+    
+    private Menu menu = null;
+    private World world = null;
 
     public static void main(String[] args) {
         try {
-            System.out.println("Yeet, starting main");
-
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
             appgc.setDisplayMode(WINDOW_W, WINDOW_H, false);
@@ -43,10 +41,9 @@ public class App extends BasicGame {
         super(title);
     }
 
-    /** Calls world to initializes all game object before the game begins.
-     *
-     * Sets game parametrs and loads up files.
-     * */
+    /** Calls World to initialize all game objects before the game begins.
+     * Sets game parameters and loads up files.
+     */
     @Override
     public void init(GameContainer gc) throws SlickException {
         System.out.println("GAME STATE: Initialising game...");
@@ -55,14 +52,71 @@ public class App extends BasicGame {
         // Game update speed. 1 tick every 20 ms (50/sec)
         gc.setMaximumLogicUpdateInterval(20);
         gc.setMinimumLogicUpdateInterval(20);
+        
+        // Open Main Menu
+        menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+    }
 
-        // Initialise level from file and create world object
+    /**
+     * Should be called every 20ms. Executes a 'tick' operations.
+     * @throws SlickException
+     */
+    @Override
+    public void update(GameContainer gc, int delta) throws SlickException {
+        Input input = gc.getInput();
+        if (menu != null) {
+            String action = menu.update(input);
+            if (action != null) {
+                switch (action) {
+                    case "Start":
+                        openLevel("level1");
+                        break;
+                    case "Options":
+                        // TODO: Add options (what settings would we have?) or just remove this
+                        break;
+                    case "Quit":
+                        closeRequested();
+                        break;
+                }
+            }
+        }
+        if (world != null) {
+            world.tick(delta);
+            world.moveEnemies();
+            world.moveProjectiles();
+            world.processTowers(input);
+        }
+    }
+
+    /**
+     * Responsible for drawing sprites. Called regularly automatically.
+     * @throws SlickException
+     */
+    @Override
+    public void render(GameContainer gc, Graphics g) throws SlickException {
+        if (menu != null) {
+            menu.renderTitle();
+            menu.renderOptions();
+        }
+        if (world != null) {
+            world.renderTiles();
+            world.renderEnemies();
+            world.renderTowers(g);
+            world.renderProjectiles();
+            world.drawGUI(g);
+        }
+    }
+    
+    /** Opens a new level and creates a World to manage it.
+     * Also minimises the current menu and changes focus to the level.
+     */
+    private void openLevel(String levelName) {
         try {
             // 2D grid array
             int[][] level = new int[GRID_W][GRID_H];
 
             // Load map info file
-            Scanner scanner = new Scanner(new File("assets\\levels\\level1.txt"));
+            Scanner scanner = new Scanner(new File("assets\\levels\\" + levelName + ".txt"));
             for (int y = 0; y < GRID_H; y++) {
                 assert (scanner.hasNext());
                 char[] line = scanner.next().toCharArray();
@@ -117,48 +171,21 @@ public class App extends BasicGame {
                 wavenum++;
             }
             scanner.close();
-
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level);
-            world.setWaves(waves);
+            
+            // Create World
+            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level, waves);
+            
+            // Get rid of menu
+            // TODO: there's probably a better way to do this
+            menu = null;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
-     * Should be called every 20ms. Executes a 'tick' operations.
-     * @throws SlickException
-     */
-    @Override
-    public void update(GameContainer gc, int delta) throws SlickException {
-        // something about speed -- increment it given the delta I guess
-        world.tick(delta);
-        world.moveEnemies();
-        world.moveProjectiles();
-
-        Input input = gc.getInput();
-        world.processTowers(input);
-    }
-
-    /**
-     * Responsible for drawing sprites. Called regularly automatically.
-     * @throws SlickException
-     */
-    @Override
-    public void render(GameContainer gc, Graphics g) throws SlickException {
-        // Draw all the sprites
-        world.renderTiles();
-        world.renderEnemies();
-        world.renderTowers(g);
-        world.renderProjectiles();
-
-        world.drawGUI(g);
-    }
-
-    /**
-     * Closes the game
+     * Closes the game.
      */
     @Override
     public boolean closeRequested() {

@@ -26,7 +26,7 @@ class World {
 
     private Tile[][] tiles;
     /** A complete list of waves, each with set of spawn instructions */
-    private ArrayList<Wave> waves = new ArrayList<>();
+    private ArrayList<Wave> waves;
     /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move move */
     private int[][][] path;
     /** List of enemies in crder of creation (oldest first) */
@@ -67,7 +67,7 @@ class World {
      * @param starty Enemy origin (y-axis)
      * @param level Map layout
      */
-    World(int w, int h, int tSize, float startx, float starty, int[][] level) {
+    World(int w, int h, int tSize, float startx, float starty, int[][] level, ArrayList<Wave> waves) {
         this.w = w;
         this.h = h;
         this.tSize = tSize;
@@ -75,6 +75,7 @@ class World {
         this.gridH = h / tSize;
         this.startx = startx;
         this.starty = starty;
+        this.waves = waves;
 
         // Initialise tile sprites from level + tileset
         tiles = new Tile[gridW][gridH];
