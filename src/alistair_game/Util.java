@@ -27,6 +27,6 @@ public class Util {
     /** Calculates the distance between two x-y coordinates. */
     public static float dist(float x1, float y1, float x2, float y2) {
         // Euclidean distance (COMP20008 method)
-        return (float) Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+        return (float) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
     }
 }

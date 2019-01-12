@@ -2,7 +2,7 @@ package alistair_game;
 
 import java.util.ArrayList;
 
-/** Waves contain a list of their enemy spawns */
+/** Waves contain a list of their enemy spawns. */
 public class Wave {
     int waveNum;
     ArrayList<SpawnInstruction> instructions = new ArrayList<>();
@@ -21,14 +21,6 @@ public class Wave {
         instructions.removeIf(i -> i.getParsed());
     }
 
-    ArrayList<SpawnInstruction> getInstructions() {
-        return instructions;
-    }
-
-    int getWaveNum() {
-        return waveNum;
-    }
-
     void addInstruction(SpawnInstruction instruction) {
         instructions.add(instruction);
     }
@@ -36,9 +28,12 @@ public class Wave {
     void removeInstrucion(SpawnInstruction instruction) {
         instructions.remove(instruction);
     }
+    
+    ArrayList<SpawnInstruction> getInstructions() { return instructions; }
+    int getWaveNum() { return waveNum; }
 }
 
-/** Individual enemy spawn instructions, with enemy time and type */
+/** Individual enemy spawn instructions, with enemy time and type. */
 class SpawnInstruction {
     private String enemy;
     private float spawnTime;
@@ -57,5 +52,5 @@ class SpawnInstruction {
     String getEnemy() { return this.enemy; }
     float getSpawnTime() { return this.spawnTime; }
     boolean getParsed() { return this.parsed; }
-    void setParsed(boolean b) {parsed = b; }
+    void setParsed(boolean b) { parsed = b; }
 }
