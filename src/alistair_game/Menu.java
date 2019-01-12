@@ -30,7 +30,7 @@ public class Menu {
     /** 
      * Updates menu based on player input.
      * @param input Obtained from App's GameContainer
-     * @return A string if some action was taken (e.g. "Quit" to exit game) or null otherwise
+     * @return The action taken (e.g. "Quit" to exit game). Defaults to the empty string.
      */
     String update(Input input) {
         if (input.isKeyPressed(Input.KEY_DOWN)) {
@@ -50,7 +50,7 @@ public class Menu {
         else if (input.isKeyPressed(Input.KEY_ENTER)) {
             return choices[currentChoice];
         }
-        return null; // default value for no action
+        return ""; // default value for no action
     }
     
     void renderTitle() {

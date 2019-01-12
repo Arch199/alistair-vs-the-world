@@ -62,10 +62,11 @@ class World {
      * Create the world.
      * @param w Map width
      * @param h Map height
-     * @param tSize Pixels in a tile
+     * @param tSize Side length of each tile in pixels
      * @param startx Enemy origin (x-axis)
      * @param starty Enemy origin (y-axis)
      * @param level Map layout
+     * @param waves Data on waves and enemy spawn timing
      */
     World(int w, int h, int tSize, float startx, float starty, int[][] level, ArrayList<Wave> waves) {
         this.w = w;
@@ -83,8 +84,9 @@ class World {
             for (int y = 0; y < level[x].length; y++) {
                 int i = level[x][y];
                 tiles[x][y] = new Tile((x + 0.5f) * tSize, (y + 0.5f) * tSize, tileset[i], tile_names[i]);
-                if (i == ALISTAIR_INDEX)
+                if (i == ALISTAIR_INDEX) {
                     alistair = tiles[x][y];
+                }
             }
         }
 
@@ -127,6 +129,18 @@ class World {
         AudioController.play("intro");
     }
 
+    /**
+     * Deals with user input e.g. pressing Esc to return to main menu.
+     * @param Obtained from App's GameContainer
+     * @return A string for an action to take. (Empty string by default).
+     */
+    String processInput(Input input) {
+        if (input.isKeyPressed(Input.KEY_ESCAPE)) {
+            return "Exit";
+        }
+        return "";
+    }
+    
     /**
      * Keeps track of the time (in ms) from the start of the wave. Spawns enemies
      * and projectiles accordingly.

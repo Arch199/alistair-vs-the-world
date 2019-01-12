@@ -10,10 +10,8 @@ import org.newdawn.slick.*;
  * Stores all sound files, and provides a method to play them.
  */
 public class AudioController {
-
     private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
-    private static HashMap<String, Sound[]> listSounds = new HashMap<String, Sound[]>();
-
+    private static HashMap<String, Sound[]> multiSounds = new HashMap<String, Sound[]>();
     static {
         // Load audio files
         File folder = new File("assets\\audio");
@@ -34,7 +32,7 @@ public class AudioController {
                             return null;
                         }
                     }).toArray(Sound[]::new);
-                    listSounds.put(f.getName().toLowerCase(), new_sounds);
+                    multiSounds.put(f.getName().toLowerCase(), new_sounds);
                 }
             }
         } catch (SlickException e) {
@@ -51,7 +49,7 @@ public class AudioController {
      */
     public static void play(String event) {
         // TODO: Add pitch and volume control
-        Sound[] list = listSounds.get(event);
+        Sound[] list = multiSounds.get(event);
         if (list != null) {
             list[Util.rand(list.length)].play();
         } else {
@@ -60,6 +58,20 @@ public class AudioController {
                 single.play();
             } else {
                 System.err.printf("ERROR: Could not find sound '%s'%n", event);
+            }
+        }
+    }
+    
+    /**
+     * Stops all currently playing sounds.
+     */
+    static void stopAll() {
+        for (Sound s : singleSounds.values()) {
+            s.stop();
+        }
+        for (Sound[] list : multiSounds.values()) {
+            for (Sound s : list) {
+                s.stop();
             }
         }
     }

@@ -66,21 +66,29 @@ public class App extends BasicGame {
         Input input = gc.getInput();
         if (menu != null) {
             String action = menu.update(input);
-            if (action != null) {
-                switch (action) {
-                    case "Start":
-                        openLevel("level1");
-                        break;
-                    case "Options":
-                        // TODO: Add options (what settings would we have?) or just remove this
-                        break;
-                    case "Quit":
-                        closeRequested();
-                        break;
-                }
+            switch (action) {
+                case "Start":
+                    openLevel("level1");
+                    break;
+                case "Options":
+                    // TODO: Add options (what settings would we have?) or just remove this
+                    break;
+                case "Quit":
+                    closeRequested();
+                    break;
             }
         }
         if (world != null) {
+            String action = world.processInput(input);
+            switch (action) {
+                case "Exit":
+                    // TODO: put this in a function or something?
+                    AudioController.stopAll();
+                    world = null;
+                    menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+                    return; // Terminate the update at this point
+            }
+            
             world.tick(delta);
             world.moveEnemies();
             world.moveProjectiles();
