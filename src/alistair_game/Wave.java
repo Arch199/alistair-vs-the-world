@@ -7,10 +7,16 @@ public class Wave {
     int waveNum;
     ArrayList<SpawnInstruction> instructions = new ArrayList<>();
 
+    /** Create a wave
+     * @param waveNum The number of this wave (>=1)
+     */
     Wave(int waveNum) {
         this.waveNum = waveNum;
     }
 
+    /**
+     * Delete all instructions that have already been executed.
+     */
     void clearOldInstructions() {
         instructions.removeIf(i -> i.getParsed());
     }
@@ -38,6 +44,11 @@ class SpawnInstruction {
     private float spawnTime;
     private boolean parsed = false;
 
+    /**
+     * Contains info for one enemy spawn.
+     * @param enemy Enemy type
+     * @param spawnTime Spawn time from the start of the wave (ms)
+     */
     SpawnInstruction(String enemy, float spawnTime) {
         this.enemy = enemy;
         this.spawnTime = spawnTime;

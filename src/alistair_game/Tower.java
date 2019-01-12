@@ -9,6 +9,9 @@ import java.util.List;
 
 import org.newdawn.slick.Color;
 
+/**
+ * Towers are placed on a grid and shoot projectiles at enemies.
+ */
 class Tower extends Sprite {   
     private boolean placed = false;
     private float range = 150f; // Range is radius from center
@@ -16,6 +19,13 @@ class Tower extends Sprite {
     private long nextShot; // Time until next fire (in ms)
     private float projSpeed = 4f;
 
+    /**
+     * Create a tower
+     * @param startx x-position
+     * @param starty y-position
+     * @param im Sprite image
+     * @param fireRate Time between shots (ms)
+     */
     Tower(float startx, float starty, Image im, int fireRate) {
         super(startx, starty, im);
         this.fireRate = fireRate;

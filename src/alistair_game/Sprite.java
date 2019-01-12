@@ -3,11 +3,18 @@ package alistair_game;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
+/** On-screen object */
 class Sprite {
     private float x, y;
     private Image im;
     private Color col = Color.white;
 
+    /**
+     * Create a sprite (stationary for the frame)
+     * @param x x-pos
+     * @param y y-pos
+     * @param im sprite image
+     */
     Sprite(float x, float y, Image im) {
         this.x = x;
         this.y = y;
@@ -18,6 +25,11 @@ class Sprite {
         im.draw(x - im.getWidth() / 2, y - im.getHeight() / 2, col);
     }
 
+    /**
+     * Checks if this sprite is touching another
+     * @param other Sprite to check against
+     * @return Returns true if touching
+     */
     boolean checkCollision(Sprite other) {
         int w = im.getWidth() / 2, h = im.getHeight() / 2;
         Image im2 = other.getImage();
@@ -27,21 +39,42 @@ class Sprite {
         return (x + w >= x2 - w2 && x2 + w2 >= x - w && y + h >= y2 - h2 && y2 + h2 >= y - h);
         // I'm honestly amazed this works -James
     }
-    
+
+    /**
+     * Euclidian distance to any other sprite.
+     * @param other Other sprite
+     * @return Pixel distance
+     */
     float distanceTo(Sprite other) {
         return Util.dist(x, y, other.getX(), other.getY());
     }
 
+    /**
+     * Checks the sprite's position against the game boundraries.
+     * @param windowW Game width
+     * @param windowH Game height
+     * @return Returns true if off the screen
+     */
     boolean isOffScreen(int windowW, int windowH) {
         int w = im.getWidth() / 2, h = im.getHeight() / 2;
         return x - w >= windowW || x + w < 0 || y - h >= windowH || y + h < 0;
     }
 
+    /**
+     * Moves relative to the current position.
+     * @param xdist signed pixels in the x-plane to move
+     * @param ydist signed pixels in teh y-play to move
+     */
     void move(float xdist, float ydist) {
         x += xdist;
         y += ydist;
     }
 
+    /**
+     * Move instantly to an arbritary coordinate.
+     * @param destx new x-positon
+     * @param desty new y-position
+     */
     void teleport(float destx, float desty) {
         x = destx;
         y = desty;
