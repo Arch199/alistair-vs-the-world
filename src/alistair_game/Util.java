@@ -4,8 +4,8 @@ import java.util.Random;
 
 import org.newdawn.slick.Graphics;
 
+/** Contains utility methods for use throughout the project. */
 public class Util {
-    /** Contains utility methods for use throughout the project. */
 
     /** Random number generator
      * @param num Closed maximum value
