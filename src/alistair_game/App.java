@@ -149,12 +149,11 @@ public class App extends BasicGame {
             scanner.useDelimiter("[\\r\\n;]+");
 
             ArrayList<Wave> waves = new ArrayList<>();
-            int wavenum = 1;
 
             // Wave-by-wave
             while (scanner.hasNext()) {
                 String wave = scanner.next();
-                Wave currWave = new Wave(wavenum);
+                Wave currWave = new Wave();
                 waves.add(currWave);
 
                 // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
@@ -172,11 +171,10 @@ public class App extends BasicGame {
 
                     // Generate and add spawn individual instructions
                     for (int j = enemyNum; j >= 1; j--) {
-                        currWave.addInstruction(new SpawnInstruction(enemy, spawnTime*1000));
+                        currWave.addInstruction(enemy, spawnTime*1000);
                         spawnTime += spawnRate;
                     }
                 }
-                wavenum++;
             }
             scanner.close();
             

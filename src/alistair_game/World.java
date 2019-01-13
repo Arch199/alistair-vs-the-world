@@ -150,30 +150,15 @@ class World {
     void tick(int delta) {
         timer += delta;
 
-        // Enemy spawning
-        // Find the correct wave
-        for (Wave w: waves) {
-            if (w.waveNum == waveNum) {
-                // Correct wave
-                ArrayList<SpawnInstruction> instructions = w.getInstructions();
-
-                // All enemies dead, new wave
-                if (instructions.isEmpty()) {
-                    waveNum++;
+        // Enemy spawning (based on the current wave)
+        if (waveNum-1 < waves.size()) {
+            Wave w = waves.get(waveNum-1);
+            String enemy = w.trySpawn(timer);
+            if (enemy != "") {
+                spawnEnemy(startx, starty, enemy);
+                if (w.isFinished()) {
                     newWave();
-                    break;
                 }
-
-                // Enemy spawning
-                for (SpawnInstruction i: instructions) {
-                    if (timer >= i.getSpawnTime()) {
-                        i.setParsed(true);
-                        // TODO: Add enemy types
-                        spawnEnemy(startx, starty, i.getEnemy());
-                    }
-                }
-                w.clearOldInstructions();
-                break;
             }
         }
 
@@ -187,6 +172,7 @@ class World {
 
     /** Call every time a new wave starts */
     void newWave() {
+        waveNum++;
         timer = 0;
         for (Tower t : towers) {
             if (t.isPlaced()) {

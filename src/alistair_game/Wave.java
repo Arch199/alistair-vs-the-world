@@ -1,56 +1,44 @@
 package alistair_game;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /** Waves contain a list of their enemy spawns. */
 public class Wave {
-    int waveNum;
-    ArrayList<SpawnInstruction> instructions = new ArrayList<>();
+    private List<SpawnInstruction> instructions = new LinkedList<>();
+    
+    /** Individual enemy spawn instructions, with enemy time and type. */
+    private class SpawnInstruction {
+        String enemy;
+        float spawnTime;
 
-    /** Create a wave
-     * @param waveNum The number of this wave (>=1)
-     */
-    Wave(int waveNum) {
-        this.waveNum = waveNum;
-    }
-
-    /**
-     * Delete all instructions that have already been executed.
-     */
-    void clearOldInstructions() {
-        instructions.removeIf(i -> i.getParsed());
-    }
-
-    void addInstruction(SpawnInstruction instruction) {
-        instructions.add(instruction);
-    }
-
-    void removeInstrucion(SpawnInstruction instruction) {
-        instructions.remove(instruction);
+        SpawnInstruction(String enemy, float spawnTime) {
+            this.enemy = enemy;
+            this.spawnTime = spawnTime;
+        }
     }
     
-    ArrayList<SpawnInstruction> getInstructions() { return instructions; }
-    int getWaveNum() { return waveNum; }
-}
-
-/** Individual enemy spawn instructions, with enemy time and type. */
-class SpawnInstruction {
-    private String enemy;
-    private float spawnTime;
-    private boolean parsed = false;
-
     /**
-     * Contains info for one enemy spawn.
-     * @param enemy Enemy type
-     * @param spawnTime Spawn time from the start of the wave (ms)
+     * Check if enemies are due to be spawned.
+     * @param timer The time since the start of the wave
+     * @return The name of the enemy to be spawned as a String or ""
      */
-    SpawnInstruction(String enemy, float spawnTime) {
-        this.enemy = enemy;
-        this.spawnTime = spawnTime;
+    String trySpawn(long timer) {
+        Iterator<SpawnInstruction> itr = instructions.iterator();
+        while (itr.hasNext()) {
+            SpawnInstruction si = itr.next();
+            if (timer >= si.spawnTime) {
+                itr.remove();
+                return si.enemy;
+            }
+        }
+        return ""; // default failure value
     }
-
-    String getEnemy() { return this.enemy; }
-    float getSpawnTime() { return this.spawnTime; }
-    boolean getParsed() { return this.parsed; }
-    void setParsed(boolean b) { parsed = b; }
+    
+    void addInstruction(String enemy, float spawnTime) {
+        instructions.add(new SpawnInstruction(enemy, spawnTime));
+    }
+    
+    boolean isFinished() { return instructions.isEmpty(); }
 }
