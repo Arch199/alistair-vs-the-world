@@ -1,6 +1,5 @@
 package alistair_game;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,7 +12,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.TrueTypeFont;
 
 /**
  * Handles all the game logic for a level. Created by App.
@@ -25,18 +23,19 @@ class World {
     private long timer = 0;
     private Tile alistair;
     private Tower myTower; // Tower currently being placed
-
+    
+    /** 2D array of tiles for each grid cell */
     private Tile[][] tiles;
-    /** A complete list of waves, each with set of spawn instructions */
-    private ArrayList<Wave> waves;
+    /** List of waves, each with set of spawn instructions */
+    private List<Wave> waves;
     /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move move */
     private int[][][] path;
     /** List of enemies in crder of creation (oldest first) */
-    private LinkedList<Enemy> enemies = new LinkedList<>();
-    /** Dynamic list of all projectiles */
-    private ArrayList<Projectile> projectiles = new ArrayList<>();
-    /** Dynamic list of all towers */
-    private ArrayList<Tower> towers = new ArrayList<>();
+    private List<Enemy> enemies = new LinkedList<>();
+    /** List of all projectiles */
+    private List<Projectile> projectiles = new LinkedList<>();
+    /** List of all towers */
+    private List<Tower> towers = new LinkedList<>();
 
     private static Image[] tileset;
     private static String[] tile_names;
