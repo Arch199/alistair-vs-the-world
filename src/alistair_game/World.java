@@ -1,5 +1,6 @@
 package alistair_game;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.TrueTypeFont;
 
 /**
  * Handles all the game logic for a level. Created by App.
@@ -155,6 +157,15 @@ class World {
             if (w.waveNum == waveNum) {
                 // Correct wave
                 ArrayList<SpawnInstruction> instructions = w.getInstructions();
+
+                // All enemies dead, new wave
+                if (instructions.isEmpty()) {
+                    waveNum++;
+                    newWave();
+                    break;
+                }
+
+                // Enemy spawning
                 for (SpawnInstruction i: instructions) {
                     if (timer >= i.getSpawnTime()) {
                         i.setParsed(true);
@@ -278,6 +289,8 @@ class World {
     void drawGUI(Graphics g) {
         // Display Alistair's health
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
+        // Wave number
+        Util.writeCentered(g, "Wave: " + waveNum,900, 20);
     }
 
     void renderTiles() {
