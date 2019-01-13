@@ -164,7 +164,7 @@ class World {
 
         // Tower shots
         for (Tower t : towers) {
-            if (t.isPlaced() && t.countDown(delta)) {
+            if (t.countDown(delta)) {
                 t.shoot(this);
             }
         }
@@ -175,9 +175,7 @@ class World {
         waveNum++;
         timer = 0;
         for (Tower t : towers) {
-            if (t.isPlaced()) {
-                t.waveReset();
-            }
+            t.waveReset();
         }
     }
 
@@ -245,7 +243,7 @@ class World {
             }
             outer:
             for (Tower t : towers) {
-                if (t.isPlaced() && t.checkCollision(myTower)) {
+                if (t.checkCollision(myTower)) {
                     myTower.setColor(Color.red);
                     break outer;
                 }
@@ -254,6 +252,7 @@ class World {
             // If the user clicked and it's not colliding with anything, place it
             if (clicked && myTower.getColor() == Color.white) {
                 myTower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
+                towers.add(myTower);
                 myTower = null;
                 newTower(mousex, mousey);
             }
@@ -264,7 +263,6 @@ class World {
     void newTower(float xpos, float ypos) {
         try {
             myTower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
-            towers.add(myTower);
         } catch (SlickException e) {
             e.printStackTrace();
         }
@@ -295,10 +293,9 @@ class World {
     void renderTowers(Graphics g) {
         for (Tower t : towers) {
             t.drawSelf();
-            if (!t.isPlaced()) {
-                // In hand
-                t.drawRange(g);
-            }
+        }
+        if (myTower != null) {
+            myTower.drawRange(g);
         }
     }
 
