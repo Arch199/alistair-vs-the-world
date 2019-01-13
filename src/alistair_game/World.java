@@ -295,6 +295,7 @@ class World {
             t.drawSelf();
         }
         if (myTower != null) {
+            myTower.drawSelf();
             myTower.drawRange(g);
         }
     }
