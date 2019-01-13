@@ -29,6 +29,10 @@ class Enemy extends Movable {
                 imPath += "python-icon.png";
                 setDamage(5);
                 break;
+            case "commerce":
+                imPath += "fbe1.png";
+                setDamage(10);
+                break;
             default:
                 throw new IllegalArgumentException("No such enemy '" + name + "'");
         }
