@@ -170,7 +170,7 @@ class World {
                     if (timer >= i.getSpawnTime()) {
                         i.setParsed(true);
                         // TODO: Add enemy types
-                        spawnEnemy(startx, starty);
+                        spawnEnemy(startx, starty, i.getEnemy());
                     }
                 }
                 w.clearOldInstructions();
@@ -197,9 +197,9 @@ class World {
     }
 
     /** Create a new enemy at the given position */
-    void spawnEnemy(float x, float y) {
+    void spawnEnemy(float x, float y, String name) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemySpeed);
-        enemies.add(new Enemy(x, y, v, "python"));
+        enemies.add(new Enemy(x, y, v, name));
     }
 
     /** Update enemy positons */
