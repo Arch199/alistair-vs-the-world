@@ -154,9 +154,11 @@ class World {
             String enemy = w.trySpawn(timer);
             if (enemy != "") {
                 spawnEnemy(startx, starty, enemy);
-                if (w.isFinished()) {
-                    newWave();
-                }
+            }
+
+            // All enemies dead, new wave
+            if (w.isFinished() && enemies.isEmpty()) {
+                newWave();
             }
         }
 
@@ -188,6 +190,7 @@ class World {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
+            // Hitting alistair
             e.advance(enemySpeed, this);
             if (e.checkCollision(alistair)) {
                 takeDamage(e.getDamage());
@@ -228,7 +231,6 @@ class World {
 
             // Red if out of game bounds
             if (!inGridBounds(mousex/tSize, mousey/tSize)) {
-                System.out.println(timer + "Out of bounds!");
                 myTower.setColor(Color.red);
             }
 
