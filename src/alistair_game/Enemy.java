@@ -28,10 +28,12 @@ class Enemy extends Movable {
             case "python":
                 imPath += "python-icon.png";
                 setDamage(5);
+                health = 1;
                 break;
             case "commerce":
                 imPath += "fbe1.png";
                 setDamage(10);
+                health = 2;
                 break;
             default:
                 throw new IllegalArgumentException("No such enemy '" + name + "'");
@@ -65,7 +67,7 @@ class Enemy extends Movable {
     /**
      * Make an enemy take damage
      * @param damage Amount to be deducted from health
-     * @param itr The enemy to deduct from, as an iterator. (Use .iterator on a list of enemies to convert)
+     * @param itr The enemy to deduct from, as an iterator. (Use .iterator() on a list of enemies to convert)
      */
     void takeDamage(int damage, Iterator<Enemy> itr) {
         health -= damage;
