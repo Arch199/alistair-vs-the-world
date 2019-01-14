@@ -104,7 +104,7 @@ public class App extends BasicGame {
     public void render(GameContainer gc, Graphics g) throws SlickException {
         if (menu != null) {
             menu.renderTitle();
-            menu.renderOptions();
+            menu.renderOptions(g);
         }
         if (world != null) {
             world.renderTiles();
