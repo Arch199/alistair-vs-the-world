@@ -13,7 +13,6 @@ import org.newdawn.slick.*;
 
 /**
  * Main handler for the game as a program.
- *
  * Creates a World to handle the gameplay itself.
  */
 public class App extends BasicGame {
@@ -93,11 +92,11 @@ public class App extends BasicGame {
             world.tick(delta);
             world.moveEnemies();
             world.moveProjectiles();
+            
             // Should only call input methods once per update, as per documentation
             boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
-            int mousex = input.getMouseX(), mousey = input.getMouseY();
-            world.towerSelect(mousex, mousey, clicked);
-            world.processTowers(mousex, mousey, clicked);
+            int mouseX = input.getMouseX(), mouseY = input.getMouseY();
+            world.processTowers(mouseX, mouseY, clicked);
         }
     }
 
@@ -143,8 +142,8 @@ public class App extends BasicGame {
             }
 
             // Enemy spawn location
-            float startx = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
-            float starty = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
+            float startX = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
+            float startY = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
             scanner.close();
 
 
@@ -184,7 +183,7 @@ public class App extends BasicGame {
             scanner.close();
             
             // Create World
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startx, starty, level, waves);
+            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, level, waves);
             // Get rid of menu
             // TODO: there's probably a better way to do this
             menu = null;

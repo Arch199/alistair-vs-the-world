@@ -7,7 +7,6 @@ import org.newdawn.slick.geom.Vector2f;
  * Object that is automatically "movable" i.e. it has a set speed.
  */
 abstract class Movable extends Sprite {
-    
     private Vector2f v;
     private int damage;
 
@@ -31,11 +30,9 @@ abstract class Movable extends Sprite {
     }
     
     Vector2f getV() { return v; }
-
     int getDamage() { return damage; }
     
     void setV(float x, float y) { v.x = x; v.y = y; }
-
     void setDamage(int d) {
         if (d < 0) {
             throw new IllegalArgumentException("Damage must be >= 0");

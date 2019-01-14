@@ -18,7 +18,7 @@ import org.newdawn.slick.geom.Vector2f;
  */
 class World {
     private int w, h, tSize, gridW, gridH, sidebarW;
-    private float startx, starty, enemySpeed = 1f;
+    private float startX, startY, enemySpeed = 1f;
     private int health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
@@ -36,6 +36,8 @@ class World {
     private List<Projectile> projectiles = new LinkedList<>();
     /** List of all towers */
     private List<Tower> towers = new LinkedList<>();
+    /** List of Sidebar icons */
+    private List<Sprite> sidebarIcons = new ArrayList<Sprite>();
 
     private static Image[] tileset;
     private static String[] tile_names;
@@ -64,19 +66,19 @@ class World {
      * @param w Map width
      * @param h Map height
      * @param tSize Side length of each tile in pixels
-     * @param startx Enemy origin (x-axis)
-     * @param starty Enemy origin (y-axis)
+     * @param startX Enemy origin (x-axis)
+     * @param startY Enemy origin (y-axis)
      * @param level Map layout
      * @param waves Data on waves and enemy spawn timing
      */
-    World(int w, int h, int tSize, int sidebarW, float startx, float starty, int[][] level, ArrayList<Wave> waves) {
+    World(int w, int h, int tSize, int sidebarW, float startX, float startY, int[][] level, ArrayList<Wave> waves) {
         this.w = w;
         this.h = h;
         this.tSize = tSize;
         this.gridW = (w-sidebarW)/tSize;
         this.gridH = h/tSize;
-        this.startx = startx;
-        this.starty = starty;
+        this.startX = startX;
+        this.startY = startY;
         this.waves = waves;
         this.sidebarW = sidebarW;
 
@@ -94,7 +96,7 @@ class World {
 
         // Traverse the path and store direction values in a grid
         path = new int[gridW][gridH][2];
-        int x = toGrid(startx), y = toGrid(starty);
+        int x = toGrid(startX), y = toGrid(startY);
         int i = defaultDir(x);
         int j = defaultDir(y);
         while (x < 0 || x >= gridW || y < 0 || y >= gridH) {
@@ -123,7 +125,19 @@ class World {
             x += i;
             y += j;
         }
-
+        
+        // Create sidebar
+        // TODO: update when we add more towers
+        String path = "assets\\sprites\\";
+        float xPos = w - sidebarW/2, yPos = 100;
+        try {
+            Image im = new Image(path + "alistair32.png");
+            sidebarIcons.add(new Sprite(xPos, yPos, im));
+            yPos += 50;
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+        
         // Intro sound
         AudioController.play("intro");
     }
@@ -153,7 +167,7 @@ class World {
             Wave w = waves.get(waveNum-1);
             String enemy = w.trySpawn(timer);
             if (enemy != "") {
-                spawnEnemy(startx, starty, enemy);
+                spawnEnemy(startX, startY, enemy);
             }
 
             // All enemies dead, new wave
@@ -222,15 +236,24 @@ class World {
         }
     }
 
-    /** Handles placing towers */
-    void processTowers(int mousex, int mousey, boolean clicked) {
+    /** Handles selecting / placing towers */
+    void processTowers(int mouseX, int mouseY, boolean clicked) {
+        // Process selecting towers
+        if (!isPlacingTower() && clicked) {
+            for (Sprite s : sidebarIcons) {
+                if (s.isMouseOver(mouseX, mouseY)) {
+                    newTower(mouseX, mouseY);
+                }
+            }
+        }
+
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
             myTower.setColor(Color.white);
-            myTower.teleport((float) mousex, (float) mousey);
+            myTower.teleport((float) mouseX, (float) mouseY);
 
             // Red if out of game bounds
-            if (!inGridBounds(mousex/tSize, mousey/tSize)) {
+            if (!inGridBounds(mouseX/tSize, mouseY/tSize)) {
                 myTower.setColor(Color.red);
             }
 
@@ -254,7 +277,7 @@ class World {
                 
             // If the user clicked and it's not colliding with anything, place it
             if (clicked && myTower.getColor() == Color.white) {
-                myTower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
+                myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
                 myTower = null;
             }
@@ -270,34 +293,27 @@ class World {
         }
     }
 
-    /** Handles tower selection from the sidebar */
-    void towerSelect(int mousex, int mousey, Boolean clicked) {
-        // TODO: Some better mapping here, maybe use sprites and add an isClicked() method
-        boolean inXRange = mousex >= w-(sidebarW/2)-(32/2) && mousex <= w-(sidebarW/2)+(32/2);
-        boolean inYRange = mousey >= 100 && mousey <= 132;
-        if (clicked && inXRange && inYRange) {
-            newTower(mousex, mousey);
-        }
-    }
-
     /** Draw game interface */
     void drawGUI(Graphics g) {
         // Sidebar
         g.setColor(Color.darkGray);
-        g.fillRect(w-sidebarW,0,sidebarW,h);
-
+        g.fillRect(w-sidebarW, 0, sidebarW, h);
         g.setColor(Color.white);
-        // Display Alistair's health
-        Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
+        for (Sprite s : sidebarIcons) {
+            s.drawSelf();
+        }
+        
+        // Tower being placed
+        if (myTower != null) {
+            myTower.drawSelf();
+            myTower.drawRange(g);
+        }
+        
         // Wave number
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
-        // Basic tower
-        try {
-            Image alistairTower = new Image("assets//sprites//alistair32.png");
-            alistairTower.draw(w-(sidebarW/2)-(32/2), 100);
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
+        
+        // Display Alistair's health
+        Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
 
     void renderTiles() {
@@ -317,10 +333,6 @@ class World {
     void renderTowers(Graphics g) {
         for (Tower t : towers) {
             t.drawSelf();
-        }
-        if (myTower != null) {
-            myTower.drawSelf();
-            myTower.drawRange(g);
         }
     }
 

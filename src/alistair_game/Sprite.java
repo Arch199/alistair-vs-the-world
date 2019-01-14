@@ -8,6 +8,7 @@ class Sprite {
     private float x, y;
     private Image im;
     private Color col = Color.white;
+    private int w, h; // Half of the image's width and height
 
     /**
      * Create a sprite (stationary for the frame)
@@ -19,10 +20,20 @@ class Sprite {
         this.x = x;
         this.y = y;
         this.im = im;
+        
+        if (im != null) {
+            w = im.getWidth() / 2;
+            h = im.getWidth() / 2;
+        }
     }
-
-    void drawSelf() { // Public or package-private or protected? (TODO: we should talk about this)
-        im.draw(x - im.getWidth() / 2, y - im.getHeight() / 2, col);
+    
+    /** Checks whether the mouse position intersects the Sprite. */
+    boolean isMouseOver(int mouseX, int mouseY) {
+        return (mouseX >= x-w && mouseX <= x+w && mouseY >= y-h && mouseY <= y+h);
+    }
+    
+    void drawSelf() {
+        im.draw(x-w, y-h, col);
     }
 
     /**
@@ -31,7 +42,6 @@ class Sprite {
      * @return Returns true if touching
      */
     boolean checkCollision(Sprite other) {
-        int w = im.getWidth() / 2, h = im.getHeight() / 2;
         Image im2 = other.getImage();
         int w2 = im2.getWidth() / 2, h2 = im2.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
@@ -41,7 +51,7 @@ class Sprite {
     }
 
     /**
-     * Euclidian distance to any other sprite.
+     * Calculate the Euclidian distance to another sprite.
      * @param other Other sprite
      * @return Pixel distance
      */
@@ -65,9 +75,9 @@ class Sprite {
      * @param xdist signed pixels in the x-plane to move
      * @param ydist signed pixels in teh y-play to move
      */
-    void move(float xdist, float ydist) {
-        x += xdist;
-        y += ydist;
+    void move(float xDist, float yDist) {
+        x += xDist;
+        y += yDist;
     }
 
     /**
@@ -75,9 +85,9 @@ class Sprite {
      * @param destx new x-positon
      * @param desty new y-position
      */
-    void teleport(float destx, float desty) {
-        x = destx;
-        y = desty;
+    void teleport(float destX, float destY) {
+        x = destX;
+        y = destY;
     }
 
     float getX() { return x; }
@@ -86,5 +96,9 @@ class Sprite {
     Color getColor() { return col; }
 
     void setColor(Color col) { this.col = col; }
-    void setImage(Image im) { this.im = im; }
+    void setImage(Image im) {
+        this.im = im;
+        w = im.getWidth() / 2;
+        h = im.getWidth() / 2;
+    }
 }

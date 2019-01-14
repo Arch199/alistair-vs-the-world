@@ -16,5 +16,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="AlistairGame/lib/lwjgl-2.9.3/native/windows"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/audio/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/audio/jorbis.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
