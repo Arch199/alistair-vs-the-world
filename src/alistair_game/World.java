@@ -124,9 +124,6 @@ class World {
             y += j;
         }
 
-        // Tower in hand to start TODO: Add a sidebar?
-        newTower(w / 2, h / 2);
-
         // Intro sound
         AudioController.play("intro");
     }
@@ -223,16 +220,19 @@ class World {
     }
 
     /** Handles placing towers */
-    void processTowers(Input input) {
-        int mousex = input.getMouseX(), mousey = input.getMouseY();
-        boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
-
+    void processTowers(int mousex, int mousey, boolean clicked) {
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
+            myTower.setColor(Color.white);
             myTower.teleport((float) mousex, (float) mousey);
 
+            // Red if out of game bounds
+            if (!inGridBounds(mousex/tSize, mousey/tSize)) {
+                System.out.println(timer + "Out of bounds!");
+                myTower.setColor(Color.red);
+            }
+
             // Set the tower to be red if it's touching a non-wall tile or tower
-            myTower.setColor(Color.white);
             outer:
             for (Tile[] column : tiles) {
                 for (Tile tile : column) {
@@ -255,7 +255,6 @@ class World {
                 myTower.place(toPos(toGrid(mousex)), toPos(toGrid(mousey)));
                 towers.add(myTower);
                 myTower = null;
-                newTower(mousex, mousey);
             }
         }
     }
@@ -269,6 +268,16 @@ class World {
         }
     }
 
+    /** Handles tower selection from the sidebar */
+    void towerSelect(int mousex, int mousey, Boolean clicked) {
+        // TODO: Some better mapping here, maybe use sprites and add an isClicked() method
+        boolean inXRange = mousex >= w-(sidebarW/2)-(32/2) && mousex <= w-(sidebarW/2)+(32/2);
+        boolean inYRange = mousey >= 100 && mousey <= 132;
+        if (clicked && inXRange && inYRange) {
+            newTower(mousex, mousey);
+        }
+    }
+
     /** Draw game interface */
     void drawGUI(Graphics g) {
         // Sidebar
@@ -279,7 +288,14 @@ class World {
         // Display Alistair's health
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
         // Wave number
-        Util.writeCentered(g, "Wave: " + waveNum,w-sidebarW+60, 20);
+        Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
+        // Basic tower
+        try {
+            Image alistairTower = new Image("assets//sprites//alistair32.png");
+            alistairTower.draw(w-(sidebarW/2)-(32/2), 100);
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
     }
 
     void renderTiles() {

@@ -93,7 +93,11 @@ public class App extends BasicGame {
             world.tick(delta);
             world.moveEnemies();
             world.moveProjectiles();
-            world.processTowers(input);
+            // Should only call input methods once per update, as per documentation
+            boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
+            int mousex = input.getMouseX(), mousey = input.getMouseY();
+            world.towerSelect(mousex, mousey, clicked);
+            world.processTowers(mousex, mousey, clicked);
         }
     }
 
