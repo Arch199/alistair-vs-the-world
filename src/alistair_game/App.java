@@ -18,8 +18,8 @@ import org.newdawn.slick.*;
  */
 public class App extends BasicGame {
     private static final int
-        WINDOW_W = 960, WINDOW_H = 672, TILE_SIZE = 48,
-        GRID_W = WINDOW_W / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
+        WINDOW_W = 1104, WINDOW_H = 672, TILE_SIZE = 48, SIDEBAR_W = TILE_SIZE*3,
+        GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
     private Menu menu = null;
     private World world = null;
@@ -63,6 +63,7 @@ public class App extends BasicGame {
      */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
+        // Menu
         Input input = gc.getInput();
         if (menu != null) {
             String action = menu.update(input);
@@ -179,8 +180,7 @@ public class App extends BasicGame {
             scanner.close();
             
             // Create World
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, startx, starty, level, waves);
-            
+            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startx, starty, level, waves);
             // Get rid of menu
             // TODO: there's probably a better way to do this
             menu = null;

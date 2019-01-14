@@ -17,7 +17,7 @@ import org.newdawn.slick.geom.Vector2f;
  * Handles all the game logic for a level. Created by App.
  */
 class World {
-    private int w, h, tSize, gridW, gridH;
+    private int w, h, tSize, gridW, gridH, sidebarW;
     private float startx, starty, enemySpeed = 1f;
     private int health = 100, waveNum = 1;
     private long timer = 0;
@@ -69,15 +69,16 @@ class World {
      * @param level Map layout
      * @param waves Data on waves and enemy spawn timing
      */
-    World(int w, int h, int tSize, float startx, float starty, int[][] level, ArrayList<Wave> waves) {
+    World(int w, int h, int tSize, int sidebarW, float startx, float starty, int[][] level, ArrayList<Wave> waves) {
         this.w = w;
         this.h = h;
         this.tSize = tSize;
-        this.gridW = w / tSize;
-        this.gridH = h / tSize;
+        this.gridW = (w-sidebarW)/tSize;
+        this.gridH = h/tSize;
         this.startx = startx;
         this.starty = starty;
         this.waves = waves;
+        this.sidebarW = sidebarW;
 
         // Initialise tile sprites from level + tileset
         tiles = new Tile[gridW][gridH];
@@ -270,10 +271,15 @@ class World {
 
     /** Draw game interface */
     void drawGUI(Graphics g) {
+        // Sidebar
+        g.setColor(Color.darkGray);
+        g.fillRect(w-sidebarW,0,sidebarW,h);
+
+        g.setColor(Color.white);
         // Display Alistair's health
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
         // Wave number
-        Util.writeCentered(g, "Wave: " + waveNum,900, 20);
+        Util.writeCentered(g, "Wave: " + waveNum,w-sidebarW+60, 20);
     }
 
     void renderTiles() {
