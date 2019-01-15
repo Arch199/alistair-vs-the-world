@@ -53,9 +53,9 @@ public class Menu {
         else if (input.isKeyPressed(Input.KEY_ENTER)) {
             return choices[currentChoice];
         }
-        else if () { // TODO: Add Keyhover and press function
+        /*else if () { // TODO: Add Keyhover and press function
             
-        } 
+        } */
         return ""; // default value for no action
     }
     
