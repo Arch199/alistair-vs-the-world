@@ -1,6 +1,9 @@
 package alistair_game;
 
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -22,6 +25,7 @@ public class Menu {
         NOT_CHOSEN_COL = new Color(153, 204, 255),
         CHOSEN_COL = Color.yellow,
         TITLE_COL = new Color(255, 69, 0);
+    private List<Button> buttons = new ArrayList<Button>();
     
     Menu(String title, int w, int h) {
         this.title = title;
@@ -35,7 +39,7 @@ public class Menu {
      * @return The action taken (e.g. "Quit" to exit game). Defaults to the empty string.
      */
     String update(Input input) {
-        int xpos = input.getMouseX(), ypos = input.getMouseY();
+        int mouseX = input.getMouseX(), mouseY = input.getMouseY();
         
         if (input.isKeyPressed(Input.KEY_DOWN)) {
             if (currentChoice == choices.length-1) {
@@ -51,12 +55,27 @@ public class Menu {
                 currentChoice--;
             }
         }
+        else if (buttons.get(0).contains(mouseX, mouseY)) {
+            currentChoice = 0;
+            if (buttons.get(0).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
+                return choices[currentChoice];
+            }
+        } 
+        else if (buttons.get(1).contains(mouseX, mouseY)) {
+            currentChoice = 1;
+            if (buttons.get(1).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
+                return choices[currentChoice];
+            }
+        }
+        else if (buttons.get(2).contains(mouseX, mouseY)) {
+            currentChoice = 2;
+            if (buttons.get(2).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
+                return choices[currentChoice];
+            }
+        }
         else if (input.isKeyPressed(Input.KEY_ENTER)) {
             return choices[currentChoice];
         }
-        /*else if () { // TODO: Add Keyhover and press function
-            
-        } */
         return ""; // default value for no action
     }
     
@@ -66,16 +85,24 @@ public class Menu {
     
     void renderOptions(Graphics g) {
         for (int i = 0; i < choices.length; i++) {
+            int fontX = (w/2) - OPTION_TTF.getWidth(choices[i])/2, 
+                fontY = i*56+252, 
+                bnW = OPTION_TTF.getWidth(choices[i]) + 4,
+                bnH = OPTION_TTF.getHeight() + 4;
+            
+            float bnX = (w/2) - (OPTION_TTF.getWidth(choices[i])/2)-2, 
+                  bnY = i*56 + 250;
+            
+            // Generates the instances of the buttons.
+            buttons.add(new Button(bnX, bnY, bnW, bnH, choices[i]));
+            buttons.get(i).setText(OPTION_TTF, fontX, fontY);
+                
             if (currentChoice == i) {
-                OPTION_TTF.drawString((w/2) - OPTION_TTF.getWidth(choices[i])/2, i*56+252, choices[i], CHOSEN_COL);
-                g.setColor(CHOSEN_COL);
-                g.drawRect((w/2) - (OPTION_TTF.getWidth(choices[i])/2)-2, i*56 + 250, OPTION_TTF.getWidth(choices[i]) + 4, OPTION_TTF.getHeight() + 4);
+                buttons.get(i).drawButton(g, CHOSEN_COL);
             } else {
-                OPTION_TTF.drawString((w/2) - OPTION_TTF.getWidth(choices[i])/2, i*56+252, choices[i], NOT_CHOSEN_COL);
-                g.setColor(NOT_CHOSEN_COL);
-                g.drawRect((w/2) - (OPTION_TTF.getWidth(choices[i])/2)-2, i*56 + 250, OPTION_TTF.getWidth(choices[i]) + 4, OPTION_TTF.getHeight() + 4);
-                //TODO: Replace magic numbers with Constants
+                buttons.get(i).drawButton(g, NOT_CHOSEN_COL);
             }
         }
     }
 }
+
