@@ -5,37 +5,31 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 
+/**
+ * Rectangular button with text.
+ */
 class Button extends Rectangle {
-    /**
-     * Not quite sure what this serial ID does, was copied.
-     */
-    private static final long serialVersionUID = 1L;
-    private String title;
-    private int w, h, fontX, fontY;
+    private static final long serialVersionUID = 1L; // necessary as Rectangle implements java.io.serializable
+    private String text;
     private TrueTypeFont ttf;
+    private int padding;
+    private boolean hasBorder;
     
-    //** im will be null
-    Button(float bnX, float bnY, int w, int h, String title) {
-        super(bnX, bnY, w, h);
-        this.title = title;
-        this.w = w;
-        this.h = h;
-    }
-    
-    Boolean isClicked(int mouseX, int mouseY, Boolean clicked) {
-        return (this.contains(mouseX, mouseY) && clicked) ;
-    }
-    
-    void drawButton(Graphics g, Color col) {
-        ttf.drawString(fontX, fontY, title, col);
-        g.setColor(col);
-        g.drawRect(super.getX(), super.getY(), w, h);
-    }
-    
-    void setText(TrueTypeFont ttf, int fontX, int fontY) { 
+    Button(float x, float y, String text, TrueTypeFont ttf, int padding, boolean hasBorder) {
+        super(x, y, ttf.getWidth(text)+padding, ttf.getHeight()+padding);
+        this.text = text;
         this.ttf = ttf;
-        this.fontX = fontX;
-        this.fontY = fontY;
+        this.padding = padding;
+        this.hasBorder = hasBorder;
     }
-   
+    
+    void drawSelf(Graphics g, Color col) {
+        ttf.drawString(x+padding/2, y+padding/2, text, col);
+        if (hasBorder) {
+            g.setColor(col);
+            g.drawRect(getX(), getY(), getWidth(), getHeight());
+        }
+    }
+    
+    String getText() { return text; }
 }

@@ -1,9 +1,6 @@
 package alistair_game;
 
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -11,9 +8,9 @@ import org.newdawn.slick.TrueTypeFont;
 
 /** Main menu handler (One instance only) */
 public class Menu {
-    private int w, h, currentChoice = 0;
-    private String[] choices = {"Start", "Options", "Quit"};
     private String title;
+    private int w, h, currentChoice = 0;
+    private Button[] buttons;
     
     private static final Font
         OPTION_FONT = new Font("Verdana", Font.BOLD, 40),
@@ -25,12 +22,24 @@ public class Menu {
         NOT_CHOSEN_COL = new Color(153, 204, 255),
         CHOSEN_COL = Color.yellow,
         TITLE_COL = new Color(255, 69, 0);
-    private List<Button> buttons = new ArrayList<Button>();
+    private static final int
+        BUTTON_PADDING = 2,
+        TOP_OFFSET = 250,
+        BUTTON_SPACING = 65;
     
     Menu(String title, int w, int h) {
         this.title = title;
         this.w = w;
         this.h = h;
+        
+        // Create the buttons
+        String[] choices = {"Start", "Options", "Quit"};
+        buttons = new Button[choices.length];
+        for (int i = 0; i < choices.length; i++) {            
+            float bnX = w/2 - OPTION_TTF.getWidth(choices[i])/2, 
+                  bnY = TOP_OFFSET + i*BUTTON_SPACING;
+            buttons[i] = new Button(bnX, bnY, choices[i], OPTION_TTF, BUTTON_PADDING, false);
+        }
     }
     
     /** 
@@ -40,41 +49,30 @@ public class Menu {
      */
     String update(Input input) {
         int mouseX = input.getMouseX(), mouseY = input.getMouseY();
+        boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
         
         if (input.isKeyPressed(Input.KEY_DOWN)) {
-            if (currentChoice == choices.length-1) {
+            if (currentChoice == buttons.length-1) {
                 currentChoice = 0;
             } else {
                 currentChoice++;
             }
-        }
-        else if (input.isKeyPressed(Input.KEY_UP)) {
+        } else if (input.isKeyPressed(Input.KEY_UP)) {
             if (currentChoice == 0) {
-                currentChoice = choices.length-1;
+                currentChoice = buttons.length-1;
             } else {
                 currentChoice--;
             }
-        }
-        else if (buttons.get(0).contains(mouseX, mouseY)) {
+        } else if (buttons[0].contains(mouseX, mouseY)) {
             currentChoice = 0;
-            if (buttons.get(0).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
-                return choices[currentChoice];
-            }
-        } 
-        else if (buttons.get(1).contains(mouseX, mouseY)) {
+        } else if (buttons[1].contains(mouseX, mouseY)) {
             currentChoice = 1;
-            if (buttons.get(1).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
-                return choices[currentChoice];
-            }
-        }
-        else if (buttons.get(2).contains(mouseX, mouseY)) {
+        } else if (buttons[2].contains(mouseX, mouseY)) {
             currentChoice = 2;
-            if (buttons.get(2).isClicked(mouseX, mouseY, input.isMousePressed(0))) {
-                return choices[currentChoice];
-            }
         }
-        else if (input.isKeyPressed(Input.KEY_ENTER)) {
-            return choices[currentChoice];
+        
+        if (clicked || input.isKeyPressed(Input.KEY_ENTER)) {
+            return buttons[currentChoice].getText();
         }
         return ""; // default value for no action
     }
@@ -84,23 +82,11 @@ public class Menu {
     }
     
     void renderOptions(Graphics g) {
-        for (int i = 0; i < choices.length; i++) {
-            int fontX = (w/2) - OPTION_TTF.getWidth(choices[i])/2, 
-                fontY = i*56+252, 
-                bnW = OPTION_TTF.getWidth(choices[i]) + 4,
-                bnH = OPTION_TTF.getHeight() + 4;
-            
-            float bnX = (w/2) - (OPTION_TTF.getWidth(choices[i])/2)-2, 
-                  bnY = i*56 + 250;
-            
-            // Generates the instances of the buttons.
-            buttons.add(new Button(bnX, bnY, bnW, bnH, choices[i]));
-            buttons.get(i).setText(OPTION_TTF, fontX, fontY);
-                
+        for (int i = 0; i < buttons.length; i++) {                
             if (currentChoice == i) {
-                buttons.get(i).drawButton(g, CHOSEN_COL);
+                buttons[i].drawSelf(g, CHOSEN_COL);
             } else {
-                buttons.get(i).drawButton(g, NOT_CHOSEN_COL);
+                buttons[i].drawSelf(g, NOT_CHOSEN_COL);
             }
         }
     }

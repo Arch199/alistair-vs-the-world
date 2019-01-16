@@ -138,7 +138,7 @@ class World {
             e.printStackTrace();
         }
         
-        // Intro sound
+        // Play intro sound
         AudioController.play("intro");
     }
 
@@ -309,10 +309,8 @@ class World {
             myTower.drawRange(g);
         }
         
-        // Wave number
+        // Display wave number and Alistair's health
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
-        
-        // Display Alistair's health
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
 
@@ -392,10 +390,6 @@ class World {
      */
     void newProjectile(float x, float y, Vector2f vec, Image im) {
         projectiles.add(new Projectile(x, y, vec, im));
-    }
-
-    void setWaves(ArrayList<Wave> waves) {
-        this.waves = waves;
     }
 
     int getGridWidth() { return gridW; }
