@@ -9,6 +9,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 
+/** Main menu handler (One instance only) */
 public class Menu {
     private int w, h, currentChoice = 0;
     private String[] choices = {"Start", "Options", "Quit"};
@@ -74,7 +75,7 @@ public class Menu {
         }
         else if (input.isKeyPressed(Input.KEY_ENTER)) {
             return choices[currentChoice];
-        } 
+        }
         return ""; // default value for no action
     }
     
