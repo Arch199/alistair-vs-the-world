@@ -28,6 +28,7 @@ class World {
     private long timer = 0;
     private Tile alistair;
     private Tower myTower; // Tower currently being placed
+    private Boolean waveComplete = false;
     
     /** 2D array of tiles for each grid cell */
     private Tile[][] tiles;
@@ -147,7 +148,7 @@ class World {
 
         // New wave button
         float btnXPos = w - sidebarW/2, btnYPos = 500;
-        buttons.add(new Button(btnXPos, btnYPos, "New wave", VERANDA20, 5, true));
+        buttons.add(new Button(btnXPos, btnYPos, "Next wave", VERANDA20, 5, true, Color.green));
         
         // Play intro sound
         AudioController.play("intro");
@@ -181,10 +182,8 @@ class World {
                 spawnEnemy(startX, startY, enemy);
             }
 
-            // All enemies dead, new wave
-            if (w.isFinished() && enemies.isEmpty()) {
-                newWave();
-            }
+            // Set wave status
+            waveComplete = w.isFinished() && enemies.isEmpty();
         }
 
         // Tower shots
@@ -295,6 +294,20 @@ class World {
         }
     }
 
+    /** Button updates and colour changes */
+    void processButtons(int mousex, int mousey, boolean clicked) {
+        for (Button b: buttons) {
+            if (b.contains(mousex, mousey)) {
+                b.setCol(Color.pink);
+                if (clicked) {
+                    newWave();
+                }
+            } else {
+                b.setCol(Color.white);
+            }
+        }
+    }
+
     /** Create a new tower at the given position */
     void newTower(float xpos, float ypos) {
         try {
@@ -322,12 +335,19 @@ class World {
             myTower.drawRange(g);
         }
 
+        // Set new wave button color
+        if (waveComplete) {
+
+        }
+
         // Draw all buttons
         g.setColor(Color.white);
         for (Button b: buttons) {
-            b.drawSelf(g, Color.white);
+            b.drawSelf(g);
         }
+
         // Display wave number and Alistair's health
+        g.setColor(Color.white);
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }

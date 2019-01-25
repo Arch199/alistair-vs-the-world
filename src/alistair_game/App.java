@@ -97,6 +97,7 @@ public class App extends BasicGame {
             boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
             int mouseX = input.getMouseX(), mouseY = input.getMouseY();
             world.processTowers(mouseX, mouseY, clicked);
+            world.processButtons(mouseX, mouseY,clicked);
         }
     }
 
