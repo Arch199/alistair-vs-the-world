@@ -1,22 +1,26 @@
 package alistair_game;
 
+import java.awt.*;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.newdawn.slick.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Handles all the game logic for a level. Created by App.
  */
 class World {
+    private static final Font VERANDA = new Font("Verdana",Font.BOLD, 20);
+    private static final TrueTypeFont VERANDA20 = new TrueTypeFont(VERANDA, true);
+
     private int w, h, tSize, gridW, gridH, sidebarW;
     private float startX, startY, enemySpeed = 1f;
     private int health = 100, waveNum = 1;
@@ -126,7 +130,7 @@ class World {
             y += j;
         }
         
-        // Create sidebar
+        // Create sidebar icons
         // TODO: update when we add more towers
         String path = "assets\\sprites\\";
         float xPos = w - sidebarW/2, yPos = 100;
@@ -308,6 +312,11 @@ class World {
             myTower.drawSelf();
             myTower.drawRange(g);
         }
+
+        // New wave button
+        float xPos = w - sidebarW/2, yPos = 500;
+        Button newWave = new Button(xPos, yPos, "New wave", VERANDA20, 5, true);
+        newWave.drawSelf(g, Color.white);
         
         // Display wave number and Alistair's health
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
