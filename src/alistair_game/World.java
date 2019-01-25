@@ -1,28 +1,34 @@
 package alistair_game;
 
+import java.awt.*;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.newdawn.slick.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Handles all the game logic for a level. Created by App.
  */
 class World {
+    // Fonts
+    private static final Font VERANDA = new Font("Verdana",Font.BOLD, 20);
+    private static final TrueTypeFont VERANDA20 = new TrueTypeFont(VERANDA, true);
+
     private int w, h, tSize, gridW, gridH, sidebarW;
     private float startX, startY, enemySpeed = 1f;
     private int health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower; // Tower currently being placed
+    private Boolean waveComplete = false;
     
     /** 2D array of tiles for each grid cell */
     private Tile[][] tiles;
@@ -38,6 +44,8 @@ class World {
     private List<Tower> towers = new LinkedList<>();
     /** List of Sidebar icons */
     private List<Sprite> sidebarIcons = new ArrayList<Sprite>();
+    /** List of buttons */
+    private List<Button> buttons = new ArrayList<Button>();
 
     private static Image[] tileset;
     private static String[] tile_names;
@@ -126,7 +134,7 @@ class World {
             y += j;
         }
         
-        // Create sidebar
+        // Create sidebar icons
         // TODO: update when we add more towers
         String path = "assets\\sprites\\";
         float xPos = w - sidebarW/2, yPos = 100;
@@ -137,6 +145,10 @@ class World {
         } catch (SlickException e) {
             e.printStackTrace();
         }
+
+        // New wave button
+        float btnXPos = w - sidebarW/2, btnYPos = 500;
+        buttons.add(new Button(btnXPos, btnYPos, "Next wave", VERANDA20, 5, true, Color.green));
         
         // Play intro sound
         AudioController.play("intro");
@@ -170,10 +182,8 @@ class World {
                 spawnEnemy(startX, startY, enemy);
             }
 
-            // All enemies dead, new wave
-            if (w.isFinished() && enemies.isEmpty()) {
-                newWave();
-            }
+            // Set wave status
+            waveComplete = w.isFinished() && enemies.isEmpty();
         }
 
         // Tower shots
@@ -284,6 +294,20 @@ class World {
         }
     }
 
+    /** Button updates and colour changes */
+    void processButtons(int mousex, int mousey, boolean clicked) {
+        for (Button b: buttons) {
+            if (b.contains(mousex, mousey)) {
+                b.setCol(Color.pink);
+                if (clicked) {
+                    newWave();
+                }
+            } else {
+                b.setCol(Color.white);
+            }
+        }
+    }
+
     /** Create a new tower at the given position */
     void newTower(float xpos, float ypos) {
         try {
@@ -298,6 +322,8 @@ class World {
         // Sidebar
         g.setColor(Color.darkGray);
         g.fillRect(w-sidebarW, 0, sidebarW, h);
+
+        // Draw sidebar icons
         g.setColor(Color.white);
         for (Sprite s : sidebarIcons) {
             s.drawSelf();
@@ -308,8 +334,20 @@ class World {
             myTower.drawSelf();
             myTower.drawRange(g);
         }
-        
+
+        // Set new wave button color
+        if (waveComplete) {
+
+        }
+
+        // Draw all buttons
+        g.setColor(Color.white);
+        for (Button b: buttons) {
+            b.drawSelf(g);
+        }
+
         // Display wave number and Alistair's health
+        g.setColor(Color.white);
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }

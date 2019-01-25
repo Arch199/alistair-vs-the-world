@@ -23,7 +23,7 @@ public class Menu {
         CHOSEN_COL = Color.yellow,
         TITLE_COL = new Color(255, 69, 0);
     private static final int
-        BUTTON_PADDING = 2,
+        BUTTON_PADDING = 1,
         TOP_OFFSET = 250,
         BUTTON_SPACING = 65;
     
@@ -36,9 +36,9 @@ public class Menu {
         String[] choices = {"Start", "Options", "Quit"};
         buttons = new Button[choices.length];
         for (int i = 0; i < choices.length; i++) {            
-            float bnX = w/2 - OPTION_TTF.getWidth(choices[i])/2, 
+            float bnX = w/2,
                   bnY = TOP_OFFSET + i*BUTTON_SPACING;
-            buttons[i] = new Button(bnX, bnY, choices[i], OPTION_TTF, BUTTON_PADDING, false);
+            buttons[i] = new Button(bnX, bnY, choices[i], OPTION_TTF, BUTTON_PADDING, false, Color.white);
         }
     }
     
@@ -84,9 +84,11 @@ public class Menu {
     void renderOptions(Graphics g) {
         for (int i = 0; i < buttons.length; i++) {                
             if (currentChoice == i) {
-                buttons[i].drawSelf(g, CHOSEN_COL);
+                buttons[i].setCol(CHOSEN_COL);
+                buttons[i].drawSelf(g);
             } else {
-                buttons[i].drawSelf(g, NOT_CHOSEN_COL);
+                buttons[i].setCol(NOT_CHOSEN_COL);
+                buttons[i].drawSelf(g);
             }
         }
     }
