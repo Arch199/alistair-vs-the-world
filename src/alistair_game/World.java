@@ -18,6 +18,7 @@ import org.newdawn.slick.geom.Vector2f;
  * Handles all the game logic for a level. Created by App.
  */
 class World {
+    // Fonts
     private static final Font VERANDA = new Font("Verdana",Font.BOLD, 20);
     private static final TrueTypeFont VERANDA20 = new TrueTypeFont(VERANDA, true);
 
@@ -42,6 +43,8 @@ class World {
     private List<Tower> towers = new LinkedList<>();
     /** List of Sidebar icons */
     private List<Sprite> sidebarIcons = new ArrayList<Sprite>();
+    /** List of buttons */
+    private List<Button> buttons = new ArrayList<Button>();
 
     private static Image[] tileset;
     private static String[] tile_names;
@@ -141,6 +144,10 @@ class World {
         } catch (SlickException e) {
             e.printStackTrace();
         }
+
+        // New wave button
+        float btnXPos = w - sidebarW/2, btnYPos = 500;
+        buttons.add(new Button(btnXPos, btnYPos, "New wave", VERANDA20, 5, true));
         
         // Play intro sound
         AudioController.play("intro");
@@ -302,6 +309,8 @@ class World {
         // Sidebar
         g.setColor(Color.darkGray);
         g.fillRect(w-sidebarW, 0, sidebarW, h);
+
+        // Draw sidebar icons
         g.setColor(Color.white);
         for (Sprite s : sidebarIcons) {
             s.drawSelf();
@@ -313,11 +322,11 @@ class World {
             myTower.drawRange(g);
         }
 
-        // New wave button
-        float xPos = w - sidebarW/2, yPos = 500;
-        Button newWave = new Button(xPos, yPos, "New wave", VERANDA20, 5, true);
-        newWave.drawSelf(g, Color.white);
-        
+        // Draw all buttons
+        g.setColor(Color.white);
+        for (Button b: buttons) {
+            b.drawSelf(g, Color.white);
+        }
         // Display wave number and Alistair's health
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
