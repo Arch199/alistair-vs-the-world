@@ -39,6 +39,7 @@ public class Menu {
             float bnX = w/2,
                   bnY = TOP_OFFSET + i*BUTTON_SPACING;
             buttons[i] = new Button(bnX, bnY, choices[i], OPTION_TTF, BUTTON_PADDING, false, Color.white);
+            buttons[i].setCols(NOT_CHOSEN_COL, CHOSEN_COL);
         }
     }
     
@@ -84,10 +85,10 @@ public class Menu {
     void renderOptions(Graphics g) {
         for (int i = 0; i < buttons.length; i++) {                
             if (currentChoice == i) {
-                buttons[i].setCol(CHOSEN_COL);
+                buttons[i].setHover(true);
                 buttons[i].drawSelf(g);
             } else {
-                buttons[i].setCol(NOT_CHOSEN_COL);
+                buttons[i].setHover(false);
                 buttons[i].drawSelf(g);
             }
         }
