@@ -29,6 +29,7 @@ class World {
     private Tile alistair;
     private Tower myTower; // Tower currently being placed
     private Boolean waveComplete = false;
+    private Button nextWave;
     
     /** 2D array of tiles for each grid cell */
     private Tile[][] tiles;
@@ -148,7 +149,9 @@ class World {
 
         // New wave button
         float btnXPos = w - sidebarW/2, btnYPos = 500;
-        buttons.add(new Button(btnXPos, btnYPos, "Next wave", VERANDA20, 5, true, Color.green));
+        nextWave = new Button(btnXPos, btnYPos, "Next wave", VERANDA20, 5, true, Color.green);
+        nextWave.setCols(Color.green, Color.black, Color.white);
+        buttons.add(nextWave);
         
         // Play intro sound
         AudioController.play("intro");
@@ -297,14 +300,24 @@ class World {
     /** Button updates and colour changes */
     void processButtons(int mousex, int mousey, boolean clicked) {
         for (Button b: buttons) {
+            // New wave button disabling
+            if ((b == nextWave) && !waveComplete) {
+                nextWave.setDisabled(true);
+            } else {
+                nextWave.setDisabled(false);
+            }
+
             if (b.contains(mousex, mousey)) {
-                b.setCol(Color.pink);
-                if (clicked) {
-                    newWave();
+                b.setHover(true);
+                if (clicked && !b.getDisabled()) {
+                    // New wave button
+                    if (b == nextWave) {
+                        newWave();
+                    }
                 }
             } else {
-                b.setCol(Color.white);
-            }
+                b.setHover(false);
+        }
         }
     }
 
@@ -333,11 +346,6 @@ class World {
         if (myTower != null) {
             myTower.drawSelf();
             myTower.drawRange(g);
-        }
-
-        // Set new wave button color
-        if (waveComplete) {
-
         }
 
         // Draw all buttons
