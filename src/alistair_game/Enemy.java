@@ -35,6 +35,26 @@ class Enemy extends Movable {
                 setDamage(10);
                 health = 2;
                 break;
+            case "overflow":
+                imPath += "stackoverflow32.png";
+                setDamage(10);
+                health = 1;
+                break;
+            case "thomas":
+                imPath += "thomas100.png";
+                setDamage(10);
+                health = 1;
+                break;
+            case "int_max":
+                imPath += "int_max.png";
+                setDamage(10);
+                health = 1;
+                break;
+            case "do":
+                imPath += "do.png";
+                setDamage(10);
+                health = 1;
+                break;
             default:
                 throw new IllegalArgumentException("No such enemy '" + name + "'");
         }
