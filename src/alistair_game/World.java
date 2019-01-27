@@ -27,7 +27,8 @@ class World {
     private int health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
-    private Tower myTower; // Tower currently being placed
+    private Tower myTower = null, // Tower currently being placed
+                    selectedTower = null; // Placed tower that has been selected
     private Boolean waveComplete = false;
     private Button nextWave;
     
@@ -165,6 +166,7 @@ class World {
     String processInput(Boolean escape, Boolean rightClick) {
         if (rightClick) {
             myTower = null;
+            selectedTower = null;
         }
 
         if (escape) {
@@ -256,7 +258,22 @@ class World {
 
     /** Handles selecting / placing towers */
     void processTowers(int mouseX, int mouseY, boolean clicked) {
-        // Process selecting towers
+        // Clicking on a tower to display its range
+        if (!isPlacingTower() && clicked) {
+            for (Tower t: towers) {
+                if (t.isMouseOver(mouseX, mouseY) && t != myTower) {
+                    selectedTower = t;
+                }
+            }
+        }
+        // Deselect a tower
+        if (selectedTower != null) {
+            if (isPlacingTower() || (clicked && !selectedTower.isMouseOver(mouseX, mouseY))) {
+                selectedTower = null;
+            }
+        }
+
+        // Process selecting towers from the sidebar
         if (!isPlacingTower() && clicked) {
             for (Sprite s : sidebarIcons) {
                 if (s.isMouseOver(mouseX, mouseY)) {
@@ -360,6 +377,10 @@ class World {
         if (myTower != null) {
             myTower.drawSelf();
             myTower.drawRange(g);
+        }
+
+        if (selectedTower != null) {
+            selectedTower.drawRange(g);
         }
 
         // Draw all buttons
