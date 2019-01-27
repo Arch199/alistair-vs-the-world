@@ -78,8 +78,16 @@ public class App extends BasicGame {
                     break;
             }
         }
+
         if (world != null) {
-            String action = world.processInput(input);
+            // Can only call inputs once
+            boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
+                    leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
+                    escape = input.isKeyPressed(Input.KEY_ESCAPE);
+
+            int mouseX = input.getMouseX(), mouseY = input.getMouseY();
+
+            String action = world.processInput(escape, rightClick);
             switch (action) {
                 case "Exit":
                     // TODO: put this in a function or something?
@@ -92,12 +100,9 @@ public class App extends BasicGame {
             world.tick(delta);
             world.moveEnemies();
             world.moveProjectiles();
-            
-            // Should only call input methods once per update, as per documentation
-            boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
-            int mouseX = input.getMouseX(), mouseY = input.getMouseY();
-            world.processTowers(mouseX, mouseY, clicked);
-            world.processButtons(mouseX, mouseY,clicked);
+
+            world.processTowers(mouseX, mouseY, leftClick);
+            world.processButtons(mouseX, mouseY,leftClick);
         }
     }
 
