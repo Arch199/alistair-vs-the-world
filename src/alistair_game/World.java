@@ -164,11 +164,13 @@ class World {
      * @return A string for an action to take. (Empty string by default).
      */
     String processInput(Boolean escape, Boolean rightClick) {
+        // Deselect
         if (rightClick) {
             myTower = null;
             selectedTower = null;
         }
 
+        // Leave the game
         if (escape) {
             return "Exit";
         }
@@ -258,7 +260,7 @@ class World {
 
     /** Handles selecting / placing towers */
     void processTowers(int mouseX, int mouseY, boolean clicked) {
-        // Clicking on a tower to display its range
+        // Click on a tower to display its range
         if (!isPlacingTower() && clicked) {
             for (Tower t: towers) {
                 if (t.isMouseOver(mouseX, mouseY) && t != myTower) {
@@ -266,7 +268,8 @@ class World {
                 }
             }
         }
-        // Deselect a tower
+
+        // Deselect a selected tower
         if (selectedTower != null) {
             if (isPlacingTower() || (clicked && !selectedTower.isMouseOver(mouseX, mouseY))) {
                 selectedTower = null;
