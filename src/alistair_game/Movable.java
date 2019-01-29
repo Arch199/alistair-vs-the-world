@@ -30,6 +30,9 @@ abstract class Movable extends Sprite {
     }
     
     Vector2f getV() { return v; }
+
+    void setV(Vector2f v) { this.v = v; }
+
     int getDamage() { return damage; }
     
     void setV(float x, float y) { v.x = x; v.y = y; }
