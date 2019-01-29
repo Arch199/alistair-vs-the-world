@@ -23,7 +23,7 @@ class World {
     private static final TrueTypeFont VERANDA20 = new TrueTypeFont(VERANDA, true);
 
     private int w, h, tSize, gridW, gridH, sidebarW;
-    private float startX, startY, enemySpeed = 1f;
+    private float startX, startY;
     private int health = 100, waveNum = 1;
     private long timer = 0;
     private Tile alistair;
@@ -217,7 +217,7 @@ class World {
 
     /** Create a new enemy at the given position */
     void spawnEnemy(float x, float y, String name) {
-        Vector2f v = new Vector2f(defaultDir(x), defaultDir(y)).scale(enemySpeed);
+        Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
         enemies.add(new Enemy(x, y, v, name));
     }
 
@@ -227,7 +227,7 @@ class World {
         while (itr.hasNext()) {
             Enemy e = itr.next();
             // Hitting alistair
-            e.advance(enemySpeed, this);
+            e.advance(e.getSpeed(), this);
             if (e.checkCollision(alistair)) {
                 takeDamage(e.getDamage());
                 itr.remove();

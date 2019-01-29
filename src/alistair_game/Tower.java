@@ -94,8 +94,6 @@ class Tower extends Sprite {
 
     /** Draws a range circle around towers. */
     void drawRange(Graphics g) {
-        Color oldcol = g.getColor();
-
         // Top-left corner of the circle
         float xcorner = getX() - range, ycorner = getY() - range;
 
@@ -105,11 +103,6 @@ class Tower extends Sprite {
         // Fill with a shade of grey (can change vals depending on contrast w/ textures)
         g.setColor(new Color(80, 80, 80, 80));
         g.fillOval(xcorner, ycorner, range * 2, range * 2);
-
-        // Reset color
-        // MATT: How do colours work, and why does not resetting it break other graphics
-        // operations?
-        g.setColor(oldcol);
     }
 
     void waveReset() {

@@ -12,12 +12,13 @@ import org.newdawn.slick.geom.Vector2f;
 class Enemy extends Movable {
     private String name;
     private int health;
+    private float speed;
 
     /**
      * Create an enemy
      * @param startx x-position of start
      * @param starty y-position of start
-     * @param v Initial movement vector (dirirection and speed)
+     * @param v Initial movement vector  (unscaled)
      * @param name Enemy type, e.g. Python
      */
     Enemy(float startx, float starty, Vector2f v, String name) {
@@ -25,35 +26,36 @@ class Enemy extends Movable {
         this.name = name;
         String imPath = "assets\\sprites\\enemies\\";
         switch (name) {
+            // In order of increasing strength
             case "python":
                 imPath += "python-icon.png";
-                setDamage(5);
                 health = 1;
-                break;
-            case "commerce":
-                imPath += "fbe1.png";
-                setDamage(10);
-                health = 2;
-                break;
-            case "overflow":
-                imPath += "stackoverflow32.png";
-                setDamage(10);
-                health = 1;
-                break;
-            case "thomas":
-                imPath += "thomas100.png";
-                setDamage(10);
-                health = 1;
+                speed = 1.5f;
                 break;
             case "int_max":
                 imPath += "int_max.png";
-                setDamage(10);
                 health = 1;
+                speed = 2f;
                 break;
             case "do":
                 imPath += "do.png";
-                setDamage(10);
                 health = 1;
+                speed  = 3.0f;
+                break;
+            case "commerce":
+                imPath += "fbe1.png";
+                health = 2;
+                speed = 2f;
+                break;
+            case "overflow":
+                imPath += "stackoverflow32.png";
+                health = 3;
+                speed = 2.5f;
+                break;
+            case "thomas":
+                imPath += "thomas100.png";
+                health = 2;
+                speed = 5f;
                 break;
             default:
                 throw new IllegalArgumentException("No such enemy '" + name + "'");
@@ -63,6 +65,9 @@ class Enemy extends Movable {
         } catch (SlickException e) {
             e.printStackTrace();
         }
+
+        setV(v.scale(speed));
+        setDamage(health);
     }
     
     /** Moves enemy along the precalculated path.
@@ -91,9 +96,18 @@ class Enemy extends Movable {
      */
     void takeDamage(int damage, Iterator<Enemy> itr) {
         health -= damage;
+        setDamage(health);
         if (health <= 0) {
             itr.remove();
         }
+    }
+
+    float getSpeed() {
+        return this.speed;
+    }
+
+    void setSpeed(int speed) {
+        this.speed = speed;
     }
     
     String getName() { return name; }
