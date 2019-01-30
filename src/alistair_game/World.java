@@ -187,8 +187,10 @@ class World {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
+        // TODO: Start from wave 0
         if (waveNum-1 < waves.size()) {
             Wave w = waves.get(waveNum-1);
+            // TODO: Make this return an array of strings to spawn multipl enemies in the same tick
             String enemy = w.trySpawn(timer);
             if (enemy != "") {
                 spawnEnemy(startX, startY, enemy);

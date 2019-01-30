@@ -17,7 +17,7 @@ class Tower extends Sprite {
     private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
     private long nextShot; // Time until next fire (in ms)
-    private float projSpeed = 4f;
+    private float projSpeed = 10f;
 
     /**
      * Create a tower
@@ -67,13 +67,15 @@ class Tower extends Sprite {
         if (target == null) {
             return null;
         }
-        
+
         Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
+
+        vec.add(target.getV());
         vec.normalise().scale(projSpeed);
-        
+
         // Assume it keeps moving in a straight line
         vec.add(target.getV());
-        
+
         return vec;
     }
     
