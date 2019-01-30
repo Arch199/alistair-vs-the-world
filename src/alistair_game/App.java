@@ -68,7 +68,7 @@ public class App extends BasicGame {
             String action = menu.update(input);
             switch (action) {
                 case "Start":
-                    openLevel("level1");
+                    openLevel("level2");
                     break;
                 case "Options":
                     // TODO: Add options (what settings would we have?) or just remove this

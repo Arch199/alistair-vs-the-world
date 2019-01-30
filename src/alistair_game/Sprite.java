@@ -20,10 +20,10 @@ class Sprite {
         this.x = x;
         this.y = y;
         this.im = im;
-        
+
         if (im != null) {
             w = im.getWidth() / 2;
-            h = im.getWidth() / 2;
+            h = im.getHeight() / 2;
         }
     }
     
@@ -46,7 +46,7 @@ class Sprite {
         int w2 = im2.getWidth() / 2, h2 = im2.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
 
-        return (x + w >= x2 - w2 && x2 + w2 >= x - w && y + h >= y2 - h2 && y2 + h2 >= y - h);
+        return ((x + w >= x2 - w2) && (x2 + w2 >= x - w) && (y + h >= y2 - h2) && (y2 + h2 >= y - h));
         // I'm honestly amazed this works -James
     }
 
@@ -99,6 +99,6 @@ class Sprite {
     void setImage(Image im) {
         this.im = im;
         w = im.getWidth() / 2;
-        h = im.getWidth() / 2;
+        h = im.getHeight() / 2;
     }
 }
