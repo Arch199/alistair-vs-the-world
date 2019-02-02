@@ -11,6 +11,7 @@ public class Menu {
     private String title;
     private int w, h, currentChoice = 0;
     private Button[] buttons;
+    private int oldMouseX = 0, oldMouseY = 0;
     
     private static final Font
         OPTION_FONT = new Font("Verdana", Font.BOLD, 40),
@@ -52,25 +53,33 @@ public class Menu {
         int mouseX = input.getMouseX(), mouseY = input.getMouseY();
         boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
         
-        if (input.isKeyPressed(Input.KEY_DOWN)) {
-            if (currentChoice == buttons.length-1) {
-                currentChoice = 0;
-            } else {
-                currentChoice++;
+        // Decide whether to work with mouse or keyboard input
+        if (mouseX != oldMouseX || mouseY != oldMouseY) {
+            // Mouse was moved; use mouse input
+            for (int i = 0; i < buttons.length; i++) {
+                if (buttons[i].contains(mouseX, mouseY)) {
+                    currentChoice = i;
+                    break;
+                }
             }
-        } else if (input.isKeyPressed(Input.KEY_UP)) {
-            if (currentChoice == 0) {
-                currentChoice = buttons.length-1;
-            } else {
-                currentChoice--;
+        } else {
+            // No mouse movement; use keyboard input
+            if (input.isKeyPressed(Input.KEY_DOWN)) {
+                if (currentChoice == buttons.length-1) {
+                    currentChoice = 0;
+                } else {
+                    currentChoice++;
+                }
+            } else if (input.isKeyPressed(Input.KEY_UP)) {
+                if (currentChoice == 0) {
+                    currentChoice = buttons.length-1;
+                } else {
+                    currentChoice--;
+                }
             }
-        } else if (buttons[0].contains(mouseX, mouseY)) {
-            currentChoice = 0;
-        } else if (buttons[1].contains(mouseX, mouseY)) {
-            currentChoice = 1;
-        } else if (buttons[2].contains(mouseX, mouseY)) {
-            currentChoice = 2;
         }
+        oldMouseX = mouseX;
+        oldMouseY = mouseY;
         
         if (clicked || input.isKeyPressed(Input.KEY_ENTER)) {
             return buttons[currentChoice].getText();
