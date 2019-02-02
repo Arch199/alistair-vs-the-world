@@ -10,7 +10,24 @@ import org.newdawn.slick.geom.Vector2f;
  * Sprite that moves down the path and does damage to Alistair.
  */
 class Enemy extends Movable {
-    enum Type { PYTHON, INT_MAX, DO, COMMERCE, OVERFLOW, THOMAS }
+    enum Type {
+        // In order of increasing strength
+        PYTHON("python-icon.png", 1, 1.5F),
+        INT_MAX("int_max.png", 1, 2F),
+        DO("do.png", 1, 3F),
+        COMMERCE("fbe1.png", 2, 2F),
+        OVERFLOW("stackoverflow32.png", 3, 2.5F),
+        THOMAS("thomas100.png", 2, 5F);
+        final String imPath;
+        final int health;
+        final float speed;
+        Type(String imPath, int health, float speed) {
+            this.imPath = imPath;
+            this.health = health;
+            this.speed = speed;
+        }
+    }
+    static final String SPRITE_PATH = "assets\\sprites\\enemies\\";
     
     private Type type;
     private int health;
@@ -21,49 +38,15 @@ class Enemy extends Movable {
      * @param startx x-position of start
      * @param starty y-position of start
      * @param v Initial movement vector  (unscaled)
-     * @param type Enemy type, e.g. PYTHON
+     * @param type Enemy type as an enum, e.g. Enemy.Type.PYTHON
      */
     Enemy(float startx, float starty, Vector2f v, Type type) {
         super(startx, starty, v, null, 0);
         this.type = type;
-        String imPath = "assets\\sprites\\enemies\\";
-        switch (type) {
-            // In order of increasing strength
-            case PYTHON:
-                imPath += "python-icon.png";
-                health = 1;
-                speed = 1.5f;
-                break;
-            case INT_MAX:
-                imPath += "int_max.png";
-                health = 1;
-                speed = 2f;
-                break;
-            case DO:
-                imPath += "do.png";
-                health = 1;
-                speed  = 3.0f;
-                break;
-            case COMMERCE:
-                imPath += "fbe1.png";
-                health = 2;
-                speed = 2f;
-                break;
-            case OVERFLOW:
-                imPath += "stackoverflow32.png";
-                health = 3;
-                speed = 2.5f;
-                break;
-            case THOMAS:
-                imPath += "thomas100.png";
-                health = 2;
-                speed = 5f;
-                break;
-            default:
-                throw new IllegalArgumentException("No such enemy '" + type + "'");
-        }
+        health = type.health;
+        speed = type.speed;
         try {
-            setImage(new Image(imPath));
+            setImage(new Image(SPRITE_PATH + type.imPath));
         } catch (SlickException e) {
             e.printStackTrace();
         }

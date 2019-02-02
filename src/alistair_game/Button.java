@@ -29,8 +29,7 @@ class Button extends Rectangle {
      * @param col The default colour for all states (call setCols to expand)
      */
     Button(float x, float y, String text, TrueTypeFont ttf, int padding, boolean hasBorder, Color col) {
-        super(x - ttf.getWidth(text)/2-padding, y, ttf.getWidth(text)+padding*2,
-                ttf.getHeight()+padding*2);
+        super(x - ttf.getWidth(text)/2-padding, y, ttf.getWidth(text)+padding*2, ttf.getHeight()+padding*2);
         setCols(col, col, col);
         this.text = text;
         this.ttf = ttf;
@@ -77,20 +76,9 @@ class Button extends Rectangle {
         setCols(defaultCol, defaultCol, hoverCol);
     }
 
-
-    /** Set the disabled state */
-    void setDisabled(Boolean state) {
-        disabled = state;
-    }
-
-    Boolean getDisabled() {
-        return disabled;
-    }
-
-    /** Set the hover status */
-    void setHover(Boolean hover) {
-        hovered = hover;
-    }
-
     String getText() { return text; }
+    Boolean getDisabled() { return disabled;}
+    
+    void setDisabled(Boolean state) { disabled = state; }
+    void setHover(Boolean hover) { hovered = hover; }
 }

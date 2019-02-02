@@ -92,8 +92,8 @@ class Sprite {
 
     float getX() { return x; }
     float getY() { return y; }
-    Image getImage() { return im; }
     Color getColor() { return col; }
+    Image getImage() { return im; }
 
     void setColor(Color col) { this.col = col; }
     void setImage(Image im) {

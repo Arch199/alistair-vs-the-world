@@ -19,17 +19,21 @@ import org.newdawn.slick.geom.Vector2f;
  */
 class World {
     // Fonts
-    private static final Font VERANDA = new Font("Verdana",Font.BOLD, 20);
-    private static final TrueTypeFont VERANDA20 = new TrueTypeFont(VERANDA, true);
+    private static final Font
+        SMALL_FONT = new Font("Verdana", Font.PLAIN, 11),
+        MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20);
+    private static final TrueTypeFont
+        SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
+        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true);
 
     private int w, h, tSize, gridW, gridH, sidebarW;
     private float startX, startY;
-    private int health = 100, waveNum = 1;
+    private int health = 100, waveNum = 0;
     private long timer = 0;
     private Tile alistair;
-    private Tower myTower = null, // Tower currently being placed
-                    selectedTower = null; // Placed tower that has been selected
-    private Boolean waveComplete = false;
+    private Tower myTower = null,       // Tower currently being placed
+                  selectedTower = null; // Placed tower that has been selected
+    private Boolean waveComplete = true;
     private Button nextWave;
     
     /** 2D array of tiles for each grid cell */
@@ -44,9 +48,9 @@ class World {
     private List<Projectile> projectiles = new LinkedList<>();
     /** List of all towers */
     private List<Tower> towers = new LinkedList<>();
-    /** List of Sidebar icons */
-    private List<Sprite> sidebarIcons = new ArrayList<Sprite>();
-    /** List of buttons */
+    /** List of sidebar icons */
+    private List<TextSprite> sidebarIcons = new ArrayList<TextSprite>();
+    /** List of other buttons */
     private List<Button> buttons = new ArrayList<Button>();
 
     private static Image[] tileset;
@@ -64,7 +68,7 @@ class World {
         tileset = new Image[tile_names.length];
         try {
             for (int i = 0; i < tileset.length; i++) {
-                tileset[i] = new Image("assets\\sprites\\tiles\\" + tile_names[i] + ".png");
+                tileset[i] = new Image(Tile.SPRITE_PATH + tile_names[i] + ".png");
             }
         } catch (SlickException e) {
             e.printStackTrace();
@@ -138,19 +142,21 @@ class World {
         
         // Create sidebar icons
         // TODO: update when we add more towers
-        String path = "assets\\sprites\\";
         float xPos = w - sidebarW/2, yPos = 100;
-        try {
-            Image im = new Image(path + "alistair32.png");
-            sidebarIcons.add(new Sprite(xPos, yPos, im));
-            yPos += 50;
-        } catch (SlickException e) {
-            e.printStackTrace();
+        for (Tower.Type t : Tower.Type.values()) {
+            try {
+                TextSprite icon = new TextSprite(xPos, yPos, new Image(Tower.SPRITE_PATH + t.imPath));
+                icon.setText(TextSprite.Mode.BELOW, t.title, SMALL_TTF);
+                sidebarIcons.add(icon);
+                yPos += 50;
+            } catch (SlickException e) {
+                e.printStackTrace();
+            }
         }
 
         // New wave button
         float btnXPos = w - sidebarW/2, btnYPos = 500;
-        nextWave = new Button(btnXPos, btnYPos, "Next wave", VERANDA20, 5, true, Color.green);
+        nextWave = new Button(btnXPos, btnYPos, "Next wave", MEDIUM_TTF, 5, true, Color.green);
         nextWave.setCols(Color.green, Color.black, Color.white);
         buttons.add(nextWave);
         
@@ -187,8 +193,7 @@ class World {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
-        // TODO: Start from wave 0
-        if (waveNum-1 < waves.size()) {
+        if (waveNum > 0 && waveNum-1 < waves.size()) {
             Wave w = waves.get(waveNum-1);
             // TODO: Make this return an array to spawn multiple enemies in the same tick
             Enemy.Type enemy = w.trySpawn(timer);
@@ -280,10 +285,10 @@ class World {
 
         // Process selecting towers from the sidebar
         if (!isPlacingTower() && clicked) {
-            for (Sprite s : sidebarIcons) {
+            for (TextSprite s : sidebarIcons) {
                 if (s.isMouseOver(mouseX, mouseY)) {
-                    newTower(mouseX, mouseY);
-                    // Leave the func to avoid confusion in placing the new tower
+                    myTower = new Tower(mouseX, mouseY, Tower.Type.BUBBLE);
+                    // TODO: add other tower types here
                     return;
                 }
             }
@@ -336,7 +341,7 @@ class World {
             // Button disabling
 
             // New wave button disabling
-            if ((b == nextWave) && !waveComplete) {
+            if (b == nextWave && !waveComplete) {
                 nextWave.setDisabled(true);
             } else {
                 nextWave.setDisabled(false);
@@ -357,15 +362,6 @@ class World {
         }
     }
 
-    /** Create a new tower at the given position */
-    void newTower(float xpos, float ypos) {
-        try {
-            myTower = new Tower(xpos, ypos, new Image("assets\\sprites\\alistair32.png"), 3000);
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
-    }
-
     /** Draw game interface */
     void drawGUI(Graphics g) {
         // Sidebar
@@ -374,7 +370,7 @@ class World {
 
         // Draw sidebar icons
         g.setColor(Color.white);
-        for (Sprite s : sidebarIcons) {
+        for (TextSprite s : sidebarIcons) {
             s.drawSelf();
         }
         
@@ -474,8 +470,8 @@ class World {
      * @param vec Initial movement vector
      * @param im Sprite image
      */
-    void newProjectile(float x, float y, Vector2f vec, Image im) {
-        projectiles.add(new Projectile(x, y, vec, im));
+    void newProjectile(float x, float y, Vector2f vec, Projectile.Type type) {
+        projectiles.add(new Projectile(x, y, vec, type));
     }
 
     int getGridWidth() { return gridW; }

@@ -3,6 +3,7 @@ package alistair_game;
 import java.util.Random;
 
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.TrueTypeFont;
 
 /** Contains utility methods for use throughout the project. */
 public class Util {
@@ -16,12 +17,26 @@ public class Util {
         return r.nextInt(num);
     }
 
-    /** Writes horizontally centered text.
+    /** Write horizontally centered text.
+     * @param g Graphics handler
      * @param str String to write
-     * */
+     * @param x X position
+     * @param y Y position
+     */
     public static void writeCentered(Graphics g, String str, float x, float y) {
         int offset = g.getFont().getWidth(str) / 2;
         g.drawString(str, x - offset, y);
+    }
+    
+    /** Write horizontally centered text.
+     * @param ttf True Type Font
+     * @param str String to write
+     * @param x X position
+     * @param y Y position
+     */
+    public static void writeCentered(TrueTypeFont ttf, String str, float x, float y) {
+        int offset = ttf.getWidth(str) / 2;
+        ttf.drawString(x - offset, y, str);
     }
 
     /** Calculates the distance between two x-y coordinates. */

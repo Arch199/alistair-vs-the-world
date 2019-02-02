@@ -7,7 +7,7 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 
 /** Main menu handler (One instance only) */
-public class Menu {
+public class Menu {    
     private String title;
     private int w, h, currentChoice = 0;
     private Button[] buttons;

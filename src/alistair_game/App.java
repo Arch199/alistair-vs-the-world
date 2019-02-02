@@ -84,7 +84,6 @@ public class App extends BasicGame {
             boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
                     escape = input.isKeyPressed(Input.KEY_ESCAPE);
-
             int mouseX = input.getMouseX(), mouseY = input.getMouseY();
 
             String action = world.processInput(escape, rightClick);
@@ -188,10 +187,8 @@ public class App extends BasicGame {
             }
             scanner.close();
             
-            // Create World
+            // Create World and get rid of Menu
             world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, level, waves);
-            // Get rid of menu
-            // TODO: there's probably a better way to do this
             menu = null;
 
         } catch (FileNotFoundException e) {
