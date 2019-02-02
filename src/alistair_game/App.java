@@ -65,15 +65,18 @@ public class App extends BasicGame {
         // Menu
         Input input = gc.getInput();
         if (menu != null) {
-            String action = menu.update(input);
+            Menu.Choice action = menu.update(input);
+            if (action == null) {
+                return;
+            }
             switch (action) {
-                case "Start":
-                    openLevel("level2");
+                case START:
+                    openLevel("level1");
                     break;
-                case "Options":
+                case OPTIONS:
                     // TODO: Add options (what settings would we have?) or just remove this
                     break;
-                case "Quit":
+                case QUIT:
                     closeRequested();
                     break;
             }

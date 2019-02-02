@@ -7,7 +7,23 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 
 /** Main menu handler (One instance only) */
-public class Menu {    
+public class Menu {
+    enum Choice {
+        START("Start"),
+        OPTIONS("Options"),
+        QUIT("Quit");
+        final String displayName;
+        Choice(String s) { displayName = s; }
+        static Choice fromDisplayName(String s) {
+            for (Choice c : Choice.values()) {
+                if (c.displayName.equals(s)) {
+                    return c;
+                }
+            }
+            throw new IllegalArgumentException("No matching choice for display name '" + s + "'");
+        }
+    }
+    
     private String title;
     private int w, h, currentChoice = 0;
     private Button[] buttons;
@@ -34,12 +50,12 @@ public class Menu {
         this.h = h;
         
         // Create the buttons
-        String[] choices = {"Start", "Options", "Quit"};
+        Choice[] choices = Choice.values();
         buttons = new Button[choices.length];
         for (int i = 0; i < choices.length; i++) {            
             float bnX = w/2,
                   bnY = TOP_OFFSET + i*BUTTON_SPACING;
-            buttons[i] = new Button(bnX, bnY, choices[i], OPTION_TTF, BUTTON_PADDING, false, Color.white);
+            buttons[i] = new Button(bnX, bnY, choices[i].displayName, OPTION_TTF, BUTTON_PADDING, false, Color.white);
             buttons[i].setCols(NOT_CHOSEN_COL, CHOSEN_COL);
         }
     }
@@ -47,9 +63,9 @@ public class Menu {
     /** 
      * Updates menu based on player input.
      * @param input Obtained from App's GameContainer
-     * @return The action taken (e.g. "Quit" to exit game). Defaults to the empty string.
+     * @return The action taken as an enum (e.g. Menu.Choice.QUIT to exit game). Defaults to null.
      */
-    String update(Input input) {
+    Choice update(Input input) {
         int mouseX = input.getMouseX(), mouseY = input.getMouseY();
         boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
         
@@ -82,9 +98,9 @@ public class Menu {
         oldMouseY = mouseY;
         
         if (clicked || input.isKeyPressed(Input.KEY_ENTER)) {
-            return buttons[currentChoice].getText();
+            return Choice.fromDisplayName(buttons[currentChoice].getText());
         }
-        return ""; // default value for no action
+        return null; // default value for no action
     }
     
     void renderTitle() {
