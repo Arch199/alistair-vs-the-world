@@ -9,12 +9,14 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class Projectile extends Movable {
     enum Type {
-        BUBBLE("bubble.png", 1);
+        BUBBLE("bubble.png", 1, 4F);
         final String imPath;
         final int damage;
-        Type(String imPath, int damage) {
+        final float speed;
+        Type(String imPath, int damage, float speed) {
             this.imPath = imPath;
             this.damage = damage;
+            this.speed = speed;
         }
     }
     static final String SPRITE_PATH = "assets\\sprites\\projectiles\\";

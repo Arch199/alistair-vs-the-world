@@ -23,10 +23,12 @@ class Tower extends Sprite {
         MERGE("Mergesort Alistair", null, 0)*/;
         final String title, imPath;
         final int fireRate;
+        final Projectile.Type proj;
         Type(String title, String imPath, int fireRate) {
             this.title = title;
             this.imPath = imPath;
             this.fireRate = fireRate;
+            proj = Projectile.Type.valueOf(name());
         }
     }
     static final String SPRITE_PATH = "assets\\sprites\\towers\\";
@@ -36,7 +38,6 @@ class Tower extends Sprite {
     private float range = 150f; // Range is radius from center
     private int fireRate = 0; // In ms
     private long nextShot = 0L; // Time until next fire (in ms)
-    private float projSpeed = 10f;
 
     /**
      * Create a tower.
@@ -65,7 +66,7 @@ class Tower extends Sprite {
         }
         
         // Create projectile
-        world.newProjectile(getX(), getY(), vec, Projectile.Type.valueOf(type.name()));
+        world.newProjectile(getX(), getY(), vec, type.proj);
 
         // Reset the timer for the next shot
         nextShot = fireRate;
@@ -89,7 +90,7 @@ class Tower extends Sprite {
         Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
 
         vec.add(target.getV());
-        vec.normalise().scale(projSpeed);
+        vec.normalise().scale(type.proj.speed);
 
         // Assume it keeps moving in a straight line
         vec.add(target.getV());
