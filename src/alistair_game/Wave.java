@@ -10,10 +10,10 @@ public class Wave {
     
     /** Individual enemy spawn instructions, with enemy time and type. */
     private class SpawnInstruction {
-        String enemy;
+        Enemy.Type enemy;
         float spawnTime;
 
-        SpawnInstruction(String enemy, float spawnTime) {
+        SpawnInstruction(Enemy.Type enemy, float spawnTime) {
             this.enemy = enemy;
             this.spawnTime = spawnTime;
         }
@@ -22,9 +22,9 @@ public class Wave {
     /**
      * Check if enemies are due to be spawned.
      * @param timer The time since the start of the wave
-     * @return The name of the enemy to be spawned as a String or ""
+     * @return The name of the enemy to be spawned as an enum
      */
-    String trySpawn(long timer) {
+    Enemy.Type trySpawn(long timer) {
         Iterator<SpawnInstruction> itr = instructions.iterator();
         while (itr.hasNext()) {
             SpawnInstruction si = itr.next();
@@ -33,11 +33,12 @@ public class Wave {
                 return si.enemy;
             }
         }
-        return ""; // default failure value
+        return null; // default failure value
     }
     
     void addInstruction(String enemy, float spawnTime) {
-        instructions.add(new SpawnInstruction(enemy, spawnTime));
+        Enemy.Type type = Enemy.Type.valueOf(enemy.toUpperCase());
+        instructions.add(new SpawnInstruction(type, spawnTime));
     }
     
     boolean isFinished() { return instructions.isEmpty(); }

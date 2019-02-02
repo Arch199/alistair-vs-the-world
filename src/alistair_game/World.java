@@ -1,6 +1,5 @@
 package alistair_game;
 
-import java.awt.*;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +7,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.newdawn.slick.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
@@ -190,9 +190,9 @@ class World {
         // TODO: Start from wave 0
         if (waveNum-1 < waves.size()) {
             Wave w = waves.get(waveNum-1);
-            // TODO: Make this return an array of strings to spawn multipl enemies in the same tick
-            String enemy = w.trySpawn(timer);
-            if (enemy != "") {
+            // TODO: Make this return an array to spawn multiple enemies in the same tick
+            Enemy.Type enemy = w.trySpawn(timer);
+            if (enemy != null) {
                 spawnEnemy(startX, startY, enemy);
             }
 
@@ -218,9 +218,9 @@ class World {
     }
 
     /** Create a new enemy at the given position */
-    void spawnEnemy(float x, float y, String name) {
+    void spawnEnemy(float x, float y, Enemy.Type type) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
-        enemies.add(new Enemy(x, y, v, name));
+        enemies.add(new Enemy(x, y, v, type));
     }
 
     /** Update enemy positons */

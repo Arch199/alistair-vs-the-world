@@ -10,7 +10,9 @@ import org.newdawn.slick.geom.Vector2f;
  * Sprite that moves down the path and does damage to Alistair.
  */
 class Enemy extends Movable {
-    private String name;
+    enum Type { PYTHON, INT_MAX, DO, COMMERCE, OVERFLOW, THOMAS }
+    
+    private Type type;
     private int health;
     private float speed;
 
@@ -19,46 +21,46 @@ class Enemy extends Movable {
      * @param startx x-position of start
      * @param starty y-position of start
      * @param v Initial movement vector  (unscaled)
-     * @param name Enemy type, e.g. Python
+     * @param type Enemy type, e.g. PYTHON
      */
-    Enemy(float startx, float starty, Vector2f v, String name) {
+    Enemy(float startx, float starty, Vector2f v, Type type) {
         super(startx, starty, v, null, 0);
-        this.name = name;
+        this.type = type;
         String imPath = "assets\\sprites\\enemies\\";
-        switch (name) {
+        switch (type) {
             // In order of increasing strength
-            case "python":
+            case PYTHON:
                 imPath += "python-icon.png";
                 health = 1;
                 speed = 1.5f;
                 break;
-            case "int_max":
+            case INT_MAX:
                 imPath += "int_max.png";
                 health = 1;
                 speed = 2f;
                 break;
-            case "do":
+            case DO:
                 imPath += "do.png";
                 health = 1;
                 speed  = 3.0f;
                 break;
-            case "commerce":
+            case COMMERCE:
                 imPath += "fbe1.png";
                 health = 2;
                 speed = 2f;
                 break;
-            case "overflow":
+            case OVERFLOW:
                 imPath += "stackoverflow32.png";
                 health = 3;
                 speed = 2.5f;
                 break;
-            case "thomas":
+            case THOMAS:
                 imPath += "thomas100.png";
                 health = 2;
                 speed = 5f;
                 break;
             default:
-                throw new IllegalArgumentException("No such enemy '" + name + "'");
+                throw new IllegalArgumentException("No such enemy '" + type + "'");
         }
         try {
             setImage(new Image(imPath));
@@ -102,13 +104,8 @@ class Enemy extends Movable {
         }
     }
 
-    float getSpeed() {
-        return this.speed;
-    }
-
-    void setSpeed(int speed) {
-        this.speed = speed;
-    }
+    float getSpeed() { return speed; }
+    Type getType() { return type; }
     
-    String getName() { return name; }
+    void setSpeed(int speed) { this.speed = speed; }
 }
