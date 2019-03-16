@@ -1,19 +1,20 @@
-package alistair_game;
-
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.Graphics;
+package game;
 
 import java.util.List;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Vector2f;
+
+import control.World;
 
 /**
  * Towers are placed on a grid and shoot projectiles at enemies.
  */
-class Tower extends Sprite {
-    enum Type {
+public class Tower extends Sprite {
+    public enum Type {
         // TODO: implement and enable all of these
         BUBBLE("Bubble Sort Alistair", "bubble.png", 4000, 150f),
         SELECTION("Selection Sort Alistair", "selection.png", 3000, 100f)/*,
@@ -21,10 +22,10 @@ class Tower extends Sprite {
         QUICK("Quicksort Alistair", null, 0, 0f),
         HEAP("Heapsort Alistair", null, 0, 0f),
         MERGE("Mergesort Alistair", null, 0, 0f)*/;
-        final String title, imPath;
-        final int fireRate;
-        final float range;
-        final Projectile.Type proj;
+        public final String title, imPath;
+        public final int fireRate;
+        public final float range;
+        public final Projectile.Type proj;
         Type(String title, String imPath, int fireRate, float range) {
             this.title = title;
             this.imPath = imPath;
@@ -32,7 +33,7 @@ class Tower extends Sprite {
             this.range = range;
             proj = Projectile.Type.valueOf(name());
         }
-        static Type fromTitle(String title) {
+        public static Type fromTitle(String title) {
             for (Type t : values()) {
                 if (t.title.equals(title)) {
                     return t;
@@ -41,7 +42,7 @@ class Tower extends Sprite {
             throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
     }
-    static final String SPRITE_PATH = "assets\\sprites\\towers\\";
+    public static final String SPRITE_PATH = "assets\\sprites\\towers\\";
     
     private Type type;
     private boolean placed = false;
@@ -55,7 +56,7 @@ class Tower extends Sprite {
      * @param y y-position
      * @param type Enum for the tower's type
      */
-    Tower(float x, float y, Tower.Type type) {
+    public Tower(float x, float y, Tower.Type type) {
         super(x, y, null);
         this.type = type;
         fireRate = type.fireRate; // Could actually remove this and determine everything from type
@@ -68,7 +69,7 @@ class Tower extends Sprite {
     }
 
     /** Makes the shot. Generates a projectile and sets a new time. */
-    void shoot(World world) {
+    public void shoot(World world) {
         // Target the next enemy in range
         Vector2f vec = targetNext(world.getEnemies());
         if (vec == null) {
@@ -110,7 +111,7 @@ class Tower extends Sprite {
     }
     
     /** Places the tower. */
-    void place(float x, float y) {
+    public void place(float x, float y) {
         teleport(x, y);
         placed = true;
     }
@@ -118,7 +119,7 @@ class Tower extends Sprite {
     /** Counts down the shot timer.
      * Returns true if enough time has passed to shoot.
      */
-    boolean countDown(int delta) {
+    public boolean countDown(int delta) {
         // This could be split into two functions rather than being a check with side effects
         // Could also just move this into the shoot() method directly (might be best)
         nextShot -= delta;
@@ -126,7 +127,7 @@ class Tower extends Sprite {
     }
 
     /** Draws a range circle around towers. */
-    void drawRange(Graphics g) {
+    public void drawRange(Graphics g) {
         // Top-left corner of the circle
         float xCorner = getX() - range, yCorner = getY() - range;
 
@@ -139,10 +140,10 @@ class Tower extends Sprite {
         g.fillOval(xCorner, yCorner, range * 2, range * 2);
     }
 
-    void waveReset() {
+    public void waveReset() {
         nextShot = 0;
     }
 
-    Type getType() { return type; }
-    boolean isPlaced() { return placed; }
+    public Type getType() { return type; }
+    public boolean isPlaced() { return placed; }
 }

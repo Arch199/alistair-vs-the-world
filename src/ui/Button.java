@@ -1,4 +1,4 @@
-package alistair_game;
+package ui;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -8,7 +8,7 @@ import org.newdawn.slick.geom.Rectangle;
 /**
  * Rectangular button with text.
  */
-class Button extends Rectangle {
+public class Button extends Rectangle {
     private static final long serialVersionUID = 1L; // necessary as Rectangle implements java.io.serializable
     private String text;
     private TrueTypeFont ttf;
@@ -28,7 +28,7 @@ class Button extends Rectangle {
      * @param hasBorder Display the border
      * @param col The default colour for all states (call setCols to expand)
      */
-    Button(float x, float y, String text, TrueTypeFont ttf, int padding, boolean hasBorder, Color col) {
+    public Button(float x, float y, String text, TrueTypeFont ttf, int padding, boolean hasBorder, Color col) {
         super(x - ttf.getWidth(text)/2-padding, y, ttf.getWidth(text)+padding*2, ttf.getHeight()+padding*2);
         setCols(col, col, col);
         this.text = text;
@@ -38,7 +38,7 @@ class Button extends Rectangle {
     }
 
     /** Draw the button with the current colour */
-    void drawSelf(Graphics g) {
+    public void drawSelf(Graphics g) {
 
         Color currentCol;
         // Find the draw colour
@@ -66,19 +66,19 @@ class Button extends Rectangle {
      * @param disabledCol Colour when disabled
      * @param hoverCol Colour on hover
      */
-    void setCols(Color defaultCol, Color disabledCol, Color hoverCol) {
+    public void setCols(Color defaultCol, Color disabledCol, Color hoverCol) {
         this.defaultCol = defaultCol;
         this.disabledCol = disabledCol;
         this.hoverCol = hoverCol;
     }
 
-    void setCols(Color defaultCol, Color hoverCol) {
+    public void setCols(Color defaultCol, Color hoverCol) {
         setCols(defaultCol, defaultCol, hoverCol);
     }
 
-    String getText() { return text; }
-    Boolean getDisabled() { return disabled;}
+    public String getText() { return text; }
+    public Boolean getDisabled() { return disabled; }
     
-    void setDisabled(Boolean state) { disabled = state; }
-    void setHover(Boolean hover) { hovered = hover; }
+    public void setDisabled(Boolean state) { disabled = state; }
+    public void setHover(Boolean hover) { hovered = hover; }
 }

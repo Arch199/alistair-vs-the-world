@@ -1,8 +1,10 @@
-package alistair_game;
+package control;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import game.Enemy;
 
 /** Waves contain a list of their enemy spawns. */
 public class Wave {

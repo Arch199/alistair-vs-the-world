@@ -1,4 +1,4 @@
-package alistair_game;
+package control;
 
 import java.util.Random;
 

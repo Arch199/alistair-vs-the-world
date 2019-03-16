@@ -1,4 +1,4 @@
-package alistair_game;
+package game;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
@@ -6,7 +6,7 @@ import org.newdawn.slick.geom.Vector2f;
 /**
  * Object that is automatically "movable" i.e. it has a set speed.
  */
-abstract class Movable extends Sprite {
+public abstract class Movable extends Sprite {
     private Vector2f v;
     private int damage;
 
@@ -18,25 +18,23 @@ abstract class Movable extends Sprite {
      * @param im sprite image file
      * @param damage arbritrary int counter always >= 0
      */
-    Movable(float startx, float starty, Vector2f v, Image im, int damage) {
+    public Movable(float startx, float starty, Vector2f v, Image im, int damage) {
         super(startx, starty, im);
         this.v = v;
         this.damage = damage;
     }
     
     /** Move according to current velocity. */
-    void advance() {
+    public void advance() {
         move(v.x, v.y);
     }
     
-    Vector2f getV() { return v; }
+    public Vector2f getV() { return v; }
+    public int getDamage() { return damage; }
 
-    void setV(Vector2f v) { this.v = v; }
-
-    int getDamage() { return damage; }
-    
-    void setV(float x, float y) { v.x = x; v.y = y; }
-    void setDamage(int d) {
+    public void setV(Vector2f v) { this.v = v; }
+    public void setV(float x, float y) { v.x = x; v.y = y; }
+    public void setDamage(int d) {
         if (d < 0) {
             throw new IllegalArgumentException("Damage must be >= 0");
         }

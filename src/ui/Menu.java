@@ -1,4 +1,4 @@
-package alistair_game;
+package ui;
 
 import java.awt.Font;
 import org.newdawn.slick.Color;
@@ -8,13 +8,13 @@ import org.newdawn.slick.TrueTypeFont;
 
 /** Main menu handler (One instance only) */
 public class Menu {
-    enum Choice {
+    public enum Choice {
         START("Start"),
         OPTIONS("Options"),
         QUIT("Quit");
-        final String displayName;
+        public final String displayName;
         Choice(String s) { displayName = s; }
-        static Choice fromDisplayName(String s) {
+        public static Choice fromDisplayName(String s) {
             for (Choice c : Choice.values()) {
                 if (c.displayName.equals(s)) {
                     return c;
@@ -25,7 +25,7 @@ public class Menu {
     }
     
     private String title;
-    private int w, h, currentChoice = 0;
+    private int w, /*h,*/ currentChoice = 0;
     private Button[] buttons;
     private int oldMouseX = 0, oldMouseY = 0;
     
@@ -44,17 +44,19 @@ public class Menu {
         TOP_OFFSET = 250,
         BUTTON_SPACING = 65;
     
-    Menu(String title, int w, int h) {
+    public Menu(String title, int w, int h) {
         this.title = title;
         this.w = w;
-        this.h = h;
+        //this.h = h;
         
         // Create the buttons
         Choice[] choices = Choice.values();
         buttons = new Button[choices.length];
         for (int i = 0; i < choices.length; i++) {            
-            float bnX = w/2,
-                  bnY = TOP_OFFSET + i*BUTTON_SPACING;
+            float bnX = w/2, bnY = TOP_OFFSET + i*BUTTON_SPACING;
+            if (bnY >= h) {
+                throw new IllegalStateException("Buttons overflow vertical space in menu");
+            }
             buttons[i] = new Button(bnX, bnY, choices[i].displayName, OPTION_TTF, BUTTON_PADDING, false, Color.white);
             buttons[i].setCols(NOT_CHOSEN_COL, CHOSEN_COL);
         }
@@ -65,7 +67,7 @@ public class Menu {
      * @param input Obtained from App's GameContainer
      * @return The action taken as an enum (e.g. Menu.Choice.QUIT to exit game). Defaults to null.
      */
-    Choice update(Input input) {
+    public Choice update(Input input) {
         int mouseX = input.getMouseX(), mouseY = input.getMouseY();
         boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
         
@@ -103,11 +105,11 @@ public class Menu {
         return null; // default value for no action
     }
     
-    void renderTitle() {
+    public void renderTitle() {
         TITLE_TTF.drawString((w/2) - (TITLE_TTF.getWidth(title)/2), 125, title, TITLE_COL);
     }
     
-    void renderOptions(Graphics g) {
+    public void renderOptions(Graphics g) {
         for (int i = 0; i < buttons.length; i++) {                
             if (currentChoice == i) {
                 buttons[i].setHover(true);

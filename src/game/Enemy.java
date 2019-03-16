@@ -1,4 +1,4 @@
-package alistair_game;
+package game;
 
 import java.util.Iterator;
 
@@ -6,14 +6,16 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
+import control.World;
+
 /**
  * Sprite that moves down the path and does damage to Alistair.
  */
-class Enemy extends Movable {
-    enum Type {
+public class Enemy extends Movable {
+    public enum Type {
         // In order of increasing strength
         PYTHON("python-icon.png", 1, 1.5F),
-        INT_MAX("int_max.png", 1, 2F),
+        INT_MAX("int_max.png", 1, 2.1F),
         DO("do.png", 1, 3F),
         COMMERCE("fbe1.png", 2, 2F),
         OVERFLOW("stackoverflow32.png", 3, 2.5F),
@@ -27,7 +29,7 @@ class Enemy extends Movable {
             this.speed = speed;
         }
     }
-    static final String SPRITE_PATH = "assets\\sprites\\enemies\\";
+    public static final String SPRITE_PATH = "assets\\sprites\\enemies\\";
     
     private Type type;
     private int health;
@@ -40,7 +42,7 @@ class Enemy extends Movable {
      * @param v Initial movement vector  (unscaled)
      * @param type Enemy type as an enum, e.g. Enemy.Type.PYTHON
      */
-    Enemy(float startx, float starty, Vector2f v, Type type) {
+    public Enemy(float startx, float starty, Vector2f v, Type type) {
         super(startx, starty, v, null, 0);
         this.type = type;
         health = type.health;
@@ -59,7 +61,7 @@ class Enemy extends Movable {
      * @param speed Magnitude of step
      * @param world Game's world instance
      * */
-    void advance(float speed, World world) {
+    public void advance(float speed, World world) {
         int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(getV().x));
         int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(getV().y));
         // If we're about to hit a wall, change direction
@@ -79,7 +81,7 @@ class Enemy extends Movable {
      * @param damage Amount to be deducted from health
      * @param itr The enemy to deduct from, as an iterator. (Use .iterator() on a list of enemies to convert)
      */
-    void takeDamage(int damage, Iterator<Enemy> itr) {
+    public void takeDamage(int damage, Iterator<Enemy> itr) {
         health -= damage;
         setDamage(health);
         if (health <= 0) {
@@ -87,8 +89,8 @@ class Enemy extends Movable {
         }
     }
 
-    float getSpeed() { return speed; }
-    Type getType() { return type; }
+    public float getSpeed() { return speed; }
+    public Type getType() { return type; }
     
-    void setSpeed(int speed) { this.speed = speed; }
+    public void setSpeed(int speed) { this.speed = speed; }
 }

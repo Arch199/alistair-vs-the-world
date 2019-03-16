@@ -1,4 +1,4 @@
-package alistair_game;
+package control;
 
 import java.awt.Font;
 import java.util.ArrayList;
@@ -14,10 +14,17 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
 
+import game.Enemy;
+import game.Projectile;
+import game.Tile;
+import game.Tower;
+import ui.Button;
+import ui.TextSprite;
+
 /**
  * Handles all the game logic for a level. Created by App.
  */
-class World {
+public class World {
     // Fonts
     private static final Font
         SMALL_FONT = new Font("Verdana", Font.PLAIN, 11),
@@ -85,7 +92,7 @@ class World {
      * @param level Map layout
      * @param waves Data on waves and enemy spawn timing
      */
-    World(int w, int h, int tSize, int sidebarW, float startX, float startY, int[][] level, ArrayList<Wave> waves) {
+    public World(int w, int h, int tSize, int sidebarW, float startX, float startY, int[][] level, ArrayList<Wave> waves) {
         this.w = w;
         this.h = h;
         this.tSize = tSize;
@@ -169,7 +176,7 @@ class World {
      * @param Obtained from App's GameContainer
      * @return A string for an action to take. (Empty string by default).
      */
-    String processInput(Boolean escape, Boolean rightClick) {
+    public String processInput(Boolean escape, Boolean rightClick) {
         // Deselect
         if (rightClick) {
             myTower = null;
@@ -189,7 +196,7 @@ class World {
      * and projectiles accordingly.
      * @param delta ms from last tick
      */
-    void tick(int delta) {
+    public void tick(int delta) {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
@@ -214,7 +221,7 @@ class World {
     }
 
     /** Call every time a new wave starts */
-    void newWave() {
+    public void newWave() {
         waveNum++;
         timer = 0;
         for (Tower t : towers) {
@@ -223,13 +230,13 @@ class World {
     }
 
     /** Create a new enemy at the given position */
-    void spawnEnemy(float x, float y, Enemy.Type type) {
+    public void spawnEnemy(float x, float y, Enemy.Type type) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
         enemies.add(new Enemy(x, y, v, type));
     }
 
     /** Update enemy positons */
-    void moveEnemies() {
+    public void moveEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
@@ -266,7 +273,7 @@ class World {
     }
 
     /** Handles selecting / placing towers */
-    void processTowers(int mouseX, int mouseY, boolean clicked) {
+    public void processTowers(int mouseX, int mouseY, boolean clicked) {
         // Click on a tower to display its range
         if (!isPlacingTower() && clicked) {
             for (Tower t: towers) {
@@ -335,7 +342,7 @@ class World {
     }
 
     /** Button updates and colour changes */
-    void processButtons(int mousex, int mousey, boolean clicked) {
+    public void processButtons(int mousex, int mousey, boolean clicked) {
         for (Button b: buttons) {
             // Button disabling
 
@@ -362,7 +369,7 @@ class World {
     }
 
     /** Draw game interface */
-    void drawGUI(Graphics g) {
+    public void drawGUI(Graphics g) {
         // Sidebar
         g.setColor(Color.darkGray);
         g.fillRect(w-sidebarW, 0, sidebarW, h);
@@ -395,7 +402,7 @@ class World {
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
 
-    void renderTiles() {
+    public void renderTiles() {
         for (Tile[] column : tiles) {
             for (Tile t : column) {
                 t.drawSelf();
@@ -403,19 +410,19 @@ class World {
         }
     }
 
-    void renderEnemies() {
+    public void renderEnemies() {
         for (Enemy e : enemies) {
             e.drawSelf();
         }
     }
 
-    void renderTowers(Graphics g) {
+    public void renderTowers(Graphics g) {
         for (Tower t : towers) {
             t.drawSelf();
         }
     }
 
-    void renderProjectiles() {
+    public void renderProjectiles() {
         for (Projectile p : projectiles) {
             p.drawSelf();
         }
@@ -424,7 +431,7 @@ class World {
     /** Make alistair take damage
      * @param damage Health reduction, <=100
      * */
-    void takeDamage(int damage) {
+    public void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             System.out.println("we ded");
@@ -434,32 +441,32 @@ class World {
     }
 
     /** Converts from literal position to position on grid */
-    int toGrid(float pos) {
+    public int toGrid(float pos) {
         // Choose closest grid position
         return Math.round((pos - tSize / 2) / tSize);
     }
 
     /** Converts from grid position to literal coordinates */
-    float toPos(int gridval) {
+    public float toPos(int gridval) {
         return gridval * tSize + tSize / 2;
     }
 
     /** Check coordinate against game boundaries */
-    boolean inGridBounds(int x, int y) {
+    public boolean inGridBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < gridW && y < gridH;
     }
 
     /** Returns a grid direction to point inwards from the current position */
-    int defaultDir(int gridval) {
+    public int defaultDir(int gridval) {
         return gridval < 0 ? 1 : (gridval >= gridW ? -1 : 0);
     }
 
     /** Returns a literal direction to point inwards */
-    float defaultDir(float pos) {
+    public float defaultDir(float pos) {
         return pos < 0 ? 1 : (pos >= gridW * tSize ? -1 : 0);
     }
 
-    boolean isPlacingTower() {
+    public boolean isPlacingTower() {
         return myTower != null;
     }
 
@@ -469,16 +476,16 @@ class World {
      * @param vec Initial movement vector
      * @param im Sprite image
      */
-    void newProjectile(float x, float y, Vector2f vec, Projectile.Type type) {
+    public void newProjectile(float x, float y, Vector2f vec, Projectile.Type type) {
         projectiles.add(new Projectile(x, y, vec, type));
     }
 
-    int getGridWidth() { return gridW; }
-    int getGridHeight() { return gridH; }
-    int getTileSize() { return tSize; }
-    Tile getTile(int x, int y) { return tiles[x][y]; }
-    int getPathXDir(int x, int y) { return path[x][y][0]; }
-    int getPathYDir(int x, int y) { return path[x][y][1]; }
-    List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
-    List<Projectile> getProjectiles() { return Collections.unmodifiableList(projectiles); }
+    public int getGridWidth() { return gridW; }
+    public int getGridHeight() { return gridH; }
+    public int getTileSize() { return tSize; }
+    public Tile getTile(int x, int y) { return tiles[x][y]; }
+    public int getPathXDir(int x, int y) { return path[x][y][0]; }
+    public int getPathYDir(int x, int y) { return path[x][y][1]; }
+    public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
+    public List<Projectile> getProjectiles() { return Collections.unmodifiableList(projectiles); }
 }

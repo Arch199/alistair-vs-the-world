@@ -1,4 +1,4 @@
-package alistair_game;
+package game;
 
 import org.newdawn.slick.Image;
 
@@ -6,7 +6,7 @@ import org.newdawn.slick.Image;
  * Tile sprites to make the terrain
  */
 public class Tile extends Sprite {
-    static final String SPRITE_PATH = "assets\\sprites\\tiles\\";
+    public static final String SPRITE_PATH = "assets\\sprites\\tiles\\";
     
     private String name;
 
@@ -16,7 +16,7 @@ public class Tile extends Sprite {
      * @param im Sprite image
      * @param name Tile name, e.g. grass
      */
-    Tile(float x, float y, Image im, String name) {
+    public Tile(float x, float y, Image im, String name) {
         super(x, y, im);
         this.name = name;
     }

@@ -1,10 +1,12 @@
-package alistair_game;
+package game;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
+import control.Util;
+
 /** On-screen object */
-class Sprite {
+public class Sprite {
     private float x, y;
     private Image im;
     private Color col = Color.white;
@@ -16,7 +18,7 @@ class Sprite {
      * @param y y-pos
      * @param im sprite image
      */
-    Sprite(float x, float y, Image im) {
+    public Sprite(float x, float y, Image im) {
         this.x = x;
         this.y = y;
         this.im = im;
@@ -28,11 +30,11 @@ class Sprite {
     }
     
     /** Checks whether the mouse position intersects the Sprite. */
-    boolean isMouseOver(int mouseX, int mouseY) {
+    public boolean isMouseOver(int mouseX, int mouseY) {
         return (mouseX >= x-w && mouseX <= x+w && mouseY >= y-h && mouseY <= y+h);
     }
     
-    void drawSelf() {
+    public void drawSelf() {
         im.draw(x-w, y-h, col);
     }
 
@@ -41,7 +43,7 @@ class Sprite {
      * @param other Sprite to check against
      * @return Returns true if touching
      */
-    boolean checkCollision(Sprite other) {
+    public boolean checkCollision(Sprite other) {
         Image im2 = other.getImage();
         int w2 = im2.getWidth() / 2, h2 = im2.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
@@ -55,7 +57,7 @@ class Sprite {
      * @param other Other sprite
      * @return Pixel distance
      */
-    float distanceTo(Sprite other) {
+    public float distanceTo(Sprite other) {
         return Util.dist(x, y, other.getX(), other.getY());
     }
 
@@ -65,7 +67,7 @@ class Sprite {
      * @param windowH Game height
      * @return Returns true if off the screen
      */
-    boolean isOffScreen(int windowW, int windowH) {
+    public boolean isOffScreen(int windowW, int windowH) {
         int w = im.getWidth() / 2, h = im.getHeight() / 2;
         return x - w >= windowW || x + w < 0 || y - h >= windowH || y + h < 0;
     }
@@ -75,7 +77,7 @@ class Sprite {
      * @param xdist signed pixels in the x-plane to move
      * @param ydist signed pixels in teh y-play to move
      */
-    void move(float xDist, float yDist) {
+    public void move(float xDist, float yDist) {
         x += xDist;
         y += yDist;
     }
@@ -85,18 +87,18 @@ class Sprite {
      * @param destx new x-positon
      * @param desty new y-position
      */
-    void teleport(float destX, float destY) {
+    public void teleport(float destX, float destY) {
         x = destX;
         y = destY;
     }
 
-    float getX() { return x; }
-    float getY() { return y; }
-    Color getColor() { return col; }
-    Image getImage() { return im; }
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public Color getColor() { return col; }
+    public Image getImage() { return im; }
 
-    void setColor(Color col) { this.col = col; }
-    void setImage(Image im) {
+    public void setColor(Color col) { this.col = col; }
+    public void setImage(Image im) {
         this.im = im;
         w = im.getWidth() / 2;
         h = im.getHeight() / 2;

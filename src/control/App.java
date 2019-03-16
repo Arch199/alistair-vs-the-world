@@ -1,6 +1,6 @@
 // Main App handler for Alistair-themed Tower Defence Game
 
-package alistair_game;
+package control;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.newdawn.slick.*;
+
+import ui.Menu;
 
 /**
  * Main handler for the game as a program.
