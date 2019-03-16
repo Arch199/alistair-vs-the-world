@@ -40,9 +40,7 @@ public class App extends BasicGame {
         super(title);
     }
 
-    /** Calls World to initialize all game objects before the game begins.
-     * Sets game parameters and loads up files.
-     */
+    /** Sets game parameters, loads up files, and starts the menu. */
     @Override
     public void init(GameContainer gc) throws SlickException {
         System.out.println("GAME STATE: Initialising game...");
@@ -57,7 +55,7 @@ public class App extends BasicGame {
     }
 
     /**
-     * Should be called every 20ms. Executes a 'tick' operations.
+     * Should be called every 20ms. Executes a 'tick' operation.
      * @throws SlickException
      */
     @Override
@@ -109,7 +107,7 @@ public class App extends BasicGame {
     }
 
     /**
-     * Responsible for drawing sprites. Called regularly automatically.
+     * Responsible for drawing sprites. Called regularly, automatically.
      * @throws SlickException
      */
     @Override
