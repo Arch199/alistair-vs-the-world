@@ -76,7 +76,7 @@ class World {
     }
 
     /**
-     * Create the world.
+     * Creates the world.
      * @param w Map width
      * @param h Map height
      * @param tSize Side length of each tile in pixels
@@ -140,15 +140,15 @@ class World {
             y += j;
         }
         
-        // Create sidebar icons
-        // TODO: update when we add more towers
+        // Create sidebar icons for buying towers
+        // TODO: add cost in currency
         float xPos = w - sidebarW/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
                 TextSprite icon = new TextSprite(xPos, yPos, new Image(Tower.SPRITE_PATH + t.imPath));
                 icon.setText(TextSprite.Mode.BELOW, t.title, SMALL_TTF);
                 sidebarIcons.add(icon);
-                yPos += 50;
+                yPos += 65;
             } catch (SlickException e) {
                 e.printStackTrace();
             }
@@ -287,8 +287,7 @@ class World {
         if (!isPlacingTower() && clicked) {
             for (TextSprite s : sidebarIcons) {
                 if (s.isMouseOver(mouseX, mouseY)) {
-                    myTower = new Tower(mouseX, mouseY, Tower.Type.BUBBLE);
-                    // TODO: add other tower types here
+                    myTower = new Tower(mouseX, mouseY, Tower.Type.fromTitle(s.getText()));
                     return;
                 }
             }

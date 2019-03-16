@@ -26,6 +26,8 @@ class TextSprite extends Sprite {
         }
     }
     
+    String getText() { return text; }
+    
     void setText(Mode mode, String text, TrueTypeFont ttf) {
         textSet = true;
         this.text = text;

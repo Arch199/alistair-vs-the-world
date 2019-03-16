@@ -15,40 +15,51 @@ import org.newdawn.slick.Color;
 class Tower extends Sprite {
     enum Type {
         // TODO: implement and enable all of these
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000)/*,
-        SELECTION("Selection Sort Alistair", null, 0),
-        INSERTION("Insertion Sort Alistair", null, 0),
-        QUICK("Quicksort Alistair", null, 0),
-        HEAP("Heapsort Alistair", null, 0),
-        MERGE("Mergesort Alistair", null, 0)*/;
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 4000, 150f),
+        SELECTION("Selection Sort Alistair", "selection.png", 3000, 100f)/*,
+        INSERTION("Insertion Sort Alistair", null, 0, 0f),
+        QUICK("Quicksort Alistair", null, 0, 0f),
+        HEAP("Heapsort Alistair", null, 0, 0f),
+        MERGE("Mergesort Alistair", null, 0, 0f)*/;
         final String title, imPath;
         final int fireRate;
+        final float range;
         final Projectile.Type proj;
-        Type(String title, String imPath, int fireRate) {
+        Type(String title, String imPath, int fireRate, float range) {
             this.title = title;
             this.imPath = imPath;
             this.fireRate = fireRate;
+            this.range = range;
             proj = Projectile.Type.valueOf(name());
+        }
+        static Type fromTitle(String title) {
+            for (Type t : values()) {
+                if (t.title.equals(title)) {
+                    return t;
+                }
+            }
+            throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
     }
     static final String SPRITE_PATH = "assets\\sprites\\towers\\";
     
     private Type type;
     private boolean placed = false;
-    private float range = 150f; // Range is radius from center
-    private int fireRate = 0; // In ms
+    private float range;
+    private int fireRate; // In ms
     private long nextShot = 0L; // Time until next fire (in ms)
 
     /**
      * Create a tower.
-     * @param startx x-position
-     * @param starty y-position
+     * @param x x-position
+     * @param y y-position
      * @param type Enum for the tower's type
      */
-    Tower(float startx, float starty, Tower.Type type) {
-        super(startx, starty, null);
+    Tower(float x, float y, Tower.Type type) {
+        super(x, y, null);
         this.type = type;
         fireRate = type.fireRate; // Could actually remove this and determine everything from type
+        range = type.range;
         try {
             setImage(new Image(SPRITE_PATH + type.imPath));
         } catch (SlickException e) {
@@ -72,7 +83,7 @@ class Tower extends Sprite {
         nextShot = fireRate;
     }
 
-    /** Returns a velocity vector to hit the first enemy in range. */
+    /** Returns a velocity vector aimed at the first enemy in range. */
     private Vector2f targetNext(List<Enemy> enemies) {
         // Target the first enemy in range
         Enemy target = null;
@@ -105,7 +116,8 @@ class Tower extends Sprite {
     }
     
     /** Counts down the shot timer.
-     * Returns true if enough time has passed to shoot. */
+     * Returns true if enough time has passed to shoot.
+     */
     boolean countDown(int delta) {
         // This could be split into two functions rather than being a check with side effects
         // Could also just move this into the shoot() method directly (might be best)
@@ -116,15 +128,15 @@ class Tower extends Sprite {
     /** Draws a range circle around towers. */
     void drawRange(Graphics g) {
         // Top-left corner of the circle
-        float xcorner = getX() - range, ycorner = getY() - range;
+        float xCorner = getX() - range, yCorner = getY() - range;
 
         // Draw circumference
         g.setColor(new Color(110, 110, 110, 110));
-        g.drawOval(xcorner, ycorner, range * 2, range * 2);
+        g.drawOval(xCorner, yCorner, range * 2, range * 2);
         
         // Fill with a shade of grey (can change vals depending on contrast w/ textures)
         g.setColor(new Color(80, 80, 80, 80));
-        g.fillOval(xcorner, ycorner, range * 2, range * 2);
+        g.fillOval(xCorner, yCorner, range * 2, range * 2);
     }
 
     void waveReset() {

@@ -24,7 +24,7 @@ abstract class Movable extends Sprite {
         this.damage = damage;
     }
     
-    /** Move according to current speed. */
+    /** Move according to current velocity. */
     void advance() {
         move(v.x, v.y);
     }

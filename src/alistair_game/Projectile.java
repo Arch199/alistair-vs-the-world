@@ -7,9 +7,10 @@ import org.newdawn.slick.geom.Vector2f;
 /** 
  * Moving item fired by a tower.
  */
-public class Projectile extends Movable {
+class Projectile extends Movable {
     enum Type {
-        BUBBLE("bubble.png", 1, 4F);
+        BUBBLE("bubble.png", 1, 2f),
+        SELECTION("defaultproj.png", 1, 6f);
         final String imPath;
         final int damage;
         final float speed;
