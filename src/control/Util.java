@@ -6,8 +6,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 
 /** Contains utility methods for use throughout the project. */
-public class Util {
-
+public final class Util {
+    private Util() {} // prevents instantiation from outside the class
+    
     /** Random number generator.
      * @param num Closed maximum value
      * @return Random value 0-num
@@ -42,6 +43,6 @@ public class Util {
     /** Calculates the distance between two x-y coordinates. */
     public static float dist(float x1, float y1, float x2, float y2) {
         // Euclidean distance (COMP20008 method)
-        return (float) Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+        return (float)Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
     }
 }

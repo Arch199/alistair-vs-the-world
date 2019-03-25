@@ -102,7 +102,6 @@ public class App extends BasicGame {
             world.tick(delta);
             world.moveEnemies();
             world.moveProjectiles();
-
             world.processTowers(mouseX, mouseY, leftClick);
             world.processButtons(mouseX, mouseY,leftClick);
         }

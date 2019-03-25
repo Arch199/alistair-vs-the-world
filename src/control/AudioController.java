@@ -9,7 +9,7 @@ import org.newdawn.slick.*;
 /**
  * Stores all sound files, and provides a method to play them.
  */
-public class AudioController {
+public final class AudioController {
     private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
     private static HashMap<String, Sound[]> multiSounds = new HashMap<String, Sound[]>();
     static {
@@ -41,6 +41,8 @@ public class AudioController {
 
         // TODO: Find some music? Can add an array of songs to a musicLoop() method.
     }
+    
+    private AudioController() {} // prevents instantiation from outside the class
 
     /**
      * Plays a sound.
@@ -65,7 +67,7 @@ public class AudioController {
     /**
      * Stops all currently playing sounds.
      */
-    static void stopAll() {
+    public static void stopAll() {
         for (Sound s : singleSounds.values()) {
             s.stop();
         }
