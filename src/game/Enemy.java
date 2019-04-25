@@ -6,9 +6,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import control.World;
 
-/**
- * Sprite that moves down the path and does damage to Alistair.
- */
+/** Sprite that moves down the path and does damage to Alistair. */
 public class Enemy extends DynamicSprite {
     public enum Type {
         // In order of increasing strength

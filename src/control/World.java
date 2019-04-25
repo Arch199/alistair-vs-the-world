@@ -343,7 +343,7 @@ public class World {
         }
     }
 
-    /** Button updates and colour changes */
+    /** Button updates and colour changes. */
     public void processButtons(int mousex, int mousey, boolean clicked) {
         for (Button b: buttons) {
             // Button disabling
