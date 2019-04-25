@@ -135,7 +135,6 @@ public class App extends BasicGame {
             int[][] level = new int[GRID_W][GRID_H];
 
             // Load map info file
-            System.out.println(System.getProperty("user.dir"));
             Scanner scanner = new Scanner(new File("assets/levels/" + levelName + ".txt"));
             for (int y = 0; y < GRID_H; y++) {
                 assert (scanner.hasNext());
