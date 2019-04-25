@@ -196,7 +196,7 @@ public class World {
      * and projectiles accordingly.
      * @param delta ms from last tick
      */
-    public void tick(int delta) {
+    public void tick(int delta) throws SlickException {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
@@ -219,7 +219,7 @@ public class World {
     }
 
     /** Call every time a new wave starts */
-    public void newWave() {
+    private void newWave() {
         waveNum++;
         timer = 0;
         for (Tower t : towers) {
@@ -227,14 +227,14 @@ public class World {
         }
     }
 
-    /** Create a new enemy at the given position */
-    public void spawnEnemy(float x, float y, Enemy.Type type) {
+    /** Create a new enemy at the given position. */
+    private void spawnEnemy(float x, float y, Enemy.Type type) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
         enemies.add(new Enemy(x, y, v, type));
     }
 
-    /** Update enemy positons */
-    public void moveEnemies() {
+    /** Update enemy positons. */
+    public void processEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
@@ -247,14 +247,15 @@ public class World {
         }
     }
 
-    /** Update projectile positions */
-    void moveProjectiles() {
+    /** Update projectile positions. */
+    void processProjectiles() {
         Iterator<Projectile> itr = projectiles.iterator();
         while (itr.hasNext()) {
             Projectile p = itr.next();
             p.advance();
-            if (p.isOffScreen(w, h)) {
+            if (p.isDead()) {
                 itr.remove();
+                continue;
             }
 
             // Hitting enemies
@@ -270,7 +271,7 @@ public class World {
         }
     }
 
-    /** Handles selecting / placing towers */
+    /** Handles selecting / placing towers. */
     public void processTowers(int mouseX, int mouseY, boolean clicked) throws SlickException {
         // Click on a tower to display its range
         if (!isPlacingTower() && clicked) {
@@ -301,7 +302,7 @@ public class World {
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
             myTower.setColor(Color.white);
-            myTower.teleport((float) mouseX, (float) mouseY);
+            myTower.teleport((float)mouseX, (float)mouseY);
 
             // Red if out of game bounds
             if (!inGridBounds(mouseX/tSize, mouseY/tSize)) {
@@ -472,7 +473,14 @@ public class World {
     public void addProjectile(Projectile proj) {
         projectiles.add(proj);
     }
-
+    
+    /** Remove a projectile from the list. */
+    public void removeProjectile(Projectile proj) {
+        projectiles.remove(proj);
+    }
+    
+    public int getWidth() { return w; }
+    public int getHeight() { return h; }
     public int getGridWidth() { return gridW; }
     public int getGridHeight() { return gridH; }
     public int getTileSize() { return tSize; }

@@ -10,7 +10,7 @@ public class Sprite {
     private float x, y;
     private Image im;
     private Color col = Color.white;
-    private int w, h; // Half of the image's width and height
+    private float scale = 1f;
 
     /**
      * Create a sprite (stationary for the frame)
@@ -22,20 +22,16 @@ public class Sprite {
         this.x = x;
         this.y = y;
         this.im = im;
-
-        if (im != null) {
-            w = im.getWidth() / 2;
-            h = im.getHeight() / 2;
-        }
     }
     
     /** Checks whether the mouse position intersects the Sprite. */
     public boolean isMouseOver(int mouseX, int mouseY) {
-        return (mouseX >= x-w && mouseX <= x+w && mouseY >= y-h && mouseY <= y+h);
+        int w = getWidth() / 2, h = getHeight() / 2;
+        return (mouseX >= x - w && mouseX <= x + w && mouseY >= y - h && mouseY <= y + h);
     }
     
     public void drawSelf() {
-        im.draw(x-w, y-h, col);
+        im.draw(x - getWidth() / 2, y - getHeight() / 2, scale, col);
     }
 
     /**
@@ -44,8 +40,7 @@ public class Sprite {
      * @return Returns true if touching
      */
     public boolean checkCollision(Sprite other) {
-        Image im2 = other.im;
-        int w2 = im2.getWidth() / 2, h2 = im2.getHeight() / 2;
+        int w = getWidth() / 2, h = getHeight() / 2, w2 = other.getWidth() / 2, h2 = other.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
 
         return ((x + w >= x2 - w2) && (x2 + w2 >= x - w) && (y + h >= y2 - h2) && (y2 + h2 >= y - h));
@@ -68,7 +63,7 @@ public class Sprite {
      * @return Returns true if off the screen
      */
     public boolean isOffScreen(int windowW, int windowH) {
-        int w = im.getWidth() / 2, h = im.getHeight() / 2;
+        int w = getWidth() / 2, h = getHeight() / 2;
         return x - w >= windowW || x + w < 0 || y - h >= windowH || y + h < 0;
     }
 
@@ -95,12 +90,11 @@ public class Sprite {
     public float getX() { return x; }
     public float getY() { return y; }
     public Color getColor() { return col; }
-    public Image getImage() { return im; }
+    public float getScale() { return scale; }
+    public int getWidth() { return (int)(im.getWidth() * scale); }
+    public int getHeight() { return (int)(im.getHeight() * scale); }
 
+    public void setImage(Image im) { this.im = im; }
     public void setColor(Color col) { this.col = col; }
-    public void setImage(Image im) {
-        this.im = im;
-        w = im.getWidth() / 2;
-        h = im.getHeight() / 2;
-    }
+    public void setScale(float scale) { this.scale = scale; }
 }

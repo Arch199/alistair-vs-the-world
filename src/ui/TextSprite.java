@@ -43,7 +43,7 @@ public class TextSprite extends Sprite {
                 break;
             case BELOW:
                 textX = getX();
-                textY = getY() + getImage().getHeight()/2 + ttf.getLineHeight()/2;
+                textY = getY() + getHeight() / 2 + ttf.getLineHeight() / 2;
                 break;
         }
     }

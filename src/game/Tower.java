@@ -15,12 +15,16 @@ import control.World;
  */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png"),
-        BUBBLE("Bubble Sort Alistair", "bubble.png");
+        SELECTION("Selection Sort Alistair", "selection.png", 3000, 150f),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 4000, 100f);
         private final String title, imName;
-        Type(String text, String imName) {
+        private final int fireRate;
+        private final float range;
+        Type(String text, String imName, int fireRate, float range) {
             this.title = text;
             this.imName = imName;
+            this.fireRate = fireRate;
+            this.range = range;
         }
         public String toString() {
             return title;
@@ -37,7 +41,7 @@ public abstract class Tower extends Sprite {
             throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
     }
-    public static final String SPRITE_PATH = "assets/sprites/towers/";
+    protected static final String SPRITE_PATH = "assets/sprites/towers/";
     
     protected final World world;
     private boolean placed = false;
@@ -53,20 +57,22 @@ public abstract class Tower extends Sprite {
      * @param world the containing world
      * @throws SlickException
      */
-    protected Tower(float x, float y, Image im, World world) throws SlickException {
-        super(x, y, im);
+    protected Tower(float x, float y, Type type, World world) throws SlickException {
+        super(x, y, type.getImage());
+        this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
+        this.range = type.range;
         this.world = world;
     }
 
     /** Fires a projectile in the given direction. */
-    protected abstract void shoot(Vector2f dir);
+    protected abstract void shoot(Vector2f dir) throws SlickException;
     
     public static final Tower create(Type type, float x, float y, World world) throws SlickException {
         switch (type) {
             case BUBBLE:
-                return new BubbleSortTower(x, y, type.getImage(), world);
+                return new BubbleSortTower(x, y, type, world);
             case SELECTION:
-                return new SelectionSortTower(x, y, type.getImage(), world);
+                return new SelectionSortTower(x, y, type, world);
         }
         return null;
     }
@@ -89,10 +95,11 @@ public abstract class Tower extends Sprite {
         Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
 
         vec.add(target.getV());
-        //vec.normalise().scale(type.proj.speed);
+        vec.normalise();
 
-        // Assume it keeps moving in a straight line
-        vec.add(target.getV());
+        // Assume it keeps moving in a straight line (leading the shot)
+        // TODO: remove / move to subclasses?
+        //vec.add(target.getV());
 
         return vec;
     }
@@ -106,7 +113,7 @@ public abstract class Tower extends Sprite {
     /** Counts down the shot timer.
      * Returns true if enough time has passed to shoot.
      */
-    public void update(int delta) {
+    public void update(int delta) throws SlickException {
         nextShot -= delta;
         if (nextShot <= 0) {
             // Target the next enemy in range
