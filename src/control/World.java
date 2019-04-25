@@ -263,7 +263,10 @@ public class World {
             while (eItr.hasNext()) {
                 Enemy e = eItr.next();
                 if (p.checkCollision(e)) {
-                    e.takeDamage(p.getDamage(), eItr);
+                    e.takeDamage(p.getDamage());
+                    if (e.isDead()) {
+                        eItr.remove();
+                    }
                     itr.remove();
                     break;
                 }

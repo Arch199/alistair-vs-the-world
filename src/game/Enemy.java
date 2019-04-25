@@ -1,7 +1,5 @@
 package game;
 
-import java.util.Iterator;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
@@ -79,18 +77,17 @@ public class Enemy extends DynamicSprite {
     /**
      * Make an enemy take damage
      * @param damage Amount to be deducted from health
-     * @param itr The enemy to deduct from, as an iterator. (Use .iterator() on a list of enemies to convert)
      */
-    public void takeDamage(int damage, Iterator<Enemy> itr) {
+    public void takeDamage(int damage) {
         health -= damage;
         setDamage(health);
-        if (health <= 0) {
-            itr.remove();
-        }
     }
-
+    
+    @Override
+    public boolean isDead() {
+        return super.isDead() || health <= 0;
+    }
+    
     public float getSpeed() { return speed; }
     public Type getType() { return type; }
-    
-    public void setSpeed(int speed) { this.speed = speed; }
 }
