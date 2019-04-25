@@ -7,7 +7,7 @@ import org.newdawn.slick.geom.Vector2f;
 /** 
  * Moving item fired by a tower.
  */
-public class Projectile extends Movable {
+public class Projectile extends DynamicSprite {
     public enum Type {
         BUBBLE("bubble.png", 1, 2f),
         SELECTION("defaultproj.png", 1, 6f);
