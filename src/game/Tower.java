@@ -42,7 +42,7 @@ public class Tower extends Sprite {
             throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
     }
-    public static final String SPRITE_PATH = "assets\\sprites\\towers\\";
+    public static final String SPRITE_PATH = "assets/sprites/towers/";
     
     private Type type;
     private boolean placed = false;

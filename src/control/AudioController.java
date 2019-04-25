@@ -14,7 +14,7 @@ public final class AudioController {
     private static HashMap<String, Sound[]> multiSounds = new HashMap<String, Sound[]>();
     static {
         // Load audio files
-        File folder = new File("assets\\audio");
+        File folder = new File("assets/audio");
         try {
             for (File f : folder.listFiles()) {
                 if (f.isFile()) {

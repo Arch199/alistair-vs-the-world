@@ -29,7 +29,7 @@ public class Enemy extends Movable {
             this.speed = speed;
         }
     }
-    public static final String SPRITE_PATH = "assets\\sprites\\enemies\\";
+    public static final String SPRITE_PATH = "assets/sprites/enemies/";
     
     private Type type;
     private int health;
