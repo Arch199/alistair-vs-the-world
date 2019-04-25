@@ -11,7 +11,7 @@ import control.World;
 /**
  * Sprite that moves down the path and does damage to Alistair.
  */
-public class Enemy extends Movable {
+public class Enemy extends DynamicSprite {
     public enum Type {
         // In order of increasing strength
         PYTHON("python-icon.png", 1, 1.5F),

@@ -4,9 +4,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
- * Object that is automatically "movable" i.e. it has a set speed.
+ * Sprite with a set velocity and damage.
  */
-public abstract class Movable extends Sprite {
+public abstract class DynamicSprite extends Sprite {
     private Vector2f v;
     private int damage;
 
@@ -18,7 +18,7 @@ public abstract class Movable extends Sprite {
      * @param im sprite image file
      * @param damage arbritrary int counter always >= 0
      */
-    public Movable(float startx, float starty, Vector2f v, Image im, int damage) {
+    public DynamicSprite(float startx, float starty, Vector2f v, Image im, int damage) {
         super(startx, starty, im);
         this.v = v;
         this.damage = damage;
