@@ -135,7 +135,8 @@ public class App extends BasicGame {
             int[][] level = new int[GRID_W][GRID_H];
 
             // Load map info file
-            Scanner scanner = new Scanner(new File("assets\\levels\\" + levelName + ".txt"));
+            System.out.println(System.getProperty("user.dir"));
+            Scanner scanner = new Scanner(new File("assets/levels/" + levelName + ".txt"));
             for (int y = 0; y < GRID_H; y++) {
                 assert (scanner.hasNext());
                 char[] line = scanner.next().toCharArray();
@@ -155,7 +156,7 @@ public class App extends BasicGame {
 
 
             // Load in wave info
-            scanner = new Scanner(new File("assets\\waves\\game1.txt"));
+            scanner = new Scanner(new File("assets/waves/game1.txt"));
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 

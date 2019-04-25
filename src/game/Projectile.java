@@ -20,7 +20,7 @@ public class Projectile extends DynamicSprite {
             this.speed = speed;
         }
     }
-    public static final String SPRITE_PATH = "assets\\sprites\\projectiles\\";
+    public static final String SPRITE_PATH = "assets/sprites/projectiles/";
     
     private Type type;
     
