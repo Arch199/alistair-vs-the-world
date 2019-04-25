@@ -1,14 +1,12 @@
 package game;
 
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
 /** 
  * Moving item fired by a tower.
  */
-public class Projectile extends DynamicSprite {
-    public enum Type {
+public abstract class Projectile extends DynamicSprite {
+    /*public enum Type {
         BUBBLE("bubble.png", 1, 2f),
         SELECTION("defaultproj.png", 1, 6f);
         final String imPath;
@@ -19,27 +17,18 @@ public class Projectile extends DynamicSprite {
             this.damage = damage;
             this.speed = speed;
         }
-    }
+    }*/
     public static final String SPRITE_PATH = "assets/sprites/projectiles/";
     
-    private Type type;
+    //private Type type;
     
     /** Create a projectile.
      * @param startx Starting x position
      * @param starty Starting y position
      * @param vec Velocity vector to begin moving with
-     * @param type Projectile type as an enum, e.g. Projectile.Type.BUBBLE 
+     * @param type Projectile type as an enum, e.g. Projectile.Type.BUBBLE
      */
-    public Projectile(float startx, float starty, Vector2f vec, Type type) {
+    public Projectile(float startx, float starty, Vector2f vec) {
         super(startx, starty, vec, null, 0);
-        this.type = type;
-        setDamage(type.damage);
-        try {
-            setImage(new Image(SPRITE_PATH + type.imPath));
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
     }
-    
-    public Type getType() { return type; }
 }

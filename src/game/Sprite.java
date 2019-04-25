@@ -44,7 +44,7 @@ public class Sprite {
      * @return Returns true if touching
      */
     public boolean checkCollision(Sprite other) {
-        Image im2 = other.getImage();
+        Image im2 = other.im;
         int w2 = im2.getWidth() / 2, h2 = im2.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
 

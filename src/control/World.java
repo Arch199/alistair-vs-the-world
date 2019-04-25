@@ -152,8 +152,8 @@ public class World {
         float xPos = w - sidebarW/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
-                TextSprite icon = new TextSprite(xPos, yPos, new Image(Tower.SPRITE_PATH + t.imPath));
-                icon.setText(TextSprite.Mode.BELOW, t.title, SMALL_TTF);
+                TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
+                icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
                 sidebarIcons.add(icon);
                 yPos += 65;
             } catch (SlickException e) {
@@ -212,11 +212,9 @@ public class World {
             waveComplete = w.isFinished() && enemies.isEmpty();
         }
 
-        // Tower shots
+        // Tower counting down / shooting
         for (Tower t : towers) {
-            if (t.countDown(delta)) {
-                t.shoot(this);
-            }
+            t.update(delta);
         }
     }
 
@@ -273,7 +271,7 @@ public class World {
     }
 
     /** Handles selecting / placing towers */
-    public void processTowers(int mouseX, int mouseY, boolean clicked) {
+    public void processTowers(int mouseX, int mouseY, boolean clicked) throws SlickException {
         // Click on a tower to display its range
         if (!isPlacingTower() && clicked) {
             for (Tower t: towers) {
@@ -294,7 +292,7 @@ public class World {
         if (!isPlacingTower() && clicked) {
             for (TextSprite s : sidebarIcons) {
                 if (s.isMouseOver(mouseX, mouseY)) {
-                    myTower = new Tower(mouseX, mouseY, Tower.Type.fromTitle(s.getText()));
+                    myTower = Tower.create(Tower.Type.fromTitle(s.getText()), mouseX, mouseY, this);
                     return;
                 }
             }
@@ -469,15 +467,10 @@ public class World {
     public boolean isPlacingTower() {
         return myTower != null;
     }
-
-    /** Create a new projectile
-     * @param x Initial x-coord
-     * @param y Initial y-coord
-     * @param vec Initial movement vector
-     * @param im Sprite image
-     */
-    public void newProjectile(float x, float y, Vector2f vec, Projectile.Type type) {
-        projectiles.add(new Projectile(x, y, vec, type));
+    
+    /** Add a projectile to the list of monitored projectiles. */
+    public void addProjectile(Projectile proj) {
+        projectiles.add(proj);
     }
 
     public int getGridWidth() { return gridW; }
