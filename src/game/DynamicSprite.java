@@ -24,6 +24,11 @@ public abstract class DynamicSprite extends Sprite {
         this.damage = damage;
     }
     
+    /** Returns if the sprite should be destroyed. */
+    public boolean isDead() {
+        return false;
+    }
+    
     /** Move according to current velocity. */
     public void advance() {
         move(v.x, v.y);

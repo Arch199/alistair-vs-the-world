@@ -173,8 +173,8 @@ public class World {
         float xPos = w - sidebarW/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
-                TextSprite icon = new TextSprite(xPos, yPos, new Image(Tower.SPRITE_PATH + t.imPath));
-                icon.setText(TextSprite.Mode.BELOW, t.title, SMALL_TTF);
+                TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
+                icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
                 sidebarIcons.add(icon);
                 yPos += 65;
             } catch (SlickException e) {
@@ -221,7 +221,7 @@ public class World {
      * and projectiles accordingly.
      * @param delta ms from last tick
      */
-    public void tick(int delta) {
+    public void tick(int delta) throws SlickException {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
@@ -237,16 +237,14 @@ public class World {
             waveComplete = w.isFinished() && enemies.isEmpty();
         }
 
-        // Tower shots
+        // Tower counting down / shooting
         for (Tower t : towers) {
-            if (t.countDown(delta)) {
-                t.shoot(this);
-            }
+            t.update(delta);
         }
     }
 
     /** Call every time a new wave starts */
-    public void newWave() {
+    private void newWave() {
         waveNum++;
         timer = 0;
         for (Tower t : towers) {
@@ -254,14 +252,14 @@ public class World {
         }
     }
 
-    /** Create a new enemy at the given position */
-    void spawnEnemy(float x, float y, Enemy.Type type) {
+    /** Create a new enemy at the given position. */
+    private void spawnEnemy(float x, float y, Enemy.Type type) {
         Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
         enemies.add(new Enemy(x, y, v, type));
     }
 
-    /** Update enemy positons */
-    public void moveEnemies() {
+    /** Update enemy positons. */
+    public void processEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
@@ -274,14 +272,15 @@ public class World {
         }
     }
 
-    /** Update projectile positions */
-    void moveProjectiles() {
+    /** Update projectile positions. */
+    void processProjectiles() {
         Iterator<Projectile> itr = projectiles.iterator();
         while (itr.hasNext()) {
             Projectile p = itr.next();
             p.advance();
-            if (p.isOffScreen(w, h)) {
+            if (p.isDead()) {
                 itr.remove();
+                continue;
             }
 
             // Hitting enemies
@@ -289,7 +288,10 @@ public class World {
             while (eItr.hasNext()) {
                 Enemy e = eItr.next();
                 if (p.checkCollision(e)) {
-                    e.takeDamage(p.getDamage(), eItr);
+                    e.takeDamage(p.getDamage());
+                    if (e.isDead()) {
+                        eItr.remove();
+                    }
                     itr.remove();
                     break;
                 }
@@ -297,8 +299,8 @@ public class World {
         }
     }
 
-    /** Handles selecting / placing towers */
-    public void processTowers(int mouseX, int mouseY, boolean clicked) {
+    /** Handles selecting / placing towers. */
+    public void processTowers(int mouseX, int mouseY, boolean clicked) throws SlickException {
         // Click on a tower to display its range
         if (!isPlacingTower() && clicked) {
             for (Tower t: towers) {
@@ -319,7 +321,7 @@ public class World {
         if (!isPlacingTower() && clicked) {
             for (TextSprite s : sidebarIcons) {
                 if (s.isMouseOver(mouseX, mouseY)) {
-                    myTower = new Tower(mouseX, mouseY, Tower.Type.fromTitle(s.getText()));
+                    myTower = Tower.create(Tower.Type.fromTitle(s.getText()), mouseX, mouseY, this);
                     return;
                 }
             }
@@ -328,7 +330,7 @@ public class World {
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
             myTower.setColor(Color.white);
-            myTower.teleport((float) mouseX, (float) mouseY);
+            myTower.teleport((float)mouseX, (float)mouseY);
 
             // Red if out of game bounds
             if (!inGridBounds(mouseX/tSize, mouseY/tSize)) {
@@ -373,7 +375,7 @@ public class World {
         }
     }
 
-    /** Button updates and colour changes */
+    /** Button updates and colour changes. */
     public void processButtons(int mousex, int mousey, boolean clicked) {
         for (Button b: buttons) {
             // Button disabling
@@ -498,17 +500,19 @@ public class World {
     public boolean isPlacingTower() {
         return myTower != null;
     }
-
-    /** Create a new projectile
-     * @param x Initial x-coord
-     * @param y Initial y-coord
-     * @param vec Initial movement vector
-     * @param im Sprite image
-     */
-    public void newProjectile(float x, float y, Vector2f vec, Projectile.Type type) {
-        projectiles.add(new Projectile(x, y, vec, type));
+    
+    /** Add a projectile to the list of monitored projectiles. */
+    public void addProjectile(Projectile proj) {
+        projectiles.add(proj);
     }
-
+    
+    /** Remove a projectile from the list. */
+    public void removeProjectile(Projectile proj) {
+        projectiles.remove(proj);
+    }
+    
+    public int getWidth() { return w; }
+    public int getHeight() { return h; }
     public int getGridWidth() { return gridW; }
     public int getGridHeight() { return gridH; }
     public int getTileSize() { return tSize; }

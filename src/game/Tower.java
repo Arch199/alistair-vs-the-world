@@ -13,25 +13,24 @@ import control.World;
 /**
  * Towers are placed on a grid and shoot projectiles at enemies.
  */
-public class Tower extends Sprite {
+public abstract class Tower extends Sprite {
     public enum Type {
-        // TODO: implement and enable all of these
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 4000, 150f),
-        SELECTION("Selection Sort Alistair", "selection.png", 3000, 100f)/*,
-        INSERTION("Insertion Sort Alistair", null, 0, 0f),
-        QUICK("Quicksort Alistair", null, 0, 0f),
-        HEAP("Heapsort Alistair", null, 0, 0f),
-        MERGE("Mergesort Alistair", null, 0, 0f)*/;
-        public final String title, imPath;
-        public final int fireRate;
-        public final float range;
-        public final Projectile.Type proj;
-        Type(String title, String imPath, int fireRate, float range) {
-            this.title = title;
-            this.imPath = imPath;
+        SELECTION("Selection Sort Alistair", "selection.png", 4000, 150f),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 100f);
+        private final String title, imName;
+        private final int fireRate;
+        private final float range;
+        Type(String text, String imName, int fireRate, float range) {
+            this.title = text;
+            this.imName = imName;
             this.fireRate = fireRate;
             this.range = range;
-            proj = Projectile.Type.valueOf(name());
+        }
+        public String toString() {
+            return title;
+        }
+        public Image getImage() throws SlickException {
+            return new Image(SPRITE_PATH + imName);
         }
         public static Type fromTitle(String title) {
             for (Type t : values()) {
@@ -42,9 +41,9 @@ public class Tower extends Sprite {
             throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
     }
-    public static final String SPRITE_PATH = "assets\\sprites\\towers\\";
+    protected static final String SPRITE_PATH = "assets/sprites/towers/";
     
-    private Type type;
+    protected final World world;
     private boolean placed = false;
     private float range;
     private int fireRate; // In ms
@@ -54,38 +53,32 @@ public class Tower extends Sprite {
      * Create a tower.
      * @param x x-position
      * @param y y-position
-     * @param type Enum for the tower's type
+     * @param imName the file name of the image file
+     * @param world the containing world
+     * @throws SlickException
      */
-    public Tower(float x, float y, Tower.Type type) {
-        super(x, y, null);
-        this.type = type;
-        fireRate = type.fireRate; // Could actually remove this and determine everything from type
-        range = type.range;
-        try {
-            setImage(new Image(SPRITE_PATH + type.imPath));
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
+    protected Tower(float x, float y, Type type, World world) throws SlickException {
+        super(x, y, type.getImage());
+        this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
+        this.range = type.range;
+        this.world = world;
     }
 
-    /** Makes the shot. Generates a projectile and sets a new time. */
-    public void shoot(World world) {
-        // Target the next enemy in range
-        Vector2f vec = targetNext(world.getEnemies());
-        if (vec == null) {
-            // Instead of firing, just wait and try again next tick
-            return;
+    /** Fires a projectile in the given direction. */
+    protected abstract void shoot(Vector2f dir) throws SlickException;
+    
+    public static final Tower create(Type type, float x, float y, World world) throws SlickException {
+        switch (type) {
+            case BUBBLE:
+                return new BubbleSortTower(x, y, type, world);
+            case SELECTION:
+                return new SelectionSortTower(x, y, type, world);
         }
-        
-        // Create projectile
-        world.newProjectile(getX(), getY(), vec, type.proj);
-
-        // Reset the timer for the next shot
-        nextShot = fireRate;
+        return null;
     }
-
+    
     /** Returns a velocity vector aimed at the first enemy in range. */
-    private Vector2f targetNext(List<Enemy> enemies) {
+    protected Vector2f targetNext(List<Enemy> enemies) {
         // Target the first enemy in range
         Enemy target = null;
         for (Enemy e : enemies) {
@@ -102,10 +95,11 @@ public class Tower extends Sprite {
         Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
 
         vec.add(target.getV());
-        vec.normalise().scale(type.proj.speed);
+        vec.normalise();
 
-        // Assume it keeps moving in a straight line
-        vec.add(target.getV());
+        // Assume it keeps moving in a straight line (leading the shot)
+        // TODO: remove / move to subclasses?
+        //vec.add(target.getV());
 
         return vec;
     }
@@ -119,11 +113,22 @@ public class Tower extends Sprite {
     /** Counts down the shot timer.
      * Returns true if enough time has passed to shoot.
      */
-    public boolean countDown(int delta) {
-        // This could be split into two functions rather than being a check with side effects
-        // Could also just move this into the shoot() method directly (might be best)
+    public void update(int delta) throws SlickException {
         nextShot -= delta;
-        return nextShot <= 0;
+        if (nextShot <= 0) {
+            // Target the next enemy in range
+            Vector2f vec = targetNext(world.getEnemies());
+            if (vec == null) {
+                // Instead of firing, just wait and try again next tick
+                return;
+            }
+            
+            // Call the relevant subclass method to shoot
+            shoot(vec);
+            
+            // Reset the timer for the next shot
+            nextShot = fireRate;
+        }
     }
 
     /** Draws a range circle around towers. */
@@ -144,6 +149,5 @@ public class Tower extends Sprite {
         nextShot = 0;
     }
 
-    public Type getType() { return type; }
     public boolean isPlaced() { return placed; }
 }

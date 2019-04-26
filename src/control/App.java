@@ -104,8 +104,8 @@ public class App extends BasicGame {
             }
             
             world.tick(delta);
-            world.moveEnemies();
-            world.moveProjectiles();
+            world.processEnemies();
+            world.processProjectiles();
             world.processTowers(mouseX, mouseY, leftClick);
             world.processButtons(mouseX, mouseY,leftClick);
         }
@@ -151,7 +151,8 @@ public class App extends BasicGame {
            
         try {
             // Load in wave info
-            Scanner scanner = new Scanner(new File("assets\\waves\\game1.txt"));
+            scanner = new Scanner(new File("assets/waves/game1.txt"));
+            
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 

@@ -6,7 +6,7 @@ import org.newdawn.slick.Image;
  * Tile sprites to make the terrain
  */
 public class Tile extends Sprite {
-    public static final String SPRITE_PATH = "assets\\sprites\\tiles\\";
+    public static final String SPRITE_PATH = "assets/sprites/tiles/";
     
     private String name;
 

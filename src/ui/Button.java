@@ -39,7 +39,6 @@ public class Button extends Rectangle {
 
     /** Draw the button with the current colour */
     public void drawSelf(Graphics g) {
-
         Color currentCol;
         // Find the draw colour
         if (disabled) {
