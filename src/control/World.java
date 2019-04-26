@@ -13,6 +13,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.tiled.TiledMap;
 
 import game.Enemy;
 import game.Projectile;
@@ -31,7 +32,7 @@ public class World {
         MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20);
     private static final TrueTypeFont
         SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
-        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true);
+        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true); 
 
     private int w, h, tSize, gridW, gridH, sidebarW;
     private float startX, startY;
@@ -44,7 +45,7 @@ public class World {
     private Button nextWave;
     
     /** 2D array of tiles for each grid cell */
-    private Tile[][] tiles;
+    private TiledMap tiledMap;
     /** List of waves, each with set of spawn instructions */
     private List<Wave> waves;
     /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move move */
@@ -59,11 +60,13 @@ public class World {
     private List<TextSprite> sidebarIcons = new ArrayList<TextSprite>();
     /** List of other buttons */
     private List<Button> buttons = new ArrayList<Button>();
-
+    /** Tile is wall properties */
+    private boolean[][] wall;
+    
     private static Image[] tileset;
     private static String[] tile_names;
     private static final int ALISTAIR_INDEX = 2;
-    static {
+    /*static {
         // Initialise tileset and tile names
         // Meaning of integers in level file
         tile_names = new String[3]; // TODO: add all this to a file (?)
@@ -80,7 +83,7 @@ public class World {
         } catch (SlickException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * Creates the world.
@@ -92,7 +95,7 @@ public class World {
      * @param level Map layout
      * @param waves Data on waves and enemy spawn timing
      */
-    public World(int w, int h, int tSize, int sidebarW, float startX, float startY, int[][] level, ArrayList<Wave> waves) {
+    public World(int w, int h, int tSize, int sidebarW, float startX, float startY, TiledMap tiledMap, ArrayList<Wave> waves) {
         this.w = w;
         this.h = h;
         this.tSize = tSize;
@@ -102,8 +105,25 @@ public class World {
         this.startY = startY;
         this.waves = waves;
         this.sidebarW = sidebarW;
+        this.tiledMap = tiledMap;
 
+        // Set up tile properties
+        for(int x=0; x < tiledMap.getWidth(); x++) {
+            for(int y=0; y < tiledMap.getHeight(); y++) {
+                int ID = tiledMap.getTileId(x, y, 0);
+                System.out.printf("x = %d, y = %d, ID = %d%n", x, y, ID);
+                //if(tiledMap.getTileProperty(ID, "isWall", "false") == null) {
+                 //   System.out.println("fdsf");
+                //}
+                //System.out.println(tiledMap.getTileProperty(ID, "isWall", "false"));
+                boolean isWall = Boolean.parseBoolean(tiledMap.getTileProperty(ID, "isWall", "false"));
+                wall[x][y] = isWall;
+            }
+        }
+        
         // Initialise tile sprites from level + tileset
+        
+        /*
         tiles = new Tile[gridW][gridH];
         for (int x = 0; x < level.length; x++) {
             for (int y = 0; y < level[x].length; y++) {
@@ -113,7 +133,7 @@ public class World {
                     alistair = tiles[x][y];
                 }
             }
-        }
+        }*/
 
         // Traverse the path and store direction values in a grid
         path = new int[gridW][gridH][2];
@@ -127,14 +147,15 @@ public class World {
         while (toPos(x) != alistair.getX() || toPos(y) != alistair.getY()) {
             // Move along the path
             // Check if we've hit a wall yet
-            if (x + i < 0 || x + i >= gridW || y + j < 0 || y + j >= gridH || tiles[x + i][y + j].isWall()) {
+            if (x + i < 0 || x + i >= gridW || y + j < 0 || y + j >= gridH || isWall(x+i, y+j)) {
                 // OK, try turning left (anti-clockwise)
                 int old_i = i;
                 i = j;
                 j = -old_i;
 
                 // Check again
-                if (tiles[x + i][y + j].isWall()) {
+                
+                if (isWall(x+i, y+j)) {
                     // Failed, turn right then (need to do a 180)
                     i = -i;
                     j = -j;
@@ -170,7 +191,11 @@ public class World {
         // Play intro sound
         AudioController.play("intro");
     }
-
+    
+    public boolean isWall(int x, int y) {
+        return wall[x/48][y/48];
+    }
+    
     /**
      * Deals with user input e.g. pressing Esc to return to main menu.
      * @param Obtained from App's GameContainer
@@ -317,15 +342,22 @@ public class World {
             }
 
             // Set the tower to be red if it's touching a non-wall tile or tower
+            // TODO: Replace with TiledMap Function
             outer:
+            if (isWall(mouseX, mouseY)) {
+                myTower.setColor(Color.red);
+            }
+            
+            /*
             for (Tile[] column : tiles) {
                 for (Tile tile : column) {
                     if (!tile.isWall() && tile.checkCollision(myTower)) {
                         myTower.setColor(Color.red);
-                        break outer;
+                        break outer
                     }
                 }
             }
+            */
             outer:
             for (Tower t : towers) {
                 if (t.checkCollision(myTower)) {
@@ -403,13 +435,10 @@ public class World {
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
-
+    
+    // TODO: Replace with tiledmap functionality
     public void renderTiles() {
-        for (Tile[] column : tiles) {
-            for (Tile t : column) {
-                t.drawSelf();
-            }
-        }
+        tiledMap.render(0, 0);
     }
 
     public void renderEnemies() {
@@ -487,7 +516,6 @@ public class World {
     public int getGridWidth() { return gridW; }
     public int getGridHeight() { return gridH; }
     public int getTileSize() { return tSize; }
-    public Tile getTile(int x, int y) { return tiles[x][y]; }
     public int getPathXDir(int x, int y) { return path[x][y][0]; }
     public int getPathYDir(int x, int y) { return path[x][y][1]; }
     public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }

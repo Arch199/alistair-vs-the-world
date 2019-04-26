@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.newdawn.slick.*;
+import org.newdawn.slick.tiled.TiledMap;
 
 import ui.Menu;
 
@@ -18,7 +19,10 @@ import ui.Menu;
  * Creates a World to handle the gameplay itself.
  */
 public class App extends BasicGame {
-    private static final int
+    private static final String 
+        START_POS = "Starting_Pos";
+    
+    public static final int
         WINDOW_W = 1104, WINDOW_H = 672, TILE_SIZE = 48, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
@@ -126,36 +130,29 @@ public class App extends BasicGame {
         }
     }
     
+    
+    
     /** Opens a new level and creates a World to manage it.
      * Also minimises the current menu and changes focus to the level.
      */
-    private void openLevel(String levelName) {
+    private void openLevel(String levelName) throws SlickException{
+        
+        // TiledMap
+        TiledMap tiledMap; 
+        float startX = 0, startY = 0;
+        tiledMap = new TiledMap("assets\\levels\\" + levelName + ".tmx");
+        // 2D grid array
+        int[][] level = new int[GRID_W][GRID_H];
+        
+        // Enemy spawn location
+        String[] pos = tiledMap.getMapProperty(START_POS, "0,0").split(",");
+        startX = Float.parseFloat(pos[0]);
+        startY = Float.parseFloat(pos[1]);
+           
         try {
-            // 2D grid array
-            int[][] level = new int[GRID_W][GRID_H];
-
-            // Load map info file
-            Scanner scanner = new Scanner(new File("assets/levels/" + levelName + ".txt"));
-            for (int y = 0; y < GRID_H; y++) {
-                assert (scanner.hasNext());
-                char[] line = scanner.next().toCharArray();
-                int x = 0;
-                for (char c : line) {
-                    if (x >= GRID_W)
-                        break;
-                    assert (Character.isDigit(c));
-                    level[x++][y] = Character.getNumericValue(c);
-                }
-            }
-
-            // Enemy spawn location
-            float startX = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
-            float startY = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
-            scanner.close();
-
-
             // Load in wave info
             scanner = new Scanner(new File("assets/waves/game1.txt"));
+            
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 
@@ -187,10 +184,10 @@ public class App extends BasicGame {
                     }
                 }
             }
-            scanner.close();
+            //scanner.close();
             
             // Create World and get rid of Menu
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, level, waves);
+            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, tiledMap, waves);
             menu = null;
 
         } catch (FileNotFoundException e) {
