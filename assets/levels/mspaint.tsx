@@ -3,19 +3,19 @@
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="1" type="Alistair">
   <properties>
-   <property name="isWall" value="false"/>
+   <property name="isWall" type="bool" value="false"/>
   </properties>
   <image width="48" height="48" source="../sprites/tiles/alistair.png"/>
  </tile>
  <tile id="2" type="Wall">
   <properties>
-   <property name="isWall" value="true"/>
+   <property name="isWall" type="bool" value="true"/>
   </properties>
   <image width="48" height="48" source="../sprites/tiles/wall.png"/>
  </tile>
  <tile id="3" type="Path">
   <properties>
-   <property name="isWall" value="false"/>
+   <property name="isWall" type="bool" value="false"/>
   </properties>
   <image width="48" height="48" source="../sprites/tiles/path.png"/>
  </tile>

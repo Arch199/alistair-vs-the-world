@@ -374,7 +374,7 @@ public class World {
     }
     
     public void renderTiles() {
-        //map.render(0, 0);
+        map.render(0, 0);
     }
 
     public void renderEnemies() {
