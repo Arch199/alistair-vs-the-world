@@ -20,9 +20,7 @@ public abstract class Entity {
     public boolean checkCollision(Entity other) {
         int w = getWidth() / 2, h = getHeight() / 2, w2 = other.getWidth() / 2, h2 = other.getHeight() / 2;
         float x2 = other.x, y2 = other.y;
-
         return ((x + w >= x2 - w2) && (x2 + w2 >= x - w) && (y + h >= y2 - h2) && (y2 + h2 >= y - h));
-        // I'm honestly amazed this works -James
     }
     
     /**
@@ -38,7 +36,7 @@ public abstract class Entity {
      * Check whether the entity contains a given point.
      * @param x The x-coordinate of the point
      * @param y The y-coordinate of the point
-     * */
+     */
     public boolean contains(int x, int y) {
         return x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom();
     }
@@ -46,7 +44,7 @@ public abstract class Entity {
     /**
      * Move relative to the current position.
      * @param xDist Signed pixels in the x-plane to move
-     * @param yDist Signed pixels in the y-play to move
+     * @param yDist Signed pixels in the y-plane to move
      */
     public void move(float xDist, float yDist) {
         x += xDist;
@@ -54,7 +52,7 @@ public abstract class Entity {
     }
     
     /**
-     * Move instantly to an arbritary position.
+     * Move instantly to an arbitrary position.
      * @param destX New x-position
      * @param destY New y-position
      */
@@ -71,4 +69,7 @@ public abstract class Entity {
     public float getRight() { return x + w / 2; }
     public float getTop() { return y - h / 2; }
     public float getBottom() { return y + h / 2; }
+    
+    protected void setWidth(int width) { w = width; }
+    protected void setHeight(int height) { h = height; }
 }

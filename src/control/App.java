@@ -63,8 +63,8 @@ public class App extends BasicGame {
      */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
-        // Menu
         Input input = gc.getInput();
+        
         if (menu != null) {
             Menu.Choice action = menu.update(input);
             if (action == null) {
@@ -81,9 +81,7 @@ public class App extends BasicGame {
                     closeRequested();
                     break;
             }
-        }
-
-        if (world != null) {
+        } else if (world != null) {
             // Can only call inputs once
             boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
@@ -93,7 +91,7 @@ public class App extends BasicGame {
             String action = world.processInput(escape, rightClick);
             switch (action) {
                 case "Exit":
-                    // TODO: put this in a function or something?
+                    // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                     AudioController.stopAll();
                     world = null;
                     menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);

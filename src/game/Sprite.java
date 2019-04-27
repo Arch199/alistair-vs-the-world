@@ -36,10 +36,11 @@ public class Sprite extends Entity {
 
     public Color getColor() { return col; }
     public float getScale() { return scale; }
-    public int getWidth() { return (int)(im.getWidth() * scale); }
-    public int getHeight() { return (int)(im.getHeight() * scale); }
 
-    public void setImage(Image im) { this.im = im; }
     public void setColor(Color col) { this.col = col; }
-    public void setScale(float scale) { this.scale = scale; }
+    public void setScale(float scale) {
+        setWidth((int)(getWidth() / this.scale * scale));
+        setHeight((int)(getHeight() / this.scale * scale));
+        this.scale = scale;
+    }
 }

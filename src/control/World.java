@@ -47,8 +47,8 @@ public class World {
     private List<Wave> waves;
     private List<Projectile> projectiles = new LinkedList<>();
     private List<Tower> towers = new LinkedList<>();
-    private List<TextSprite> sidebarIcons = new ArrayList<TextSprite>();
-    private List<Button> buttons = new ArrayList<Button>();
+    private List<TextSprite> sidebarIcons = new ArrayList<>();
+    private List<Button> buttons = new ArrayList<>();
     /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move in. */
     private int[][][] path;
     /** List of enemies in order of creation (oldest first). */
@@ -70,9 +70,9 @@ public class World {
         
         this.w = w;
         this.h = h;
-        this.waves = waves;
         this.sidebarW = sidebarW;
         this.map = map;
+        this.waves = waves;
         
         // Get the enemy spawn location
         String[] pos = map.getMapProperty("startPos", "").split(",");
@@ -208,22 +208,6 @@ public class World {
         for (Tower t : towers) {
             t.update(delta);
         }
-    }
-
-    /** Increment the wave number and reset the timer.
-     * Called every time a new wave starts.
-     */
-    private void newWave() {
-        waveNum++;
-        timer = 0;
-        for (Tower t : towers) {
-            t.waveReset();
-        }
-    }
-
-    /** Create a new enemy at the given position. */
-    private void spawnEnemy(float x, float y, Enemy.Type type) throws SlickException {
-        enemies.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
     }
 
     /** Update enemy positons. */
@@ -385,12 +369,12 @@ public class World {
 
         // Display wave number and Alistair's health
         g.setColor(Color.white);
-        Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
+        Util.writeCentered(g, "Wave: " + waveNum, w - (sidebarW / 2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
     
     public void renderTiles() {
-        map.render(0, 0);
+        //map.render(0, 0);
     }
 
     public void renderEnemies() {
@@ -411,7 +395,8 @@ public class World {
         }
     }
 
-    /** Make alistair take damage
+    /**
+     * Make alistair take damage
      * @param damage Health reduction, <=100
      */
     public void takeDamage(int damage) {
@@ -454,23 +439,19 @@ public class World {
         return gridX < 0 ? 1 : (gridX >= map.getWidth() ? -1 : 0);
     }
     
-    /** Calculate a vertical grid direction to point inwards from the current position. */
-    public int inwardDirY(int gridY) {
-        return gridY < 0 ? 1 : (gridY >= map.getHeight() ? -1 : 0);
-    }
-
-    /** Calculate a horizontal literal direction to point inwards */
+    /** Calculate a horizontal literal direction to point inwards. */
     public float inwardDirX(float posX) {
         return posX < 0 ? 1 : (posX >= map.getWidth() * tileSize ? -1 : 0);
     }
     
-    /** Calculate a vertical literal direction to point inwards */
+    /** Calculate a vertical grid direction to point inwards from the current position. */
+    public int inwardDirY(int gridY) {
+        return gridY < 0 ? 1 : (gridY >= map.getHeight() ? -1 : 0);
+    }
+    
+    /** Calculate a vertical literal direction to point inwards. */
     public float inwardDirY(float posY) {
         return posY < 0 ? 1 : (posY >= map.getHeight() * tileSize ? -1 : 0);
-    }
-
-    public boolean isPlacingTower() {
-        return myTower != null;
     }
     
     /** Add a projectile to the list of monitored projectiles. */
@@ -478,9 +459,27 @@ public class World {
         projectiles.add(proj);
     }
     
-    /** Remove a projectile from the list. */
-    public void removeProjectile(Projectile proj) {
-        projectiles.remove(proj);
+    /**
+     * Increment the wave number and reset the timer.
+     * Called every time a new wave starts.
+     */
+    private void newWave() {
+        waveNum++;
+        timer = 0;
+        for (Tower t : towers) {
+            t.waveReset();
+        }
+    }
+
+    /** Create a new enemy at the given position. */
+    private void spawnEnemy(float x, float y, Enemy.Type type) throws SlickException {
+        enemies.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
+    }
+    
+    /** Check if a tower is currently being held. */
+    private boolean isPlacingTower() {
+        // TODO: consider removing this method (also maybe rename myTower to heldTower or something)
+        return myTower != null;
     }
     
     public int getWidth() { return w; }
