@@ -30,16 +30,16 @@ public class World {
         MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20);
     private static final TrueTypeFont
         SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
-        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true); 
+        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true);
 
-    private int w, h, tileSize, gridW, gridH, sidebarW;
+    private int w, h, tileSize, sidebarW;
     private float startX, startY;
     private int health = 100, waveNum = 0;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
                   selectedTower = null; // Placed tower that has been selected
-    private Boolean waveComplete = true;
+    private boolean waveComplete = true;
     private Button nextWave;
     
     private TiledMap map;
@@ -49,9 +49,9 @@ public class World {
     private List<Tower> towers = new LinkedList<>();
     private List<TextSprite> sidebarIcons = new ArrayList<TextSprite>();
     private List<Button> buttons = new ArrayList<Button>();
-    /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move move */
+    /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move in. */
     private int[][][] path;
-    /** List of enemies in crder of creation (oldest first) */
+    /** List of enemies in order of creation (oldest first). */
     private List<Enemy> enemies = new LinkedList<>();
 
     /**
@@ -61,27 +61,37 @@ public class World {
      * @param map The tiled map to render
      * @param waves Data on waves and enemy spawn timing
      */
-    public World(int w, int h, int sidebarW, TiledMap map, ArrayList<Wave> waves) {
+    public World(int w, int h, int sidebarW, TiledMap map, List<Wave> waves) {
+        // Assert that the map has square tiles
+        if (map.getTileWidth() != map.getTileHeight()) {
+            throw new IllegalArgumentException("Tiled map must have square tiles");
+        }
+        this.tileSize = map.getTileWidth();
+        
         this.w = w;
         this.h = h;
-        this.gridW = (w - sidebarW) / tileSize;
-        this.gridH = h / tileSize;
         this.waves = waves;
         this.sidebarW = sidebarW;
         this.map = map;
         
-        // Assert that the map has square tiles
-        if (map.getTileWidth() != map.getTileHeight()) {
-            throw new IllegalArgumentException("Given TiledMap must have square tiles");
-        }
-        this.tileSize = map.getTileWidth();
-        
         // Get the enemy spawn location
-        String[] pos = map.getMapProperty("startPos", "0,0").split(",");
-        startX = Float.parseFloat(pos[0]);
-        startY = Float.parseFloat(pos[1]);
+        String[] pos = map.getMapProperty("startPos", "").split(",");
+        try {
+            startX = toPos(Integer.parseInt(pos[0]));
+            startY = toPos(Integer.parseInt(pos[1]));
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Tiled map must have an enemy starting position");
+        }
         
-        // TODO: get alistair's location
+        // Get Alistair's location
+        String[] alistairPos = map.getMapProperty("alistairPos", "").split(",");
+        int alistairX, alistairY;
+        try {
+            alistairX = Integer.parseInt(alistairPos[0]);
+            alistairY = Integer.parseInt(alistairPos[1]);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Tiled map must have Alistair on it (with his position given)");
+        }
         
         // Extract the tile data into an array for easy access
         tiles = new Tile[map.getWidth()][map.getHeight()];
@@ -89,31 +99,34 @@ public class World {
         for (int x = 0; x < map.getWidth(); x++) {
             for (int y = 0; y < map.getHeight(); y++) {
                 int id = map.getTileId(x, y, 0);
-                tiles[x][y] = new Tile(toPos(x), toPos(y), tileSize, tileSet.getProperties(id));
+                tiles[x][y] = new Tile(x, y, tileSet.getProperties(id));
             }
         }
+        alistair = tiles[alistairX][alistairY];
 
         // Traverse the enemy path and store direction values in a grid
-        path = new int[gridW][gridH][2];
+        path = new int[map.getWidth()][map.getHeight()][2];
         int x = toGrid(startX), y = toGrid(startY);
-        int i = defaultDir(x);
-        int j = defaultDir(y);
-        while (x < 0 || x >= gridW || y < 0 || y >= gridH) {
+        int i = inwardDirX(x);
+        int j = inwardDirY(y);
+        if (i == 0 && j == 0) {
+            throw new IllegalArgumentException("Starting position must be outside grid");
+        }
+        while (!inGridBounds(x, y)) {
             x += i;
             y += j;
         }
-        while (toPos(x) != alistair.getX() || toPos(y) != alistair.getY()) {
+        while (x != alistairX || y != alistairY) {
             // Move along the path
             // Check if we've hit a wall yet
-            if (x + i < 0 || x + i >= gridW || y + j < 0 || y + j >= gridH || tiles[x+i][y+j].isWall()) {
+            if (!inGridBounds(x + i, y + j) || tiles[x + i][y + j].isWall()) {
                 // OK, try turning left (anti-clockwise)
                 int old_i = i;
                 i = j;
                 j = -old_i;
 
                 // Check again
-                
-                if (tiles[x+i][y+j].isWall()) {
+                if (!inGridBounds(x + i, y + j) || tiles[x + i][y + j].isWall()) {
                     // Failed, turn right then (need to do a 180)
                     i = -i;
                     j = -j;
@@ -151,7 +164,7 @@ public class World {
     }
     
     /**
-     * Deals with user input e.g. pressing Esc to return to main menu.
+     * Deal with user input e.g. pressing Esc to return to main menu.
      * @param Obtained from App's GameContainer
      * @return A string for an action to take. (Empty string by default).
      */
@@ -171,8 +184,8 @@ public class World {
     }
     
     /**
-     * Keeps track of the time (in ms) from the start of the wave. Spawns enemies
-     * and projectiles accordingly.
+     * Keep track of the time (in ms) from the start of the wave.
+     * Spawn enemies and projectiles accordingly.
      * @param delta ms from last tick
      */
     public void tick(int delta) throws SlickException {
@@ -208,7 +221,7 @@ public class World {
 
     /** Create a new enemy at the given position. */
     private void spawnEnemy(float x, float y, Enemy.Type type) {
-        Vector2f v = new Vector2f(defaultDir(x), defaultDir(y));
+        Vector2f v = new Vector2f(inwardDirX(x), inwardDirY(y));
         enemies.add(new Enemy(x, y, v, type));
     }
 
@@ -253,78 +266,63 @@ public class World {
         }
     }
 
-    /** Handles selecting / placing towers. */
+    /** Handle selecting / placing towers. */
     public void processTowers(int mouseX, int mouseY, boolean clicked) throws SlickException {
-        // Click on a tower to display its range
-        if (!isPlacingTower() && clicked) {
-            for (Tower t: towers) {
-                if (t.isMouseOver(mouseX, mouseY) && t != myTower) {
-                    selectedTower = t;
-                }
-            }
-        }
-
-        // Deselect a selected tower
-        if (selectedTower != null) {
-            if (isPlacingTower() || (clicked && !selectedTower.isMouseOver(mouseX, mouseY))) {
-                selectedTower = null;
-            }
-        }
-
-        // Process selecting towers from the sidebar
-        if (!isPlacingTower() && clicked) {
-            for (TextSprite s : sidebarIcons) {
-                if (s.isMouseOver(mouseX, mouseY)) {
-                    myTower = Tower.create(Tower.Type.fromTitle(s.getText()), mouseX, mouseY, this);
-                    return;
-                }
-            }
-        }
-
         // If we're placing a tower, move it to the mouse position
         if (isPlacingTower()) {
             myTower.setColor(Color.white);
-            myTower.teleport((float)mouseX, (float)mouseY);
+            myTower.teleport(mouseX, mouseY);
 
-            // Red if out of game bounds
-            if (!inGridBounds(mouseX / tileSize, mouseY / tileSize)) {
+            // Set color to red if out of game bounds
+            if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
                 myTower.setColor(Color.red);
                 if (clicked) {
                     myTower = null;
                     return;
                 }
-            }
-
-            // Set the tower to be red if it's touching a non-wall tile or tower
-            // TODO: Replace with TiledMap Function
-            if (tiles[mouseX][mouseY].isWall()) {
-                myTower.setColor(Color.red);
-            }
-            
-            /*
-            outer:
-            for (Tile[] column : tiles) {
-                for (Tile tile : column) {
-                    if (!tile.isWall() && tile.checkCollision(myTower)) {
-                        myTower.setColor(Color.red);
-                        break outer
-                    }
-                }
-            }
-            */
-            outer:
-            for (Tower t : towers) {
-                if (t.checkCollision(myTower)) {
+            } else {
+                // Also set color to red if touching a non-wall tile or tower
+                if (getTile(mouseX, mouseY).isWall()) {
                     myTower.setColor(Color.red);
-                    break outer;
+                    return;
+                }
+                
+                for (Tower t : towers) {
+                    if (t.checkCollision(myTower)) {
+                        myTower.setColor(Color.red);
+                        return;
+                    }
                 }
             }
                 
             // If the user clicked and it's not colliding with anything, place it
-            if (clicked && myTower.getColor() == Color.white) {
+            if (clicked/* && myTower.getColor() == Color.white*/) {
                 myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
                 myTower = null;
+            }
+        } else if (clicked) {            
+            // Click on a tower to display its range
+            for (Tower t: towers) {
+                if (t.contains(mouseX, mouseY) && t != myTower) {
+                    if (t == selectedTower) {
+                        selectedTower = null;
+                    } else {
+                        selectedTower = t;
+                    }
+                    return;
+                }
+            }
+            
+            // Deselect a selected tower
+            selectedTower = null;
+                 
+            // Process selecting towers from the sidebar
+            for (TextSprite s : sidebarIcons) {
+                if (s.contains(mouseX, mouseY)) {
+                    myTower = Tower.create(Tower.Type.fromTitle(s.getText()), mouseX, mouseY, this);
+                    return;
+                }
             }
         }
     }
@@ -352,7 +350,7 @@ public class World {
                 }
             } else {
                 b.setHover(false);
-        }
+            }
         }
     }
 
@@ -390,7 +388,6 @@ public class World {
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
     
-    // TODO: Replace with tiledmap functionality
     public void renderTiles() {
         map.render(0, 0);
     }
@@ -425,35 +422,50 @@ public class World {
         }
     }
     
-    /** Gets the tile data at a specific position. */
+    /** Get the tile data at a specific position. */
     public Tile getTile(float x, float y) {
         return tiles[toGrid(x)][toGrid(y)];
     }
-
-    /** Converts from literal position to position on grid */
+    
+    /** Convert from literal position to position on grid. */
     public int toGrid(float pos) {
         // Choose closest grid position
         return Math.round((pos - tileSize / 2) / tileSize);
     }
 
-    /** Converts from grid position to literal coordinates */
+    /** Convert from grid position to literal coordinates. */
     public float toPos(int gridval) {
         return gridval * tileSize + tileSize / 2;
     }
 
-    /** Check coordinate against game boundaries */
+    /** Check grid coordinates against game boundaries. */
     public boolean inGridBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < gridW && y < gridH;
+        return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
+    }
+    
+    /** Check literal coordinates against game boundaries. */
+    public boolean inGridBounds(float x, float y) {
+        return x >= 0 && y >= 0 && x < map.getWidth() * tileSize && y < map.getHeight() * tileSize;
     }
 
-    /** Returns a grid direction to point inwards from the current position */
-    public int defaultDir(int gridval) {
-        return gridval < 0 ? 1 : (gridval >= gridW ? -1 : 0);
+    /** Calculate a horizontal grid direction to point inwards from the current position. */
+    public int inwardDirX(int gridX) {
+        return gridX < 0 ? 1 : (gridX >= map.getWidth() ? -1 : 0);
+    }
+    
+    /** Calculate a vertical grid direction to point inwards from the current position. */
+    public int inwardDirY(int gridY) {
+        return gridY < 0 ? 1 : (gridY >= map.getHeight() ? -1 : 0);
     }
 
-    /** Returns a literal direction to point inwards */
-    public float defaultDir(float pos) {
-        return pos < 0 ? 1 : (pos >= gridW * tileSize ? -1 : 0);
+    /** Calculate a horizontal literal direction to point inwards */
+    public float inwardDirX(float posX) {
+        return posX < 0 ? 1 : (posX >= map.getWidth() * tileSize ? -1 : 0);
+    }
+    
+    /** Calculate a vertical literal direction to point inwards */
+    public float inwardDirY(float posY) {
+        return posY < 0 ? 1 : (posY >= map.getHeight() * tileSize ? -1 : 0);
     }
 
     public boolean isPlacingTower() {
@@ -472,8 +484,8 @@ public class World {
     
     public int getWidth() { return w; }
     public int getHeight() { return h; }
-    public int getGridWidth() { return gridW; }
-    public int getGridHeight() { return gridH; }
+    public int getGridWidth() { return map.getWidth(); }
+    public int getGridHeight() { return map.getHeight(); }
     public int getTileSize() { return tileSize; }
     public int getPathXDir(int x, int y) { return path[x][y][0]; }
     public int getPathYDir(int x, int y) { return path[x][y][1]; }
@@ -481,12 +493,12 @@ public class World {
     public List<Projectile> getProjectiles() { return Collections.unmodifiableList(projectiles); }
     
     /** A data container for each tile on the map. */
-    public static class Tile extends StaticEntity {
+    public class Tile extends StaticEntity {
         private final boolean isWall;
         
-        private Tile(float x, float y, int tileSize, Properties properties) {
-            super(x, y, tileSize, tileSize);
-            isWall = Boolean.valueOf(properties.getProperty("isWall"));
+        private Tile(int gridX, int gridY, Properties properties) {
+            super(toPos(gridX) + tileSize / 2, toPos(gridY) + tileSize / 2, tileSize, tileSize);
+            isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
         }
         
         public boolean isWall() { return isWall; }

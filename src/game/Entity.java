@@ -45,8 +45,8 @@ public abstract class Entity {
     
     /**
      * Move relative to the current position.
-     * @param xDist signed pixels in the x-plane to move
-     * @param yDist signed pixels in the y-play to move
+     * @param xDist Signed pixels in the x-plane to move
+     * @param yDist Signed pixels in the y-play to move
      */
     public void move(float xDist, float yDist) {
         x += xDist;

@@ -66,14 +66,14 @@ public class Enemy extends DynamicSprite {
             if (world.inGridBounds(gridx, gridy)) {
                 setV(speed * world.getPathXDir(gridx, gridy), speed * world.getPathYDir(gridx, gridy));
             } else {
-                setV(speed * world.defaultDir(gridx), speed * world.defaultDir(gridy));
+                setV(speed * world.inwardDirX(gridx), speed * world.inwardDirY(gridy));
             }
         }
         super.advance();
     }
 
     /**
-     * Make an enemy take damage
+     * Make an enemy take damage.
      * @param damage Amount to be deducted from health
      */
     public void takeDamage(int damage) {

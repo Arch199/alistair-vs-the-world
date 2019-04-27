@@ -9,22 +9,22 @@ public abstract class StaticEntity extends Entity {
     /**
      * Move relative to the current position.
      * Disallowed for static entities.
-     * @param xDist signed pixels in the x-plane to move
-     * @param yDist signed pixels in the y-play to move
-     * @throws IllegalStateException
+     * @param xDist Signed pixels in the x-plane to move
+     * @param yDist Signed pixels in the y-play to move
+     * @throws UnsupportedOperationException
      */
     public void move(float xDist, float yDist) {
-        throw new IllegalStateException("Static entities cannot move");
+        throw new UnsupportedOperationException("Static entities cannot move");
     }
     
     /**
      * Move instantly to an arbritary co-ordinate.
      * Disallowed for static entities.
-     * @param destx new x-positon
-     * @param desty new y-position
-     * @throws IllegalStateException
+     * @param destX New x-positon
+     * @param destY New y-position
+     * @throws UnsupportedOperationException
      */
     public void teleport(float destX, float destY) {
-        throw new IllegalStateException("Static entities cannot teleport");
+        throw new UnsupportedOperationException("Static entities cannot teleport");
     }
 }
