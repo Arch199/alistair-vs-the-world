@@ -20,11 +20,6 @@ public class Sprite extends Entity {
         this.im = im;
     }
     
-    /** Checks whether the mouse position intersects the Sprite. */
-    public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= getLeft() && mouseX <= getRight() && mouseY >= getTop() && mouseY <= getBottom();
-    }
-    
     public void drawSelf() {
         im.draw(getLeft(), getTop(), scale, col);
     }

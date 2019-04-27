@@ -28,10 +28,19 @@ public abstract class Entity {
     /**
      * Calculate the Euclidian distance to another entity.
      * @param other Other entity
-     * @return Pixel distance
+     * @return Distance in pixels
      */
     public float distanceTo(Entity other) {
         return (float)Math.hypot(x - other.x, y - other.y);
+    }
+    
+    /**
+     * Check whether the entity contains a given point.
+     * @param x The x-coordinate of the point
+     * @param y The y-coordinate of the point
+     * */
+    public boolean contains(int x, int y) {
+        return x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom();
     }
     
     /**
@@ -45,9 +54,9 @@ public abstract class Entity {
     }
     
     /**
-     * Move instantly to an arbritary co-ordinate.
-     * @param destx new x-positon
-     * @param desty new y-position
+     * Move instantly to an arbritary position.
+     * @param destX New x-position
+     * @param destY New y-position
      */
     public void teleport(float destX, float destY) {
         x = destX;
