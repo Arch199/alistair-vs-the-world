@@ -11,8 +11,8 @@ public class Sprite extends Entity {
 
     /**
      * Create a sprite.
-     * @param x x-pos
-     * @param y y-pos
+     * @param x Starting x-position
+     * @param y Starting y-position
      * @param im Sprite image
      */
     public Sprite(float x, float y, Image im) {
@@ -25,7 +25,7 @@ public class Sprite extends Entity {
     }
 
     /**
-     * Checks the sprite's position against the game boundraries.
+     * Check the sprite's position against the game boundraries.
      * @param windowW Game width
      * @param windowH Game height
      * @return Returns true if off the screen

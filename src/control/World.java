@@ -210,7 +210,9 @@ public class World {
         }
     }
 
-    /** Call every time a new wave starts */
+    /** Increment the wave number and reset the timer.
+     * Called every time a new wave starts.
+     */
     private void newWave() {
         waveNum++;
         timer = 0;
@@ -220,9 +222,8 @@ public class World {
     }
 
     /** Create a new enemy at the given position. */
-    private void spawnEnemy(float x, float y, Enemy.Type type) {
-        Vector2f v = new Vector2f(inwardDirX(x), inwardDirY(y));
-        enemies.add(new Enemy(x, y, v, type));
+    private void spawnEnemy(float x, float y, Enemy.Type type) throws SlickException {
+        enemies.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
     }
 
     /** Update enemy positons. */
@@ -282,7 +283,7 @@ public class World {
                 }
             } else {
                 // Also set color to red if touching a non-wall tile or tower
-                if (getTile(mouseX, mouseY).isWall()) {
+                if (!getTile(mouseX, mouseY).isWall()) {
                     myTower.setColor(Color.red);
                     return;
                 }
@@ -354,7 +355,7 @@ public class World {
         }
     }
 
-    /** Draw game interface */
+    /** Draw game interface. */
     public void drawGUI(Graphics g) {
         // Sidebar
         g.setColor(Color.darkGray);
@@ -412,7 +413,7 @@ public class World {
 
     /** Make alistair take damage
      * @param damage Health reduction, <=100
-     * */
+     */
     public void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
@@ -497,8 +498,13 @@ public class World {
         private final boolean isWall;
         
         private Tile(int gridX, int gridY, Properties properties) {
-            super(toPos(gridX) + tileSize / 2, toPos(gridY) + tileSize / 2, tileSize, tileSize);
+            super(toPos(gridX), toPos(gridY), tileSize, tileSize);
             isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
+        }
+        
+        @Override
+        public String toString() {
+            return "Tile(" + toGrid(getX()) + ", " + toGrid(getY()) + "): {isWall: " + isWall + "}";
         }
         
         public boolean isWall() { return isWall; }

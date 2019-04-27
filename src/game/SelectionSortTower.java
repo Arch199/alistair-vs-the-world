@@ -20,8 +20,8 @@ public class SelectionSortTower extends Tower {
         private static final int DAMAGE = 1;
         private static final float SPEED = 6f;
         
-        public Ball(World world, float startx, float starty, Vector2f vec) throws SlickException {
-            super(world, startx, starty, vec, new Image(Projectile.SPRITE_PATH + "defaultproj.png"), DAMAGE);
+        public Ball(World world, float startX, float startY, Vector2f vec) throws SlickException {
+            super(world, startX, startY, vec, new Image(Projectile.SPRITE_PATH + "defaultproj.png"), DAMAGE);
         }
         
     }

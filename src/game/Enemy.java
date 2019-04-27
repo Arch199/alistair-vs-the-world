@@ -38,17 +38,11 @@ public class Enemy extends DynamicSprite {
      * @param v Initial movement vector  (unscaled)
      * @param type Enemy type as an enum, e.g. Enemy.Type.PYTHON
      */
-    public Enemy(float startx, float starty, Vector2f v, Type type) {
-        super(startx, starty, v, null, 0);
+    public Enemy(float startx, float starty, Vector2f v, Type type) throws SlickException {
+        super(startx, starty, v, new Image(SPRITE_PATH + type.imPath), 0);
         this.type = type;
         health = type.health;
         speed = type.speed;
-        try {
-            setImage(new Image(SPRITE_PATH + type.imPath));
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
-
         setV(v.scale(speed));
         setDamage(health);
     }
