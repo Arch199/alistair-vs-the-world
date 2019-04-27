@@ -18,16 +18,13 @@ import ui.Menu;
  * Main handler for the game as a program.
  * Creates a World to handle the gameplay itself.
  */
-public class App extends BasicGame {
-    private static final String 
-        START_POS = "Starting_Pos";
-    
+public class App extends BasicGame {    
     public static final int
         WINDOW_W = 1104, WINDOW_H = 672, TILE_SIZE = 48, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
-    private Menu menu = null;
-    private World world = null;
+    private Menu menu;
+    private World world;
 
     public static void main(String[] args) {
         try {
@@ -136,27 +133,15 @@ public class App extends BasicGame {
      * Also minimises the current menu and changes focus to the level.
      */
     private void openLevel(String levelName) throws SlickException{
+        // Initialize the tiled map for the level
+        TiledMap tiledMap = new TiledMap("assets/levels/" + levelName + ".tmx");
         
-        // TiledMap
-        TiledMap tiledMap; 
-        float startX = 0, startY = 0;
-        tiledMap = new TiledMap("assets\\levels\\" + levelName + ".tmx");
-        // 2D grid array
-        int[][] level = new int[GRID_W][GRID_H];
-        
-        // Enemy spawn location
-        String[] pos = tiledMap.getMapProperty(START_POS, "0,0").split(",");
-        startX = Float.parseFloat(pos[0]);
-        startY = Float.parseFloat(pos[1]);
-           
-        try {
-            // Load in wave info
-            scanner = new Scanner(new File("assets/waves/game1.txt"));
-            
+        // Load in wave info
+        try (Scanner scanner = new Scanner(new File("assets/waves/game1.txt"))) {            
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 
-            ArrayList<Wave> waves = new ArrayList<>();
+            ArrayList<Wave> waves = new ArrayList<Wave>();
 
             // Wave-by-wave
             while (scanner.hasNext()) {
@@ -184,12 +169,10 @@ public class App extends BasicGame {
                     }
                 }
             }
-            //scanner.close();
             
             // Create World and get rid of Menu
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, tiledMap, waves);
+            world = new World(WINDOW_W, WINDOW_H, SIDEBAR_W, tiledMap, waves);
             menu = null;
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

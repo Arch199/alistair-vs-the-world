@@ -61,7 +61,7 @@ public class Enemy extends DynamicSprite {
         int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(getV().x));
         int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(getV().y));
         // If we're about to hit a wall, change direction
-        if (!world.inGridBounds(nextx, nexty) || world.isWall(nextx, nexty)) {
+        if (!world.inGridBounds(nextx, nexty) || world.getTile(nextx, nexty).isWall()) {
             int gridx = world.toGrid(getX()), gridy = world.toGrid(getY());
             if (world.inGridBounds(gridx, gridy)) {
                 setV(speed * world.getPathXDir(gridx, gridy), speed * world.getPathYDir(gridx, gridy));
