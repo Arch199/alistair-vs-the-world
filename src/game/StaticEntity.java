@@ -13,6 +13,7 @@ public abstract class StaticEntity extends Entity {
      * @param yDist Signed pixels in the y-play to move
      * @throws UnsupportedOperationException
      */
+    @Override
     public void move(float xDist, float yDist) {
         throw new UnsupportedOperationException("Static entities cannot move");
     }
@@ -24,6 +25,7 @@ public abstract class StaticEntity extends Entity {
      * @param destY New y-position
      * @throws UnsupportedOperationException
      */
+    @Override
     public void teleport(float destX, float destY) {
         throw new UnsupportedOperationException("Static entities cannot teleport");
     }

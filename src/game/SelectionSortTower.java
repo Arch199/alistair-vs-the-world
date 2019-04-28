@@ -13,7 +13,14 @@ public class SelectionSortTower extends Tower {
 
     @Override
     protected void shoot(Vector2f dir) throws SlickException {
-        world.addProjectile(new Ball(world, getX(), getY(), dir.scale(Ball.SPEED)));
+        // This assumes that the given dir is already scaled by speed
+        world.addProjectile(new Ball(world, getX(), getY(), dir));
+    }
+    
+    @Override
+    protected Vector2f aimAt(Enemy target) {
+        // Assume the target keeps moving in a straight line (leading the shot)
+        return super.aimAt(target).scale(Ball.SPEED).add(target.getV());
     }
     
     private static class Ball extends Projectile {

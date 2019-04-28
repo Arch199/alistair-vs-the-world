@@ -16,8 +16,6 @@ public class BubbleSortTower extends Tower {
         world.addProjectile(new Bubble(world, getX(), getY()));
     }
     
-    // TODO: consider adding shot leading
-    
     private static class Bubble extends Projectile {
         private static final int DAMAGE = 1;
         private static final float SCALE_INCR = 0.1f, SCALE_MAX = 7;
