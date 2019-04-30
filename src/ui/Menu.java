@@ -105,11 +105,11 @@ public class Menu {
         return null; // default value for no action
     }
     
-    public void renderTitle() {
+    public void render(Graphics g) {
+        // Title
         TITLE_TTF.drawString((w/2) - (TITLE_TTF.getWidth(title)/2), 125, title, TITLE_COL);
-    }
-    
-    public void renderOptions(Graphics g) {
+        
+        // Options
         for (int i = 0; i < buttons.length; i++) {                
             if (currentChoice == i) {
                 buttons[i].setHover(true);

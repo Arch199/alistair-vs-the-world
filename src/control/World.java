@@ -369,14 +369,36 @@ public class World {
         }
         }
     }
-
-    /** Draw game interface */
-    public void drawGUI(Graphics g) {
+    
+    /** Render the game world. */
+    public void render(Graphics g) {
+        // Tiles
+        for (Tile[] column : tiles) {
+            for (Tile t : column) {
+                t.drawSelf();
+            }
+        }
+        
+        // Enemies
+        for (Enemy e : enemies) {
+            e.drawSelf();
+        }
+        
+        // Towers
+        for (Tower t : towers) {
+            t.drawSelf();
+        }
+        
+        // Projectiles
+        for (Projectile p : projectiles) {
+            p.drawSelf();
+        }
+        
         // Sidebar
         g.setColor(Color.darkGray);
         g.fillRect(w-sidebarW, 0, sidebarW, h);
 
-        // Draw sidebar icons
+        // Sidebar icons
         g.setColor(Color.white);
         for (TextSprite s : sidebarIcons) {
             s.drawSelf();
@@ -387,12 +409,13 @@ public class World {
             myTower.drawSelf();
             myTower.drawRange(g);
         }
-
+        
+        // Selected tower draws its range
         if (selectedTower != null) {
             selectedTower.drawRange(g);
         }
 
-        // Draw all buttons
+        // Buttons
         g.setColor(Color.white);
         for (Button b: buttons) {
             b.drawSelf(g);
@@ -402,32 +425,6 @@ public class World {
         g.setColor(Color.white);
         Util.writeCentered(g, "Wave: " + waveNum,w-(sidebarW/2), 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
-    }
-
-    public void renderTiles() {
-        for (Tile[] column : tiles) {
-            for (Tile t : column) {
-                t.drawSelf();
-            }
-        }
-    }
-
-    public void renderEnemies() {
-        for (Enemy e : enemies) {
-            e.drawSelf();
-        }
-    }
-
-    public void renderTowers(Graphics g) {
-        for (Tower t : towers) {
-            t.drawSelf();
-        }
-    }
-
-    public void renderProjectiles() {
-        for (Projectile p : projectiles) {
-            p.drawSelf();
-        }
     }
 
     /** Make alistair take damage
