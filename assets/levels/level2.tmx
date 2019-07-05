@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="30" height="16" tilewidth="64" tileheight="64" infinite="0" nextlayerid="2" nextobjectid="1">
+ <properties>
+  <property name="alistairPos" value="2,15"/>
+  <property name="startPos" value="2,-1"/>
+ </properties>
+ <tileset firstgid="1" source="kenney.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="30" height="16">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACpNkYGCQAmJjIJYAYkk64lF7R+2lpb36QGwAxfS0lxhMTXulgZgJDVdgUUdte4nFo/ZSz1x86YcW9iLbR6/0PBzjDhcGAKSCYNaABwAA
+  </data>
+ </layer>
+</map>
