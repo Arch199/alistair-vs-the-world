@@ -20,7 +20,7 @@ import ui.Menu;
  */
 public class App extends BasicGame {    
     public static final int
-        WINDOW_W = 1856, WINDOW_H = 960, TILE_SIZE = 64, SIDEBAR_W = TILE_SIZE*3,
+        WINDOW_W = 1920, WINDOW_H = 1024, TILE_SIZE = 64, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
     private Menu menu;

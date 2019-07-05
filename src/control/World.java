@@ -95,11 +95,17 @@ public class World {
 
         // Extract the tile data into an array for easy access
         tiles = new Tile[map.getWidth()][map.getHeight()];
-        TileSet tileSet = map.getTileSet(0);
+        TileSet kenneyTileSet = map.getTileSet(0);
+        TileSet customTileSet = map.getTileSet(1);
+
         for (int x = 0; x < map.getWidth(); x++) {
             for (int y = 0; y < map.getHeight(); y++) {
                 int id = map.getTileId(x, y, 0);
-                tiles[x][y] = new Tile(x, y, tileSet.getProperties(id));
+                if (id < 300) {
+                    tiles[x][y] = new Tile(x, y, kenneyTileSet.getProperties(id));
+                } else {
+                    tiles[x][y] = new Tile(x, y, customTileSet.getProperties(id));
+                }
             }
         }
         alistair = tiles[alistairX][alistairY];
@@ -494,11 +500,17 @@ public class World {
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
-        private final boolean isWall;
+        private boolean isWall;
 
         private Tile(int gridX, int gridY, Properties properties) {
             super(toPos(gridX), toPos(gridY), tileSize, tileSize);
-            isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
+            try {
+                isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                System.err.println("Could not identify if tile at " + gridX + " " + gridY + " is a wall. Assumed not.");
+                isWall = false;
+            }
         }
 
         @Override
