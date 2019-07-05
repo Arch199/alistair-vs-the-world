@@ -273,7 +273,7 @@ public class World {
                 }
             } else {
                 // Also set color to red if touching a non-wall tile or tower
-                if (!getTile(mouseX, mouseY).isWall()) {
+                if (!getTile(mouseX, mouseY).holdsDefence) {
                     myTower.setColor(Color.red);
                     return;
                 }
@@ -500,16 +500,19 @@ public class World {
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
-        private boolean isWall;
+        private boolean isWall, holdsDefence;
 
         private Tile(int gridX, int gridY, Properties properties) {
             super(toPos(gridX), toPos(gridY), tileSize, tileSize);
             try {
                 isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
+                holdsDefence = Boolean.parseBoolean(properties.getProperty("holdsDefence"));
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                System.err.println("Could not identify if tile at " + gridX + " " + gridY + " is a wall. Assumed not.");
-                isWall = false;
+                System.err.println("Could not parse the properties of the tile at " + gridX + " " + gridY + "" +
+                                   "assumed a wall that cannot hold a defence.");
+                isWall = true;
+                holdsDefence = false;
             }
         }
 
@@ -519,5 +522,6 @@ public class World {
         }
 
         public boolean isWall() { return isWall; }
+        public boolean holdsDefence() { return holdsDefence; }
     }
 }
