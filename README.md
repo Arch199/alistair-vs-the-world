@@ -3,4 +3,4 @@ A fun Slick2D game project to honour the god-tier lecturer that is Alistair Moff
 
 Alistair vs The World is a classic tower defence game where you play as the heroic Alistair Moffat in his quest to rid the world of such horrors as the Python progamming language and Unimelb's Commerce Faculty.
 
-[Download a beta](https://github.com/Arch199/alistair-vs-the-world/releases)
+[Download a beta (requires Java)](https://github.com/Arch199/alistair-vs-the-world/releases)
