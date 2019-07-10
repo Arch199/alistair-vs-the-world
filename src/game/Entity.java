@@ -4,6 +4,7 @@ package game;
 public abstract class Entity {
     private float x, y;
     private int w, h;
+    private int scale = 1;
     
     public Entity(float x, float y, int w, int h) {
         this.x = x;
@@ -72,4 +73,11 @@ public abstract class Entity {
     
     protected void setWidth(int width) { w = width; }
     protected void setHeight(int height) { h = height; }
+
+    protected void setScale(float scale) {
+        scale = scale;
+        w = (int)(w*scale);
+        h = (int)(h*scale);
+
+    }
 }

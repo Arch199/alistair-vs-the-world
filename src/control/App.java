@@ -20,7 +20,7 @@ import ui.Menu;
  */
 public class App extends BasicGame {    
     public static final int
-        WINDOW_W = 1920, WINDOW_H = 1024, TILE_SIZE = 64, SIDEBAR_W = TILE_SIZE*3,
+        SCALE_FACTOR = 2, WINDOW_W = 960, WINDOW_H = 512, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
     private Menu menu;
@@ -86,7 +86,8 @@ public class App extends BasicGame {
             boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
                     escape = input.isKeyPressed(Input.KEY_ESCAPE);
-            int mouseX = input.getMouseX(), mouseY = input.getMouseY();
+            // Input is relative to the window, scale back up to the 'full' coordinates
+            int mouseX = input.getMouseX()*SCALE_FACTOR, mouseY = input.getMouseY()*SCALE_FACTOR;
 
             String action = world.processInput(escape, rightClick);
             switch (action) {
@@ -117,11 +118,15 @@ public class App extends BasicGame {
             menu.renderOptions(g);
         }
         if (world != null) {
-            world.renderTiles();
+            // Draw the map in half scale. Sprite images will be scaled back up.
+            // Sprite coordinates are in the default scale.
+            g.scale(1f/SCALE_FACTOR, 1f/SCALE_FACTOR);
+            world.renderTiles(g);
             world.renderEnemies();
             world.renderTowers(g);
             world.renderProjectiles();
             world.drawGUI(g);
+            g.scale(SCALE_FACTOR, SCALE_FACTOR);
         }
     }
     
