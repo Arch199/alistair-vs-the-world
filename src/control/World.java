@@ -379,7 +379,7 @@ public class World {
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
     }
 
-    public void renderTiles() {
+    public void renderTiles(Graphics g) {
         map.render(0, 0);
     }
 

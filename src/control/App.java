@@ -20,7 +20,7 @@ import ui.Menu;
  */
 public class App extends BasicGame {    
     public static final int
-        WINDOW_W = 1920, WINDOW_H = 1024, TILE_SIZE = 64, SIDEBAR_W = TILE_SIZE*3,
+        WINDOW_W = 960, WINDOW_H = 512, TILE_SIZE = 32, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     
     private Menu menu;
@@ -117,7 +117,11 @@ public class App extends BasicGame {
             menu.renderOptions(g);
         }
         if (world != null) {
-            world.renderTiles();
+            // Draw the map in half scale
+            g.scale(0.5f, 0.5f);
+            world.renderTiles(g);
+            g.scale(2, 2);
+
             world.renderEnemies();
             world.renderTowers(g);
             world.renderProjectiles();
