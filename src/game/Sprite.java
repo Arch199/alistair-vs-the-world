@@ -18,6 +18,7 @@ public class Sprite extends Entity {
      */
     public Sprite(float x, float y, Image im) {
         super(x, y, im.getWidth(), im.getHeight());
+        super.setScale(scale);
         this.im = im;
     }
     
@@ -40,8 +41,7 @@ public class Sprite extends Entity {
 
     public void setColor(Color col) { this.col = col; }
     public void setScale(float scale) {
-        setWidth((int)(getWidth() / this.scale * scale));
-        setHeight((int)(getHeight() / this.scale * scale));
+        super.setScale(scale);
         this.scale = scale;
     }
 }
