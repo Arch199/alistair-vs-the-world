@@ -147,7 +147,9 @@ public class World {
 
         // Create sidebar icons for buying towers
         // TODO: add cost in currency
-        float xPos = w - sidebarW/2, yPos = 100;
+
+        int scale = App.SCALE_FACTOR;
+        float xPos = w*scale - sidebarW*scale/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
                 TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
@@ -160,7 +162,7 @@ public class World {
         }
 
         // New wave button
-        float btnXPos = w - sidebarW/2, btnYPos = 500;
+        float btnXPos = w*scale - sidebarW*scale/2, btnYPos = 500;
         nextWave = new Button(btnXPos, btnYPos, "Next wave", MEDIUM_TTF, 5, true, Color.green);
         nextWave.setCols(Color.green, Color.black, Color.white);
         buttons.add(nextWave);
@@ -347,24 +349,16 @@ public class World {
 
     /** Draw game interface. */
     public void drawGUI(Graphics g) {
+        int scale = App.SCALE_FACTOR;
+
         // Sidebar
         g.setColor(Color.darkGray);
-        g.fillRect(w-sidebarW, 0, sidebarW, h);
+        g.fillRect(w*scale-sidebarW*scale, 0, sidebarW*scale, h*scale);
 
-        // Draw sidebar icons
+        // Draw sidebar icons (set back the scale for the call to sprite)
         g.setColor(Color.white);
         for (TextSprite s : sidebarIcons) {
             s.drawSelf();
-        }
-
-        // Tower being placed
-        if (myTower != null) {
-            myTower.drawSelf();
-            myTower.drawRange(g);
-        }
-
-        if (selectedTower != null) {
-            selectedTower.drawRange(g);
         }
 
         // Draw all buttons
@@ -375,8 +369,20 @@ public class World {
 
         // Display wave number and Alistair's health
         g.setColor(Color.white);
-        Util.writeCentered(g, "Wave: " + waveNum, w - (sidebarW / 2), 20);
+        Util.writeCentered(g, "Wave: " + waveNum, (w - (sidebarW / 2))*scale, 20);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
+
+
+
+        // Tower being placed
+        if (myTower != null) {
+            myTower.drawSelf();
+            myTower.drawRange(g);
+        }
+
+        if (selectedTower != null) {
+            selectedTower.drawRange(g);
+        }
     }
 
     public void renderTiles(Graphics g) {

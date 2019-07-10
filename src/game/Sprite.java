@@ -1,5 +1,6 @@
 package game;
 
+import control.App;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
@@ -7,7 +8,7 @@ import org.newdawn.slick.Image;
 public class Sprite extends Entity {
     private Image im;
     private Color col = Color.white;
-    private float scale = 1f;
+    private float scale = App.SCALE_FACTOR;
 
     /**
      * Create a sprite.
