@@ -18,11 +18,11 @@ import ui.Menu;
  * Main handler for the game as a program.
  * Creates a World to handle the gameplay itself.
  */
-public class App extends BasicGame {    
-    public static final int
-        SCALE_FACTOR = 2, WINDOW_W = 960, WINDOW_H = 512, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
+public class App extends BasicGame {
+    public static final float SCALE_FACTOR = 1.33f;
+    public static final float
+        WINDOW_W = 1488, WINDOW_H = 1008, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
-    
     private Menu menu;
     private World world;
 
@@ -30,7 +30,7 @@ public class App extends BasicGame {
         try {
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
-            appgc.setDisplayMode(WINDOW_W, WINDOW_H, false);
+            appgc.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
             appgc.start();
 
             System.err.println("GAME STATE: Game forced exit");
@@ -54,7 +54,7 @@ public class App extends BasicGame {
         gc.setMinimumLogicUpdateInterval(20);
         
         // Open Main Menu
-        menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+        menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
     }
 
     /**
@@ -72,7 +72,7 @@ public class App extends BasicGame {
             }
             switch (action) {
                 case START:
-                    openLevel("level_declan");
+                    openLevel("fourbythree2");
                     break;
                 case OPTIONS:
                     // TODO: Add options (what settings would we have?) or just remove this
@@ -87,7 +87,7 @@ public class App extends BasicGame {
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
                     escape = input.isKeyPressed(Input.KEY_ESCAPE);
             // Input is relative to the window, scale back up to the 'full' coordinates
-            int mouseX = input.getMouseX()*SCALE_FACTOR, mouseY = input.getMouseY()*SCALE_FACTOR;
+            int mouseX = (int) (input.getMouseX()*SCALE_FACTOR), mouseY = (int) (input.getMouseY()*SCALE_FACTOR);
 
             String action = world.processInput(escape, rightClick);
             switch (action) {
@@ -95,7 +95,7 @@ public class App extends BasicGame {
                     // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                     AudioController.stopAll();
                     world = null;
-                    menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+                    menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
                     return; // Terminate the update at this point
             }
             
@@ -174,7 +174,7 @@ public class App extends BasicGame {
             }
             
             // Create World and get rid of Menu
-            world = new World(WINDOW_W, WINDOW_H, SIDEBAR_W, tiledMap, waves);
+            world = new World((int)WINDOW_W, (int)WINDOW_H, (int)SIDEBAR_W, tiledMap, waves);
             menu = null;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

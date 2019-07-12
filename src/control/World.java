@@ -26,9 +26,11 @@ import ui.TextSprite;
 /** Handles all the game logic for a level. Created by App. */
 public class World {
     private static final Font
-            SMALL_FONT = new Font("Verdana", Font.PLAIN, 11),
+            TINY_FONT = new Font("Verdana", Font.PLAIN, 11),
+            SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
             MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20);
     private static final TrueTypeFont
+            TINY_TTF = new TrueTypeFont(TINY_FONT, true),
             SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
             MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true);
 
@@ -148,14 +150,14 @@ public class World {
         // Create sidebar icons for buying towers
         // TODO: add cost in currency
 
-        int scale = App.SCALE_FACTOR;
+        float scale = App.SCALE_FACTOR;
         float xPos = w*scale - sidebarW*scale/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
                 TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
                 icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
                 sidebarIcons.add(icon);
-                yPos += 65;
+                yPos += 100;
             } catch (SlickException e) {
                 e.printStackTrace();
             }
@@ -349,7 +351,7 @@ public class World {
 
     /** Draw game interface. */
     public void drawGUI(Graphics g) {
-        int scale = App.SCALE_FACTOR;
+        float scale = App.SCALE_FACTOR;
 
         // Sidebar
         g.setColor(Color.darkGray);
@@ -369,7 +371,9 @@ public class World {
 
         // Display wave number and Alistair's health
         g.setColor(Color.white);
+        g.setFont(SMALL_TTF);
         Util.writeCentered(g, "Wave: " + waveNum, (w - (sidebarW / 2))*scale, 20);
+        g.setFont(MEDIUM_TTF);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
 
 
