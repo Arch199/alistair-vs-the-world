@@ -148,7 +148,7 @@ public class World {
         // Create sidebar icons for buying towers
         // TODO: add cost in currency
 
-        int scale = App.SCALE_FACTOR;
+        float scale = App.SCALE_FACTOR;
         float xPos = w*scale - sidebarW*scale/2, yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
@@ -349,7 +349,7 @@ public class World {
 
     /** Draw game interface. */
     public void drawGUI(Graphics g) {
-        int scale = App.SCALE_FACTOR;
+        float scale = App.SCALE_FACTOR;
 
         // Sidebar
         g.setColor(Color.darkGray);
