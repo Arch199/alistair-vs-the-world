@@ -3,8 +3,8 @@ package game;
 /** On-screen object with a position and size. */
 public abstract class Entity {
     private float x, y;
-    private int w, h;
-    private int scale = 1;
+    private float w, h;
+    private float scale = 1;
     
     public Entity(float x, float y, int w, int h) {
         this.x = x;
@@ -64,8 +64,8 @@ public abstract class Entity {
     
     public float getX() { return x; }
     public float getY() { return y; }
-    public int getWidth() { return w; }
-    public int getHeight() { return h; }
+    public int getWidth() { return (int)w; }
+    public int getHeight() { return (int)h; }
     public float getLeft() { return x - w / 2; }
     public float getRight() { return x + w / 2; }
     public float getTop() { return y - h / 2; }
@@ -75,8 +75,13 @@ public abstract class Entity {
     protected void setHeight(int height) { h = height; }
 
     protected void setScale(float scale) {
-        scale = scale;
-        w = (int)(w*scale);
-        h = (int)(h*scale);
+        // Reset width and height to default
+        w = w/this.scale;
+        h = h/this.scale;
+
+        // Find new width and height under new scale
+        this.scale = scale;
+        w = (w*scale);
+        h = (h*scale);
     }
 }

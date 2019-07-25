@@ -8,7 +8,8 @@ import org.newdawn.slick.Image;
 public class Sprite extends Entity {
     private Image im;
     private Color col = Color.white;
-    private float scale = App.SCALE_FACTOR;
+    // Scales up all sprites from 32px reference to 48px
+    private float scale = 1.5f;
 
     /**
      * Create a sprite.
