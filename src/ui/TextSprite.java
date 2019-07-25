@@ -1,5 +1,6 @@
 package ui;
 
+import control.App;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.TrueTypeFont;
 
@@ -16,7 +17,7 @@ public class TextSprite extends Sprite {
     private float textX, textY;
     private String text;
     private TrueTypeFont ttf;
-    
+
     public TextSprite(float x, float y, Image im) {
         super(x, y, im);
     }

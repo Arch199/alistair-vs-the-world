@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.newdawn.slick.*;
+import org.newdawn.slick.tiled.TiledMap;
 
 import ui.Menu;
 
@@ -18,18 +19,18 @@ import ui.Menu;
  * Creates a World to handle the gameplay itself.
  */
 public class App extends BasicGame {
-    private static final int
-        WINDOW_W = 1104, WINDOW_H = 672, TILE_SIZE = 48, SIDEBAR_W = TILE_SIZE*3,
+    public static final float SCALE_FACTOR = 1.33f;
+    public static final float
+        WINDOW_W = 1488, WINDOW_H = 1008, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
-    
-    private Menu menu = null;
-    private World world = null;
+    private Menu menu;
+    private World world;
 
     public static void main(String[] args) {
         try {
             App game = new App("Alistair vs The World");
             AppGameContainer appgc = new AppGameContainer(game);
-            appgc.setDisplayMode(WINDOW_W, WINDOW_H, false);
+            appgc.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
             appgc.start();
 
             System.err.println("GAME STATE: Game forced exit");
@@ -53,7 +54,7 @@ public class App extends BasicGame {
         gc.setMinimumLogicUpdateInterval(20);
         
         // Open Main Menu
-        menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+        menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
     }
 
     /**
@@ -62,8 +63,8 @@ public class App extends BasicGame {
      */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
-        // Menu
         Input input = gc.getInput();
+        
         if (menu != null) {
             Menu.Choice action = menu.update(input);
             if (action == null) {
@@ -71,7 +72,7 @@ public class App extends BasicGame {
             }
             switch (action) {
                 case START:
-                    openLevel("level1");
+                    openLevel("fourbythree2");
                     break;
                 case OPTIONS:
                     // TODO: Add options (what settings would we have?) or just remove this
@@ -80,22 +81,21 @@ public class App extends BasicGame {
                     closeRequested();
                     break;
             }
-        }
-
-        if (world != null) {
+        } else if (world != null) {
             // Can only call inputs once
             boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
                     escape = input.isKeyPressed(Input.KEY_ESCAPE);
-            int mouseX = input.getMouseX(), mouseY = input.getMouseY();
+            // Input is relative to the window, scale back up to the 'full' coordinates
+            int mouseX = (int) (input.getMouseX()*SCALE_FACTOR), mouseY = (int) (input.getMouseY()*SCALE_FACTOR);
 
             String action = world.processInput(escape, rightClick);
             switch (action) {
                 case "Exit":
-                    // TODO: put this in a function or something?
+                    // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                     AudioController.stopAll();
                     world = null;
-                    menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+                    menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
                     return; // Terminate the update at this point
             }
             
@@ -117,44 +117,29 @@ public class App extends BasicGame {
             menu.render(g);
         }
         if (world != null) {
+            // Draw the map in half scale. Sprite images will be scaled back up.
+            // Sprite coordinates are in the default scale.
+            g.scale(1f/SCALE_FACTOR, 1f/SCALE_FACTOR);
             world.render(g);
+            g.scale(SCALE_FACTOR, SCALE_FACTOR);
         }
     }
+    
+    
     
     /** Opens a new level and creates a World to manage it.
      * Also minimises the current menu and changes focus to the level.
      */
-    private void openLevel(String levelName) {
-        try {
-            // 2D grid array
-            int[][] level = new int[GRID_W][GRID_H];
-
-            // Load map info file
-            Scanner scanner = new Scanner(new File("assets/levels/" + levelName + ".txt"));
-            for (int y = 0; y < GRID_H; y++) {
-                assert (scanner.hasNext());
-                char[] line = scanner.next().toCharArray();
-                int x = 0;
-                for (char c : line) {
-                    if (x >= GRID_W)
-                        break;
-                    assert (Character.isDigit(c));
-                    level[x++][y] = Character.getNumericValue(c);
-                }
-            }
-
-            // Enemy spawn location
-            float startX = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
-            float startY = (float) scanner.nextInt() * TILE_SIZE + TILE_SIZE / 2;
-            scanner.close();
-
-
-            // Load in wave info
-            scanner = new Scanner(new File("assets/waves/game1.txt"));
+    private void openLevel(String levelName) throws SlickException{
+        // Initialize the tiled map for the level
+        TiledMap tiledMap = new TiledMap("assets/levels/" + levelName + ".tmx");
+        
+        // Load in wave info
+        try (Scanner scanner = new Scanner(new File("assets/waves/game1.txt"))) {            
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 
-            ArrayList<Wave> waves = new ArrayList<>();
+            ArrayList<Wave> waves = new ArrayList<Wave>();
 
             // Wave-by-wave
             while (scanner.hasNext()) {
@@ -182,12 +167,10 @@ public class App extends BasicGame {
                     }
                 }
             }
-            scanner.close();
             
             // Create World and get rid of Menu
-            world = new World(WINDOW_W, WINDOW_H, TILE_SIZE, SIDEBAR_W, startX, startY, level, waves);
+            world = new World((int)WINDOW_W, (int)WINDOW_H, (int)SIDEBAR_W, tiledMap, waves);
             menu = null;
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

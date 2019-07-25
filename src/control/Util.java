@@ -40,9 +40,4 @@ public final class Util {
         int offset = ttf.getWidth(str) / 2;
         ttf.drawString(x - offset, y, str);
     }
-
-    /** Calculate the Euclidean distance between two x-y coordinates. */
-    public static float dist(float x1, float y1, float x2, float y2) {
-        return (float)Math.hypot(x1 - x2, y1 - y2);
-    }
 }
