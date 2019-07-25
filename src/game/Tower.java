@@ -77,8 +77,8 @@ public abstract class Tower extends Sprite {
         return null;
     }
     
-    /** Returns a velocity vector aimed at the first enemy in range. */
-    protected Vector2f targetNext(List<Enemy> enemies) {
+    /** Choose an enemy to target (the first enemy in range by default). */
+    protected Enemy chooseTarget(List<Enemy> enemies) {
         // Target the first enemy in range
         Enemy target = null;
         for (Enemy e : enemies) {
@@ -87,20 +87,14 @@ public abstract class Tower extends Sprite {
                 break;
             }
         }
-        // If there is none, return null and handle above
-        if (target == null) {
-            return null;
-        }
-
-        Vector2f vec = new Vector2f(target.getX()-getX(), target.getY()-getY());
-
+        return target;
+    }
+    
+    /** Calculate a direction vector aiming at the target enemy. */
+    protected Vector2f aimAt(Enemy target) {
+        Vector2f vec = new Vector2f(target.getX() - getX(), target.getY() - getY());
         vec.add(target.getV());
         vec.normalise();
-
-        // Assume it keeps moving in a straight line (leading the shot)
-        // TODO: remove / move to subclasses?
-        //vec.add(target.getV());
-
         return vec;
     }
     
@@ -117,14 +111,14 @@ public abstract class Tower extends Sprite {
         nextShot -= delta;
         if (nextShot <= 0) {
             // Target the next enemy in range
-            Vector2f vec = targetNext(world.getEnemies());
-            if (vec == null) {
+            Enemy target = chooseTarget(world.getEnemies());
+            if (target == null) {
                 // Instead of firing, just wait and try again next tick
                 return;
             }
             
-            // Call the relevant subclass method to shoot
-            shoot(vec);
+            // Aim at the target and shoot
+            shoot(aimAt(target));
             
             // Reset the timer for the next shot
             nextShot = fireRate;

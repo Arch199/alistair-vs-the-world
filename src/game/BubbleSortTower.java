@@ -16,14 +16,12 @@ public class BubbleSortTower extends Tower {
         world.addProjectile(new Bubble(world, getX(), getY()));
     }
     
-    // TODO: consider adding shot leading
-    
     private static class Bubble extends Projectile {
         private static final int DAMAGE = 1;
         private static final float SCALE_INCR = 0.1f, SCALE_MAX = 7;
         
-        public Bubble(World world, float startx, float starty) throws SlickException {
-            super(world, startx, starty, new Vector2f(0, 0), new Image(Projectile.SPRITE_PATH + "bubble.png"), DAMAGE);
+        public Bubble(World world, float startX, float startY) throws SlickException {
+            super(world, startX, startY, new Vector2f(0, 0), new Image(Projectile.SPRITE_PATH + "bubble.png"), DAMAGE);
         }
         
         @Override
