@@ -37,7 +37,7 @@ public class World {
 
     private int w, h, tileSize, sidebarW;
     private float startX, startY;
-    private int health = 5, waveNum = 0;
+    private int health = 100, waveNum = 0;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
@@ -300,7 +300,6 @@ public class World {
             if (clicked/* && myTower.getColor() == Color.white*/) {
                 myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
-                myTower = null;
 
                 // Play a sound effect
                 String towerName = myTower.getType().toString().toLowerCase();
@@ -308,6 +307,8 @@ public class World {
                 || towerName == "Quick Sort Alistair" || towerName == "Merge Sort Alistair") {
                     AudioController.play(towerName, false);
                 }
+
+                myTower = null;
             }
         } else if (clicked) {
             // Click on a tower to display its range

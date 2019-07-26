@@ -10,11 +10,11 @@ import control.World;
 public class Enemy extends DynamicSprite {
     public enum Type {
         // In order of increasing strength
-        PYTHON("python-icon.png", 1, 1.5F),
-        INT_MAX("int_max.png", 1, 2.1F),
-        DO("do.png", 1, 3F),
+        PYTHON("python-icon.png", 1, 2F),
+        INT_MAX("int_max.png", 1, 2.7F),
+        DO("do.png", 1, 3.2F),
         COMMERCE("fbe1.png", 2, 2F),
-        OVERFLOW("stackoverflow32.png", 3, 2.5F),
+        OVERFLOW("stackoverflow32.png", 3, 3F),
         THOMAS("thomas100.png", 2, 5F);
         final String imPath;
         final int health;
