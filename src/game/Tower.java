@@ -15,20 +15,23 @@ import control.World;
  */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 4000, 350f),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 224f);
+        SELECTION("Selection Sort Alistair", "selection.png", 4000, 350f, 50),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 224f, 80) ;
         private final String title, imName;
         private final int fireRate;
         private final float range;
-        Type(String text, String imName, int fireRate, float range) {
+        private final int cost;
+        Type(String text, String imName, int fireRate, float range, int cost) {
             this.title = text;
             this.imName = imName;
             this.fireRate = fireRate;
             this.range = range;
+            this.cost = cost;
         }
         public String toString() {
             return title;
         }
+        public int getCost() { return cost; }
         public Image getImage() throws SlickException {
             return new Image(SPRITE_PATH + imName);
         }

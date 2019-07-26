@@ -1,7 +1,7 @@
-python/1/1/0.0 int_max/1/1/0.0
-python/1/1/0.0 int_max/1/1/0.0 do/1/1/10.0 commerce/1/1/0.0 overflow/1/1/0.0 thomas/1/1/0.0
-python/5/1.5/0.0
-python/10/1.2/0.0
+python/2/1.5/0.0
+python/3/1/0.0
+python/5/0.750/0.0
+python/10/0.750/0.0
 python/5/1/0.0 python/10/2/5.0
 int_max/20/0.8/0.0
 python/40/0.5/0.0
