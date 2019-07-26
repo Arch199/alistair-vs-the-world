@@ -15,8 +15,8 @@ import control.World;
  */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 4000, 150f),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 100f);
+        SELECTION("Selection Sort Alistair", "selection.png", 4000, 350f),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 224f);
         private final String title, imName;
         private final int fireRate;
         private final float range;
@@ -48,6 +48,7 @@ public abstract class Tower extends Sprite {
     private float range;
     private int fireRate; // In ms
     private long nextShot = 0L; // Time until next fire (in ms)
+    private Type type;
 
     /**
      * Create a tower.
@@ -62,6 +63,7 @@ public abstract class Tower extends Sprite {
         this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
         this.range = type.range;
         this.world = world;
+        this.type = type;
     }
 
     /** Fires a projectile in the given direction. */
@@ -144,4 +146,6 @@ public abstract class Tower extends Sprite {
     }
 
     public boolean isPlaced() { return placed; }
+
+    public Type getType() { return type; }
 }

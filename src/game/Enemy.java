@@ -52,17 +52,27 @@ public class Enemy extends DynamicSprite {
      * @param world Game's world instance
      * */
     public void advance(float speed, World world) {
-        int nextx = world.toGrid(getX() + world.getTileSize() / 2 * Math.signum(getV().x));
-        int nexty = world.toGrid(getY() + world.getTileSize() / 2 * Math.signum(getV().y));
-        // If we're about to hit a wall, change direction
-        if (!world.inGridBounds(nextx, nexty) || world.getTile(nextx, nexty).isWall()) {
-            int gridx = world.toGrid(getX()), gridy = world.toGrid(getY());
-            if (world.inGridBounds(gridx, gridy)) {
-                setV(speed * world.getPathXDir(gridx, gridy), speed * world.getPathYDir(gridx, gridy));
-            } else {
-                setV(speed * world.inwardDirX(gridx), speed * world.inwardDirY(gridy));
+        int nextX = world.toGrid(getX() + getWidth() * Math.signum(getV().x));
+        int nextY = world.toGrid(getY() + getHeight() * Math.signum(getV().y));
+        int gridX = world.toGrid(getX()), gridY = world.toGrid(getY());
+
+        // See if we are in the process of turning (our position, plus the entire width/height of the sprite is at the edge)
+        if (world.getTile(nextX, nextY).isWall()) {
+            // Optimally turn at the center of the tile (small buffer in case of lag/fast sprites)
+            int tileSize = world.getTileSize();
+            final int BUFFER = 5;
+            if (Math.floorMod((int)getX(), tileSize*gridX + tileSize/2) < BUFFER &&
+                Math.floorMod((int)getY(), tileSize*gridY + tileSize/2) < BUFFER) {
+                // Turn
+                if (world.inGridBounds(gridX, gridY)) {
+                    setV(speed * world.getPathXDir(gridX, gridY), speed * world.getPathYDir(gridX, gridY));
+                }
             }
+        } else if (!world.inGridBounds(gridX, gridY)) {
+            // Head away from the edge of the map
+            setV(speed * world.inwardDirX(gridX), speed * world.inwardDirY(gridY));
         }
+
         super.advance();
     }
 

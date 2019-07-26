@@ -13,6 +13,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
+import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.tiled.TileSet;
 import org.newdawn.slick.tiled.TiledMap;
 
@@ -36,7 +37,7 @@ public class World {
 
     private int w, h, tileSize, sidebarW;
     private float startX, startY;
-    private int health = 100, waveNum = 0;
+    private int health = 5, waveNum = 0;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
@@ -208,6 +209,11 @@ public class World {
             Enemy.Type enemyType = w.trySpawn(timer);
             if (enemyType != null) {
                 spawnEnemy(startX, startY, enemyType);
+                // Play enemy sounds
+                if (enemyType.toString().toLowerCase().equals("python") ||
+                    enemyType.toString().toLowerCase().equals("commerce")) {
+                    AudioController.play(enemyType.toString().toLowerCase(), false);
+                }
             }
 
             // Set wave status
@@ -295,6 +301,13 @@ public class World {
                 myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
                 myTower = null;
+
+                // Play a sound effect
+                String towerName = myTower.getType().toString().toLowerCase();
+                if (towerName == "Heap Sort Alistair" || towerName == "Insertion Sort Alistair"
+                || towerName == "Quick Sort Alistair" || towerName == "Merge Sort Alistair") {
+                    AudioController.play(towerName, false);
+                }
             }
         } else if (clicked) {
             // Click on a tower to display its range
