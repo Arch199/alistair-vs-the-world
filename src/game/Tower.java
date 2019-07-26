@@ -48,6 +48,7 @@ public abstract class Tower extends Sprite {
     private float range;
     private int fireRate; // In ms
     private long nextShot = 0L; // Time until next fire (in ms)
+    private Type type;
 
     /**
      * Create a tower.
@@ -62,6 +63,7 @@ public abstract class Tower extends Sprite {
         this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
         this.range = type.range;
         this.world = world;
+        this.type = type;
     }
 
     /** Fires a projectile in the given direction. */
@@ -144,4 +146,6 @@ public abstract class Tower extends Sprite {
     }
 
     public boolean isPlaced() { return placed; }
+
+    public Type getType() { return type; }
 }

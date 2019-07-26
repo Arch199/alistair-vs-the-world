@@ -50,8 +50,8 @@ public class App extends BasicGame {
         gc.setShowFPS(false);
 
         // Game update speed. 1 tick every 20 ms (50/sec)
-        gc.setMaximumLogicUpdateInterval(20);
-        gc.setMinimumLogicUpdateInterval(20);
+        gc.setMaximumLogicUpdateInterval(3);
+        gc.setMinimumLogicUpdateInterval(3);
         
         // Open Main Menu
         menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);

@@ -12,6 +12,8 @@ import org.newdawn.slick.*;
 public final class AudioController {
     private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
     private static HashMap<String, Sound[]> multiSounds = new HashMap<String, Sound[]>();
+    private static HashMap<String, Boolean> hasPlayed = new HashMap<>();
+
     static {
         // Load audio files
         File folder = new File("assets/audio");
@@ -22,6 +24,7 @@ public final class AudioController {
                     String name = f.getName().replaceFirst("[.][^.]+$", "");
                     // Add the sound to the hash map
                     singleSounds.put(name.toLowerCase(), new Sound(f.getPath()));
+                    hasPlayed.put(name.toLowerCase(), false);
                 } else {
                     // Add all the sounds in the subfolder to an array
                     Sound[] new_sounds = Arrays.stream(f.listFiles()).filter(file -> file.isFile()).map(file -> {
@@ -33,6 +36,7 @@ public final class AudioController {
                         }
                     }).toArray(Sound[]::new);
                     multiSounds.put(f.getName().toLowerCase(), new_sounds);
+                    hasPlayed.put(f.getName().toLowerCase(), false);
                 }
             }
         } catch (SlickException e) {
@@ -47,10 +51,18 @@ public final class AudioController {
     /**
      * Plays a sound.
      *
-     * @param event The name of the game event, and the sound in assets/audio to play. Can specify a folder.
+     * @param event In lowercase, the name of the game event/sound asset to play. Can specify a folder.
+     * @param allowRepeat Lets this sound be played again until the next reset()
      */
-    public static void play(String event) {
+    public static void play(String event, boolean allowRepeat) {
         // TODO: Add pitch and volume control
+        // See if the sound has already been played
+        if (hasPlayed.get(event)) { return; }
+
+        // Flag that this event has been played if repeats are not allowed
+        if (!allowRepeat) { hasPlayed.put(event, true); }
+
+        // Play the sound
         Sound[] list = multiSounds.get(event);
         if (list != null) {
             list[Util.rand(list.length)].play();
@@ -63,7 +75,15 @@ public final class AudioController {
             }
         }
     }
-    
+
+    /**
+     * Plays a sound, by default allowing repeats.
+     * @param event In lowercase, the name of the game event/sound asset to play. Can specify a folder.
+     */
+    public static void play(String event) {
+        play(event, true);
+    }
+
     /**
      * Stops all currently playing sounds.
      */
@@ -75,6 +95,15 @@ public final class AudioController {
             for (Sound s : list) {
                 s.stop();
             }
+        }
+    }
+
+    /**
+     * Resets the audio controller by allowing all sounds to be played again.
+     */
+    public static void reset() {
+        for(String sound: hasPlayed.keySet()) {
+            hasPlayed.put(sound, false);
         }
     }
 }
