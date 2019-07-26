@@ -18,10 +18,11 @@ public class BubbleSortTower extends Tower {
     
     private static class Bubble extends Projectile {
         private static final int DAMAGE = 1;
-        private static final float SCALE_INCR = 0.1f, SCALE_MAX = 7;
+        private static final float SCALE_INCR = 0.015f, SCALE_MAX = 0.7f;
         
         public Bubble(World world, float startX, float startY) throws SlickException {
-            super(world, startX, startY, new Vector2f(0, 0), new Image(Projectile.SPRITE_PATH + "bubble.png"), DAMAGE);
+            super(world, startX, startY, new Vector2f(0, 0), new Image(Projectile.SPRITE_PATH + "bubble-original.png"), DAMAGE);
+            setScale(.1f);
         }
         
         @Override
@@ -32,7 +33,7 @@ public class BubbleSortTower extends Tower {
         
         @Override
         public boolean isDead() {
-            return super.isDead() || getScale() > SCALE_MAX;
+            return super.isDead() || getScale() >= SCALE_MAX;
         }
     }
 }

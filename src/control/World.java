@@ -37,7 +37,7 @@ public class World {
 
     private int w, h, tileSize, sidebarW;
     private float startX, startY;
-    private int health = 100, waveNum = 0;
+    private int health = 100, waveNum = 0, money = 100;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
@@ -259,6 +259,7 @@ public class World {
                     e.takeDamage(p.getDamage());
                     if (e.isDead()) {
                         eItr.remove();
+                        money++;
                     }
                     itr.remove();
                     break;
@@ -423,6 +424,7 @@ public class World {
         g.setColor(Color.white);
         g.setFont(SMALL_TTF);
         Util.writeCentered(g, "Wave: " + waveNum, (w - (sidebarW / 2)) * scale, 20);
+        Util.writeCentered(g, "Money: " + money, (w - (sidebarW / 2)) * scale, 40);
         g.setFont(MEDIUM_TTF);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
 
