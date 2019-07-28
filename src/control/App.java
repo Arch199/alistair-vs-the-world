@@ -25,6 +25,7 @@ public class App extends BasicGame {
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
     private Menu menu;
     private World world;
+    private Boolean gameOver = false;
 
     public static void main(String[] args) {
         try {
@@ -90,11 +91,12 @@ public class App extends BasicGame {
             int mouseX = (int) (input.getMouseX()*SCALE_FACTOR), mouseY = (int) (input.getMouseY()*SCALE_FACTOR);
 
             if (rightClick) { world.deselect(); }
-            if (escape) {
+            if (escape | gameOver) {
                 // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                 AudioController.stopAll();
                 world = null;
                 menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
+                gameOver = false;
                 return; // Terminate the update at this point
             }
             
@@ -184,4 +186,6 @@ public class App extends BasicGame {
         System.exit(0);
         return false; // only here to placate the compiler
     }
+
+    public void setGameOver(Boolean gameOver) { this.gameOver = gameOver; }
 }
