@@ -262,6 +262,7 @@ public class World {
                         eItr.remove();
                         money++;
                     }
+                    p.pop();
                     itr.remove();
                     break;
                 }
@@ -534,6 +535,11 @@ public class World {
     /** Add a projectile to the list of monitored projectiles. */
     public void addProjectile(Projectile proj) {
         projectiles.add(proj);
+    }
+
+    /** Forward a play command to the audio controller */
+    public void play(String event) {
+        AudioController.play(event);
     }
 
     /**

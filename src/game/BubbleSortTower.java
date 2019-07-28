@@ -35,5 +35,10 @@ public class BubbleSortTower extends Tower {
         public boolean isDead() {
             return super.isDead() || getScale() >= SCALE_MAX;
         }
+
+        @Override
+        public void pop() {
+            getWorld().play("bubblepop");
+        }
     }
 }
