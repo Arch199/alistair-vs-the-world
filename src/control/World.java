@@ -29,21 +29,24 @@ public class World {
     private static final Font
             TINY_FONT = new Font("Verdana", Font.PLAIN, 11),
             SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
-            MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20);
-    private static final TrueTypeFont
+            MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20),
+            LARGE_FONT = new Font("Verdana", Font.BOLD, 40);
+    public static final TrueTypeFont
             TINY_TTF = new TrueTypeFont(TINY_FONT, true),
             SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
-            MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true);
+            MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
+            LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true);
 
     private int w, h, tileSize, sidebarW;
     private float startX, startY;
-    private int health = 100, waveNum = 0, money = 100;
+    private int health = 1, waveNum = 0, money = 100;
     private long timer = 0;
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
             selectedTower = null; // Placed tower that has been selected
     private boolean waveComplete = true;
     private Button nextWave;
+    private boolean gameOver = false;
 
     private TiledMap map;
     private Tile[][] tiles;
@@ -157,6 +160,7 @@ public class World {
             try {
                 TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
                 icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
+                icon.setText(TextSprite.Mode.HOVER, String.valueOf(t.getCost()), MEDIUM_TTF);
                 sidebarIcons.add(icon);
                 yPos += 100;
             } catch (SlickException e) {
@@ -174,24 +178,10 @@ public class World {
         AudioController.play("intro");
     }
 
-    /**
-     * Deal with user input e.g. pressing Esc to return to main menu.
-     * @param Obtained from App's GameContainer
-     * @return A string for an action to take. (Empty string by default).
-     */
-    public String processInput(Boolean escape, Boolean rightClick) {
-        // Deselect
-        if (rightClick) {
-            myTower = null;
-            selectedTower = null;
-        }
-
-        // Leave the game
-        if (escape) {
-            return "Exit";
-        }
-
-        return "";
+    /** Deselect the item being carried */
+    public void deselect() {
+        myTower = null;
+        selectedTower = null;
     }
 
     /**
@@ -261,6 +251,7 @@ public class World {
                         eItr.remove();
                         money++;
                     }
+                    p.pop();
                     itr.remove();
                     break;
                 }
@@ -275,16 +266,17 @@ public class World {
             myTower.setColor(Color.white);
             myTower.teleport(mouseX, mouseY);
 
-            // Set color to red if out of game bounds
+            // Set color to red if out of game bounds, or if it cannot be afforeded
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
                 myTower.setColor(Color.red);
                 if (clicked) {
-                    myTower = null;
+                    // Cancel the placement
+                    deselect();
                     return;
                 }
             } else {
-                // Also set color to red if touching a non-wall tile or tower
-                if (!getTile(mouseX, mouseY).holdsDefence) {
+                // Also set color to red if touching a non-wall tile or tower, or if the player has insufficent funds
+                if (!getTile(mouseX, mouseY).holdsDefence || money < myTower.getType().getCost()) {
                     myTower.setColor(Color.red);
                     return;
                 }
@@ -301,6 +293,7 @@ public class World {
             if (clicked/* && myTower.getColor() == Color.white*/) {
                 myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
+                money -= myTower.getType().getCost();
 
                 // Play a sound effect
                 String towerName = myTower.getType().toString().toLowerCase();
@@ -309,7 +302,7 @@ public class World {
                     AudioController.play(towerName, false);
                 }
 
-                myTower = null;
+                deselect();
             }
         } else if (clicked) {
             // Click on a tower to display its range
@@ -325,12 +318,12 @@ public class World {
             }
 
             // Deselect a selected tower
-            selectedTower = null;
+            deselect();
 
             // Process selecting towers from the sidebar
             for (TextSprite s : sidebarIcons) {
                 if (s.contains(mouseX, mouseY)) {
-                    myTower = Tower.create(Tower.Type.fromTitle(s.getText()), mouseX, mouseY, this);
+                    myTower = Tower.create(Tower.Type.fromTitle(s.getText(TextSprite.Mode.BELOW)), mouseX, mouseY, this);
                     return;
                 }
             }
@@ -360,6 +353,14 @@ public class World {
                 }
             } else {
                 b.setHover(false);
+            }
+        }
+
+        for (TextSprite textSprite: sidebarIcons) {
+            if (textSprite.contains(mousex, mousey)) {
+                textSprite.setHovered(true);
+            } else {
+                textSprite.setHovered(false);
             }
         }
     }
@@ -437,6 +438,13 @@ public class World {
         if (selectedTower != null) {
             selectedTower.drawRange(g);
         }
+
+        // Game over splash
+        if (gameOver) {
+            g.setColor(Color.red);
+            Util.writeCentered(LARGE_TTF, "Game Over!", App.WINDOW_W / 2, App.WINDOW_H / 2);
+            g.setColor(Color.white);
+        }
     }
 
     public void renderTiles(Graphics g) {
@@ -466,12 +474,19 @@ public class World {
      * @param damage Health reduction, <=100
      */
     public void takeDamage(int damage) {
-        health -= damage;
-        if (health <= 0) {
-            System.out.println("we ded");
-            AudioController.play("gameover");
-            // TODO: add handling for game overs (SEGFAULTS!)
+        if (!gameOver) {
+            if (health - damage < 0) { health = 0; } else { health -= damage; }
+            if (health == 0) {
+                endGame();
+            }
         }
+    }
+
+    /** Create the end game splash */
+    public void endGame() {
+        deselect();
+        AudioController.play("gameover");
+        gameOver = true;
     }
 
     /** Get the tile data at a specific position. */
@@ -523,6 +538,11 @@ public class World {
     /** Add a projectile to the list of monitored projectiles. */
     public void addProjectile(Projectile proj) {
         projectiles.add(proj);
+    }
+
+    /** Forward a play command to the audio controller */
+    public void play(String event) {
+        AudioController.play(event);
     }
 
     /**

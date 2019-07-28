@@ -11,7 +11,7 @@ import control.World;
 public abstract class Projectile extends DynamicSprite {
     protected static final String SPRITE_PATH = "assets/sprites/projectiles/";
     
-    private World world;
+    public World world;
     
     /** Create a projectile.
      * @param startX Starting x position
@@ -29,4 +29,10 @@ public abstract class Projectile extends DynamicSprite {
     public boolean isDead() {
         return super.isDead() || isOffScreen(world.getWidth(), world.getHeight());
     }
+
+    public void pop() {
+        world.play("lowpop");
+    }
+
+    public World getWorld() { return world; }
 }

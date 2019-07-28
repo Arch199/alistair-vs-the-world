@@ -80,5 +80,5 @@ public class Button extends Rectangle {
     public Boolean getDisabled() { return disabled; }
     
     public void setDisabled(Boolean state) { disabled = state; }
-    public void setHover(Boolean hover) { hovered = hover; }
+    public void setHover(Boolean hovered) { this.hovered = hovered; }
 }

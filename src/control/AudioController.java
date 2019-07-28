@@ -56,12 +56,6 @@ public final class AudioController {
      */
     public static void play(String event, boolean allowRepeat) {
         // TODO: Add pitch and volume control
-        // See if the sound has already been played
-        if (hasPlayed.get(event)) { return; }
-
-        // Flag that this event has been played if repeats are not allowed
-        if (!allowRepeat) { hasPlayed.put(event, true); }
-
         // Play the sound
         Sound[] list = multiSounds.get(event);
         if (list != null) {
@@ -69,7 +63,13 @@ public final class AudioController {
         } else {
             Sound single = singleSounds.get(event);
             if (single != null) {
+                // See if the sound has already been played
+                if(hasPlayed.get(event)) { return; }
+
                 single.play();
+
+                // Flag that this event has been played if repeats are not allowed
+                if (!allowRepeat) { hasPlayed.put(event, true); }
             } else {
                 System.err.printf("ERROR: Could not find sound '%s'%n", event);
             }

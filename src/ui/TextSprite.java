@@ -1,22 +1,40 @@
 package ui;
 
 import control.App;
+import control.World;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.TrueTypeFont;
 
 import control.Util;
 import game.Sprite;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /** 
  * Sprite that also draws some text.
  */
 public class TextSprite extends Sprite {
-    public enum Mode { INSIDE, BELOW }
+    public enum Mode {INSIDE, BELOW, HOVER;}
+
+    /** A line of text and how to style it */
+    private class Line {
+        String text;
+        TrueTypeFont ttf = World.SMALL_TTF;
+
+        Line(String text, TrueTypeFont ttf) {
+            this.text = text;
+            this.ttf = ttf;
+        }
+
+        Line (String text) {
+            this.text = text;
+        }
+    }
     
-    private boolean textSet = false;
+    private boolean hovered = false;
     private float textX, textY;
-    private String text;
-    private TrueTypeFont ttf;
+    private HashMap<Mode, Line> textItems = new HashMap<>();
 
     public TextSprite(float x, float y, Image im) {
         super(x, y, im);
@@ -25,27 +43,45 @@ public class TextSprite extends Sprite {
     @Override
     public void drawSelf() {
         super.drawSelf();
-        if (textSet) {
-            Util.writeCentered(ttf, text, textX, textY);
+
+        for (Mode mode: textItems.keySet()) {
+            Line line = textItems.get(mode);
+            switch (mode) {
+                case INSIDE:
+                    Util.writeCentered(line.ttf, line.text, getX(), getY());
+                    break;
+                case BELOW:
+                    Util.writeCentered(line.ttf, line.text, getX(),getY() + getHeight() / 2 + line.ttf.getLineHeight() / 2);
+                    break;
+                case HOVER:
+                    if (hovered) {
+                        Util.writeCentered(line.ttf, line.text, getX(), getY());
+                    }
+            }
+
         }
     }
-    
-    public String getText() { return text; }
-    
-    public void setText(Mode mode, String text, TrueTypeFont ttf) {
-        textSet = true;
-        this.text = text;
-        this.ttf = ttf;
-        
-        switch (mode) {
-            case INSIDE:
-                textX = getX();
-                textY = getY();
-                break;
-            case BELOW:
-                textX = getX();
-                textY = getY() + getHeight() / 2 + ttf.getLineHeight() / 2;
-                break;
+
+    /** Get the text being displayed in a particular mode */
+    public String getText(Mode mode) {
+        if (textItems.containsKey(mode)) {
+            return textItems.get(mode).text;
+        } else {
+            return "";
         }
+    }
+
+    /**
+     * Set the text to display in a given position.
+     * @param mode Position specifier enum
+     * @param text Text to display in thhis position
+     * @param ttf Font to use
+     */
+    public void setText(Mode mode, String text, TrueTypeFont ttf) {
+        textItems.put(mode, new Line(text, ttf));
+    }
+
+    public void setHovered(Boolean hovered) {
+        this.hovered = hovered;
     }
 }
