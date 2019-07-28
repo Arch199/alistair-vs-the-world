@@ -15,8 +15,8 @@ import control.World;
  */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 4000, 350f, 50),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 3000, 224f, 80) ;
+        SELECTION("Selection Sort Alistair", "selection.png", 2000, 350f, 50),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 1500, 224f, 80) ;
         private final String title, imName;
         private final int fireRate;
         private final float range;
