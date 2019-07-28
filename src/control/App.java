@@ -28,7 +28,7 @@ public class App extends BasicGame {
 
     public static void main(String[] args) {
         try {
-            App game = new App("Alistair vs The World");
+            App game = new App("Alistair VS The World");
             AppGameContainer appgc = new AppGameContainer(game);
             appgc.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
             appgc.start();
@@ -89,14 +89,13 @@ public class App extends BasicGame {
             // Input is relative to the window, scale back up to the 'full' coordinates
             int mouseX = (int) (input.getMouseX()*SCALE_FACTOR), mouseY = (int) (input.getMouseY()*SCALE_FACTOR);
 
-            String action = world.processInput(escape, rightClick);
-            switch (action) {
-                case "Exit":
-                    // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
-                    AudioController.stopAll();
-                    world = null;
-                    menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
-                    return; // Terminate the update at this point
+            if (rightClick) { world.deselect(); }
+            if (escape) {
+                // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
+                AudioController.stopAll();
+                world = null;
+                menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
+                return; // Terminate the update at this point
             }
             
             world.tick(delta);

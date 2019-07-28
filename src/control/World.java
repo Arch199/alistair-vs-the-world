@@ -175,24 +175,10 @@ public class World {
         AudioController.play("intro");
     }
 
-    /**
-     * Deal with user input e.g. pressing Esc to return to main menu.
-     * @param Obtained from App's GameContainer
-     * @return A string for an action to take. (Empty string by default).
-     */
-    public String processInput(Boolean escape, Boolean rightClick) {
-        // Deselect
-        if (rightClick) {
-            myTower = null;
-            selectedTower = null;
-        }
-
-        // Leave the game
-        if (escape) {
-            return "Exit";
-        }
-
-        return "";
+    /** Deselect the item being carried */
+    public void deselect() {
+        myTower = null;
+        selectedTower = null;
     }
 
     /**
@@ -282,7 +268,7 @@ public class World {
                 myTower.setColor(Color.red);
                 if (clicked) {
                     // Cancel the placement
-                    myTower = null;
+                    deselect();
                     return;
                 }
             } else {
@@ -313,7 +299,7 @@ public class World {
                     AudioController.play(towerName, false);
                 }
 
-                myTower = null;
+                deselect();
             }
         } else if (clicked) {
             // Click on a tower to display its range
@@ -329,7 +315,7 @@ public class World {
             }
 
             // Deselect a selected tower
-            selectedTower = null;
+            deselect();
 
             // Process selecting towers from the sidebar
             for (TextSprite s : sidebarIcons) {
