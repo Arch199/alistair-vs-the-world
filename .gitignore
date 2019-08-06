@@ -1,5 +1,11 @@
 /bin/
-/.idea/
 /target/
 /out/
+/lib/
+
+/.idea/
+/.settings/
 .classpath
+.project
+
+*.iml
