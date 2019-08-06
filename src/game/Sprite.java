@@ -1,6 +1,5 @@
 package game;
 
-import control.App;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 
@@ -28,7 +27,7 @@ public class Sprite extends Entity {
     }
 
     /**
-     * Check the sprite's position against the game boundraries.
+     * Check the sprite's position against the game boundaries.
      * @param windowW Game width
      * @param windowH Game height
      * @return Returns true if off the screen

@@ -17,7 +17,7 @@ public abstract class Projectile extends DynamicSprite {
      * @param startX Starting x position
      * @param startY Starting y position
      * @param vec Velocity vector to begin moving with
-     * @param img Projectile image
+     * @param im Projectile image
      * @param damage Damage it deals
      */
     public Projectile(World world, float startX, float startY, Vector2f vec, Image im, int damage) {

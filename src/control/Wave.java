@@ -10,17 +10,6 @@ import game.Enemy;
 public class Wave {
     private List<SpawnInstruction> instructions = new LinkedList<>();
     
-    /** Individual enemy spawn instructions, with enemy time and type. */
-    private class SpawnInstruction {
-        Enemy.Type enemy;
-        float spawnTime;
-
-        SpawnInstruction(Enemy.Type enemy, float spawnTime) {
-            this.enemy = enemy;
-            this.spawnTime = spawnTime;
-        }
-    }
-    
     /**
      * Check if enemies are due to be spawned.
      * @param timer The time since the start of the wave
@@ -44,4 +33,15 @@ public class Wave {
     }
     
     boolean isFinished() { return instructions.isEmpty(); }
+
+    /** Individual enemy spawn instructions, with enemy time and type. */
+    private static class SpawnInstruction {
+        Enemy.Type enemy;
+        float spawnTime;
+
+        SpawnInstruction(Enemy.Type enemy, float spawnTime) {
+            this.enemy = enemy;
+            this.spawnTime = spawnTime;
+        }
+    }
 }

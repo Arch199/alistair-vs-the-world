@@ -13,7 +13,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.tiled.TileSet;
 import org.newdawn.slick.tiled.TiledMap;
 
@@ -154,11 +153,11 @@ public class World {
         // Create sidebar icons for buying towers
         // TODO: add cost in currency
 
-        float scale = App.SCALE_FACTOR;
-        float xPos = w*scale - sidebarW*scale/2, yPos = 100;
+        final float centerX = w * App.SCALE_FACTOR - sidebarW * App.SCALE_FACTOR/2;
+        float yPos = 100;
         for (Tower.Type t : Tower.Type.values()) {
             try {
-                TextSprite icon = new TextSprite(xPos, yPos, t.getImage());
+                TextSprite icon = new TextSprite(centerX, yPos, t.getImage());
                 icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
                 icon.setText(TextSprite.Mode.HOVER, String.valueOf(t.getCost()), MEDIUM_TTF);
                 sidebarIcons.add(icon);
@@ -169,8 +168,7 @@ public class World {
         }
 
         // New wave button
-        float btnXPos = w*scale - sidebarW*scale/2, btnYPos = 500;
-        nextWave = new Button(btnXPos, btnYPos, "Next wave", MEDIUM_TTF, 5, true, Color.green);
+        nextWave = new Button(centerX, 500, "Next wave", MEDIUM_TTF, 5, true, Color.green);
         nextWave.setCols(Color.green, Color.black, Color.white);
         buttons.add(nextWave);
 
@@ -216,7 +214,7 @@ public class World {
         }
     }
 
-    /** Update enemy positons. */
+    /** Update enemy positions. */
     public void processEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
@@ -266,7 +264,7 @@ public class World {
             myTower.setColor(Color.white);
             myTower.teleport(mouseX, mouseY);
 
-            // Set color to red if out of game bounds, or if it cannot be afforeded
+            // Set color to red if out of game bounds, or if it cannot be afforded
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
                 myTower.setColor(Color.red);
                 if (clicked) {
@@ -275,7 +273,7 @@ public class World {
                     return;
                 }
             } else {
-                // Also set color to red if touching a non-wall tile or tower, or if the player has insufficent funds
+                // Also set color to red if touching a non-wall tile or tower, or if the player has insufficient funds
                 if (!getTile(mouseX, mouseY).holdsDefence || money < myTower.getType().getCost()) {
                     myTower.setColor(Color.red);
                     return;
@@ -296,11 +294,7 @@ public class World {
                 money -= myTower.getType().getCost();
 
                 // Play a sound effect
-                String towerName = myTower.getType().toString().toLowerCase();
-                if (towerName == "Heap Sort Alistair" || towerName == "Insertion Sort Alistair"
-                || towerName == "Quick Sort Alistair" || towerName == "Merge Sort Alistair") {
-                    AudioController.play(towerName, false);
-                }
+                AudioController.play(myTower.getType().toString(), false);
 
                 deselect();
             }
@@ -331,7 +325,7 @@ public class World {
     }
 
     /** Button updates and colour changes. */
-    public void processButtons(int mousex, int mousey, boolean clicked) {
+    public void processButtons(int mouseX, int mouseY, boolean clicked) {
         for (Button b: buttons) {
             // Button disabling
 
@@ -343,7 +337,7 @@ public class World {
             }
 
             // Button clicking
-            if (b.contains(mousex, mousey)) {
+            if (b.contains(mouseX, mouseY)) {
                 b.setHover(true);
                 if (clicked && !b.getDisabled()) {
                     // New wave button
@@ -357,7 +351,7 @@ public class World {
         }
 
         for (TextSprite textSprite: sidebarIcons) {
-            if (textSprite.contains(mousex, mousey)) {
+            if (textSprite.contains(mouseX, mouseY)) {
                 textSprite.setHovered(true);
             } else {
                 textSprite.setHovered(false);

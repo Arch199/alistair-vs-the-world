@@ -46,7 +46,7 @@ public class App extends BasicGame {
 
     /** Sets game parameters, loads up files, and starts the menu. */
     @Override
-    public void init(GameContainer gc) throws SlickException {
+    public void init(GameContainer gc) {
         System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
 
@@ -58,29 +58,25 @@ public class App extends BasicGame {
         menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
     }
 
-    /**
-     * Should be called every 20ms. Executes a 'tick' operation.
-     * @throws SlickException
-     */
+    /** Should be called every 20ms. Executes a 'tick' operation. */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
         Input input = gc.getInput();
-        
+
         if (menu != null) {
             Menu.Choice action = menu.update(input);
-            if (action == null) {
-                return;
-            }
-            switch (action) {
-                case START:
-                    openLevel("fourbythree2");
-                    break;
-                case OPTIONS:
-                    // TODO: Add options (what settings would we have?) or just remove this
-                    break;
-                case QUIT:
-                    closeRequested();
-                    break;
+            if (action != null) {
+                switch (action) {
+                    case START:
+                        openLevel("fourbythree2"); // TODO: add level select
+                        break;
+                    case OPTIONS:
+                        // TODO: Add options (what settings would we have?) or just remove this
+                        break;
+                    case QUIT:
+                        closeRequested();
+                        break;
+                }
             }
         } else if (world != null) {
             // Can only call inputs once
@@ -88,32 +84,30 @@ public class App extends BasicGame {
                     leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
                     escape = input.isKeyPressed(Input.KEY_ESCAPE);
             // Input is relative to the window, scale back up to the 'full' coordinates
-            int mouseX = (int) (input.getMouseX()*SCALE_FACTOR), mouseY = (int) (input.getMouseY()*SCALE_FACTOR);
+            int mouseX = (int) (input.getMouseX() * SCALE_FACTOR), mouseY = (int) (input.getMouseY() * SCALE_FACTOR);
 
-            if (rightClick) { world.deselect(); }
+            if (rightClick) {
+                world.deselect();
+            }
             if (escape | gameOver) {
                 // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                 AudioController.stopAll();
                 world = null;
-                menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
+                menu = new Menu(getTitle(), (int) WINDOW_W, (int) WINDOW_H);
                 gameOver = false;
-                return; // Terminate the update at this point
+            } else {
+                world.tick(delta);
+                world.processEnemies();
+                world.processProjectiles();
+                world.processTowers(mouseX, mouseY, leftClick);
+                world.processButtons(mouseX, mouseY, leftClick);
             }
-            
-            world.tick(delta);
-            world.processEnemies();
-            world.processProjectiles();
-            world.processTowers(mouseX, mouseY, leftClick);
-            world.processButtons(mouseX, mouseY,leftClick);
         }
     }
 
-    /**
-     * Responsible for drawing sprites. Called regularly, automatically.
-     * @throws SlickException
-     */
+    /** Responsible for drawing sprites. Called regularly, automatically. */
     @Override
-    public void render(GameContainer gc, Graphics g) throws SlickException {
+    public void render(GameContainer gc, Graphics g) {
         if (menu != null) {
             menu.render(g);
         }
@@ -140,7 +134,7 @@ public class App extends BasicGame {
             // Read line-by-line
             scanner.useDelimiter("[\\r\\n;]+");
 
-            ArrayList<Wave> waves = new ArrayList<Wave>();
+            ArrayList<Wave> waves = new ArrayList<>();
 
             // Wave-by-wave
             while (scanner.hasNext()) {
@@ -187,5 +181,6 @@ public class App extends BasicGame {
         return false; // only here to placate the compiler
     }
 
+    // TODO: implement losing the game
     public void setGameOver(Boolean gameOver) { this.gameOver = gameOver; }
 }

@@ -57,9 +57,8 @@ public abstract class Tower extends Sprite {
      * Create a tower.
      * @param x x-position
      * @param y y-position
-     * @param imName the file name of the image file
+     * @param type the type of tower to create
      * @param world the containing world
-     * @throws SlickException
      */
     protected Tower(float x, float y, Type type, World world) throws SlickException {
         super(x, y, type.getImage());
@@ -72,7 +71,7 @@ public abstract class Tower extends Sprite {
     /** Fires a projectile in the given direction. */
     protected abstract void shoot(Vector2f dir) throws SlickException;
     
-    public static final Tower create(Type type, float x, float y, World world) throws SlickException {
+    public static Tower create(Type type, float x, float y, World world) throws SlickException {
         switch (type) {
             case BUBBLE:
                 return new BubbleSortTower(x, y, type, world);
@@ -139,7 +138,7 @@ public abstract class Tower extends Sprite {
         g.setColor(new Color(110, 110, 110, 110));
         g.drawOval(xCorner, yCorner, range * 2, range * 2);
         
-        // Fill with a shade of grey (can change vals depending on contrast w/ textures)
+        // Fill with a shade of grey (can change values depending on contrast w/ textures)
         g.setColor(new Color(80, 80, 80, 80));
         g.fillOval(xCorner, yCorner, range * 2, range * 2);
     }

@@ -25,7 +25,7 @@ public abstract class Entity {
     }
     
     /**
-     * Calculate the Euclidian distance to another entity.
+     * Calculate the Euclidean distance to another entity.
      * @param other Other entity
      * @return Distance in pixels
      */

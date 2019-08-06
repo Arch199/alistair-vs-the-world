@@ -6,12 +6,10 @@ import java.util.HashMap;
 
 import org.newdawn.slick.*;
 
-/**
- * Stores all sound files, and provides a method to play them.
- */
+/** Stores all sound files, and provides a method to play them. */
 public final class AudioController {
-    private static HashMap<String, Sound> singleSounds = new HashMap<String, Sound>();
-    private static HashMap<String, Sound[]> multiSounds = new HashMap<String, Sound[]>();
+    private static HashMap<String, Sound> singleSounds = new HashMap<>();
+    private static HashMap<String, Sound[]> multiSounds = new HashMap<>();
     private static HashMap<String, Boolean> hasPlayed = new HashMap<>();
 
     static {
@@ -27,7 +25,7 @@ public final class AudioController {
                     hasPlayed.put(name.toLowerCase(), false);
                 } else {
                     // Add all the sounds in the subfolder to an array
-                    Sound[] new_sounds = Arrays.stream(f.listFiles()).filter(file -> file.isFile()).map(file -> {
+                    Sound[] new_sounds = Arrays.stream(f.listFiles()).filter(File::isFile).map(file -> {
                         try {
                             return new Sound(file.getPath());
                         } catch (SlickException e) {
@@ -42,20 +40,21 @@ public final class AudioController {
         } catch (SlickException e) {
             e.printStackTrace();
         }
-
         // TODO: Find some music? Can add an array of songs to a musicLoop() method.
     }
     
     private AudioController() {} // prevents instantiation from outside the class
 
     /**
-     * Plays a sound.
-     *
-     * @param event In lowercase, the name of the game event/sound asset to play. Can specify a folder.
+     * Play a sound.
+     * @param event The name of the game event/sound asset to play. Can specify a folder.
      * @param allowRepeat Lets this sound be played again until the next reset()
      */
     public static void play(String event, boolean allowRepeat) {
         // TODO: Add pitch and volume control
+        // Change to lower case for consistency
+        event = event.toLowerCase();
+
         // Play the sound
         Sound[] list = multiSounds.get(event);
         if (list != null) {
@@ -64,12 +63,15 @@ public final class AudioController {
             Sound single = singleSounds.get(event);
             if (single != null) {
                 // See if the sound has already been played
-                if(hasPlayed.get(event)) { return; }
-
+                if (hasPlayed.get(event)) {
+                    return;
+                }
                 single.play();
 
                 // Flag that this event has been played if repeats are not allowed
-                if (!allowRepeat) { hasPlayed.put(event, true); }
+                if (!allowRepeat) {
+                    hasPlayed.put(event, true);
+                }
             } else {
                 System.err.printf("ERROR: Could not find sound '%s'%n", event);
             }
@@ -102,8 +104,6 @@ public final class AudioController {
      * Resets the audio controller by allowing all sounds to be played again.
      */
     public static void reset() {
-        for(String sound: hasPlayed.keySet()) {
-            hasPlayed.put(sound, false);
-        }
+        hasPlayed.replaceAll((s, v) -> false);
     }
 }

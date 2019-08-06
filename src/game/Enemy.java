@@ -47,7 +47,7 @@ public class Enemy extends DynamicSprite {
         setDamage(health);
     }
     
-    /** Moves enemy along the precalculated path.
+    /** Moves enemy along the pre-calculated path.
      * @param speed Magnitude of step
      * @param world Game's world instance
      * */
