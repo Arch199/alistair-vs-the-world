@@ -1,5 +1,6 @@
 package game;
 
+import control.App;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
@@ -33,13 +34,13 @@ public class Enemy extends DynamicSprite {
 
     /**
      * Create an enemy
-     * @param startx x-position of start
-     * @param starty y-position of start
+     * @param startX x-position of start
+     * @param startY y-position of start
      * @param v Initial movement vector  (unscaled)
      * @param type Enemy type as an enum, e.g. Enemy.Type.PYTHON
      */
-    public Enemy(float startx, float starty, Vector2f v, Type type) throws SlickException {
-        super(startx, starty, v, new Image(SPRITE_PATH + type.imPath), 0);
+    public Enemy(float startX, float startY, Vector2f v, Type type) throws SlickException {
+        super(startX, startY, v, new Image(SPRITE_PATH + type.imPath), 0);
         this.type = type;
         health = type.health;
         speed = type.speed;
@@ -49,9 +50,9 @@ public class Enemy extends DynamicSprite {
     
     /** Moves enemy along the pre-calculated path.
      * @param speed Magnitude of step
-     * @param world Game's world instance
-     * */
-    public void advance(float speed, World world) {
+     */
+    public void advance(float speed) {
+        World world = App.getWorld();
         int nextX = world.toGrid(getX() + getWidth() * Math.signum(getV().x));
         int nextY = world.toGrid(getY() + getHeight() * Math.signum(getV().y));
         int gridX = world.toGrid(getX()), gridY = world.toGrid(getY());

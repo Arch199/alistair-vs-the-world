@@ -6,41 +6,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.newdawn.slick.*;
 import org.newdawn.slick.tiled.TiledMap;
-
-import ui.Menu;
 
 /**
  * Main handler for the game as a program.
  * Creates a World to handle the gameplay itself.
  */
-public class App extends BasicGame {
-    public static final float SCALE_FACTOR = 1.33f;
-    public static final float
+public final class App extends BasicGame {
+    static final float SCALE_FACTOR = 1.33f;
+    static final float
         WINDOW_W = 1488, WINDOW_H = 1008, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
         GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
-    private Menu menu;
-    private World world;
-    private Boolean gameOver = false;
+    private static Menu menu;
+    private static World world;
 
-    public static void main(String[] args) {
-        try {
-            App game = new App("Alistair VS The World");
-            AppGameContainer appgc = new AppGameContainer(game);
-            appgc.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
-            appgc.start();
-
-            System.err.println("GAME STATE: Game forced exit");
-        } catch (SlickException e) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
-        }
+    public static void main(String[] args) throws SlickException {
+        App instance = new App("Alistair vs The World");
+        AppGameContainer container = new AppGameContainer(instance);
+        container.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
+        container.start();
     }
 
-    public App(String title) {
+    private App(String title) {
         super(title);
     }
 
@@ -89,13 +78,13 @@ public class App extends BasicGame {
             if (rightClick) {
                 world.deselect();
             }
-            if (escape | gameOver) {
+            if (escape) {
                 // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
                 AudioController.stopAll();
                 world = null;
                 menu = new Menu(getTitle(), (int) WINDOW_W, (int) WINDOW_H);
-                gameOver = false;
             } else {
+                // TODO: replace with world.update(delta)
                 world.tick(delta);
                 world.processEnemies();
                 world.processProjectiles();
@@ -119,8 +108,6 @@ public class App extends BasicGame {
             g.scale(SCALE_FACTOR, SCALE_FACTOR);
         }
     }
-    
-    
     
     /** Opens a new level and creates a World to manage it.
      * Also minimises the current menu and changes focus to the level.
@@ -181,6 +168,5 @@ public class App extends BasicGame {
         return false; // only here to placate the compiler
     }
 
-    // TODO: implement losing the game
-    public void setGameOver(Boolean gameOver) { this.gameOver = gameOver; }
+    public static World getWorld() { return world; }
 }

@@ -1,5 +1,7 @@
 package game;
 
+import control.App;
+import control.AudioController;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -10,9 +12,7 @@ import control.World;
  */
 public abstract class Projectile extends DynamicSprite {
     protected static final String SPRITE_PATH = "assets/sprites/projectiles/";
-    
-    public World world;
-    
+
     /** Create a projectile.
      * @param startX Starting x position
      * @param startY Starting y position
@@ -20,19 +20,16 @@ public abstract class Projectile extends DynamicSprite {
      * @param im Projectile image
      * @param damage Damage it deals
      */
-    public Projectile(World world, float startX, float startY, Vector2f vec, Image im, int damage) {
+    public Projectile(float startX, float startY, Vector2f vec, Image im, int damage) {
         super(startX, startY, vec, im, damage);
-        this.world = world;
     }
     
     @Override
     public boolean isDead() {
-        return super.isDead() || isOffScreen(world.getWidth(), world.getHeight());
+        return super.isDead() || isOffScreen(App.getWorld().getWidth(), App.getWorld().getHeight());
     }
 
     public void pop() {
-        world.play("lowpop");
+        AudioController.play("lowpop");
     }
-
-    public World getWorld() { return world; }
 }

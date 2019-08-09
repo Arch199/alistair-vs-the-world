@@ -43,9 +43,8 @@ public class World {
     private Tile alistair;
     private Tower myTower = null,       // Tower currently being placed
             selectedTower = null; // Placed tower that has been selected
-    private boolean waveComplete = true;
-    private Button nextWave;
-    private boolean gameOver = false;
+    private boolean waveComplete = true, gameOver = false;
+    private Button nextWave; // TODO: make a list of menu buttons?
 
     private TiledMap map;
     private Tile[][] tiles;
@@ -66,7 +65,7 @@ public class World {
      * @param map The tiled map to render
      * @param waves Data on waves and enemy spawn timing
      */
-    public World(int w, int h, int sidebarW, TiledMap map, List<Wave> waves) {
+    World(int w, int h, int sidebarW, TiledMap map, List<Wave> waves) {
         // Assert that the map has square tiles
         if (map.getTileWidth() != map.getTileHeight()) {
             throw new IllegalArgumentException("Tiled map must have square tiles");
@@ -198,6 +197,7 @@ public class World {
             if (enemyType != null) {
                 spawnEnemy(startX, startY, enemyType);
                 // Play enemy sounds
+                // TODO: refactor this
                 if (enemyType.toString().toLowerCase().equals("python") ||
                     enemyType.toString().toLowerCase().equals("commerce")) {
                     AudioController.play(enemyType.toString().toLowerCase(), false);
@@ -220,7 +220,7 @@ public class World {
         while (itr.hasNext()) {
             Enemy e = itr.next();
             // Hitting alistair
-            e.advance(e.getSpeed(), this);
+            e.advance(e.getSpeed());
             if (e.checkCollision(alistair)) {
                 takeDamage(e.getDamage());
                 itr.remove();
@@ -317,7 +317,7 @@ public class World {
             // Process selecting towers from the sidebar
             for (TextSprite s : sidebarIcons) {
                 if (s.contains(mouseX, mouseY)) {
-                    myTower = Tower.create(Tower.Type.fromTitle(s.getText(TextSprite.Mode.BELOW)), mouseX, mouseY, this);
+                    myTower = Tower.create(Tower.Type.fromTitle(s.getText(TextSprite.Mode.BELOW)), mouseX, mouseY);
                     return;
                 }
             }
@@ -532,11 +532,6 @@ public class World {
     /** Add a projectile to the list of monitored projectiles. */
     public void addProjectile(Projectile proj) {
         projectiles.add(proj);
-    }
-
-    /** Forward a play command to the audio controller */
-    public void play(String event) {
-        AudioController.play(event);
     }
 
     /**

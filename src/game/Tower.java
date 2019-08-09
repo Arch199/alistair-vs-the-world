@@ -2,13 +2,12 @@ package game;
 
 import java.util.List;
 
+import control.App;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
-
-import control.World;
 
 /**
  * Towers are placed on a grid and shoot projectiles at enemies.
@@ -45,8 +44,7 @@ public abstract class Tower extends Sprite {
         }
     }
     protected static final String SPRITE_PATH = "assets/sprites/towers/";
-    
-    protected final World world;
+
     private boolean placed = false;
     private float range;
     private int fireRate; // In ms
@@ -58,25 +56,23 @@ public abstract class Tower extends Sprite {
      * @param x x-position
      * @param y y-position
      * @param type the type of tower to create
-     * @param world the containing world
      */
-    protected Tower(float x, float y, Type type, World world) throws SlickException {
+    public Tower(float x, float y, Type type) throws SlickException {
         super(x, y, type.getImage());
         this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
         this.range = type.range;
-        this.world = world;
         this.type = type;
     }
 
     /** Fires a projectile in the given direction. */
     protected abstract void shoot(Vector2f dir) throws SlickException;
     
-    public static Tower create(Type type, float x, float y, World world) throws SlickException {
+    public static Tower create(Type type, float x, float y) throws SlickException {
         switch (type) {
             case BUBBLE:
-                return new BubbleSortTower(x, y, type, world);
+                return new BubbleSortTower(x, y, type);
             case SELECTION:
-                return new SelectionSortTower(x, y, type, world);
+                return new SelectionSortTower(x, y, type);
         }
         return null;
     }
@@ -107,15 +103,17 @@ public abstract class Tower extends Sprite {
         teleport(x, y);
         placed = true;
     }
-    
-    /** Counts down the shot timer.
-     * Returns true if enough time has passed to shoot.
+
+    // TODO: refactor this to encapsulate it (don't have world shoot for it), and integrate with DynamicSprite::advance
+    /**
+     * Count down the shot timer.
+     * @param delta Time in ms since the last update.
      */
     public void update(int delta) throws SlickException {
         nextShot -= delta;
         if (nextShot <= 0) {
             // Target the next enemy in range
-            Enemy target = chooseTarget(world.getEnemies());
+            Enemy target = chooseTarget(App.getWorld().getEnemies());
             if (target == null) {
                 // Instead of firing, just wait and try again next tick
                 return;

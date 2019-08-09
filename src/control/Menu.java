@@ -1,10 +1,11 @@
-package ui;
+package control;
 
 import java.awt.Font;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
+import ui.Button;
 
 /** Main menu handler (One instance only) */
 public class Menu {
@@ -44,7 +45,7 @@ public class Menu {
         TOP_OFFSET = 250,
         BUTTON_SPACING = 65;
     
-    public Menu(String title, int w, int h) {
+    Menu(String title, int w, int h) {
         this.title = title;
         this.w = w;
         //this.h = h;
