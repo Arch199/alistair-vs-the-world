@@ -7,8 +7,6 @@ import org.newdawn.slick.Image;
 public class Sprite extends Entity {
     private Image im;
     private Color col = Color.white;
-    // Scales up all sprites from 32px reference to 48px
-    private float scale = 1.5f;
 
     /**
      * Create a sprite.
@@ -18,30 +16,15 @@ public class Sprite extends Entity {
      */
     public Sprite(float x, float y, Image im) {
         super(x, y, im.getWidth(), im.getHeight());
-        super.setScale(scale);
         this.im = im;
     }
-    
-    public void drawSelf() {
-        im.draw(getLeft(), getTop(), scale, col);
-    }
 
-    /**
-     * Check the sprite's position against the game boundaries.
-     * @param windowW Game width
-     * @param windowH Game height
-     * @return Returns true if off the screen
-     */
-    public boolean isOffScreen(int windowW, int windowH) {
-        return getLeft() >= windowW || getRight() < 0 || getTop() >= windowH || getBottom() < 0;
+    /** Draw the sprite. */
+    public void render() {
+        im.draw(getLeft(), getTop(), getScale(), col);
     }
 
     public Color getColor() { return col; }
-    public float getScale() { return scale; }
 
     public void setColor(Color col) { this.col = col; }
-    public void setScale(float scale) {
-        super.setScale(scale);
-        this.scale = scale;
-    }
 }

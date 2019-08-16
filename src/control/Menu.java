@@ -1,20 +1,27 @@
 package control;
 
 import java.awt.Font;
+import java.util.Arrays;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 import ui.Button;
+import ui.TextButton;
 
 /** Main menu handler (One instance only) */
 public class Menu {
     public enum Choice {
-        START("Start"),
-        OPTIONS("Options"),
-        QUIT("Quit");
+        START("Start", App::openLevel),
+        OPTIONS("Options", () -> {}),
+        QUIT("Quit", App::exit);
         public final String displayName;
-        Choice(String s) { displayName = s; }
+        public final Runnable action;
+        Choice(String displayName, Runnable action) {
+            this.displayName = displayName;
+            this.action = action;
+        }
         public static Choice fromDisplayName(String s) {
             for (Choice c : Choice.values()) {
                 if (c.displayName.equals(s)) {
@@ -26,9 +33,8 @@ public class Menu {
     }
     
     private String title;
-    private int w, /*h,*/ currentChoice = 0;
-    private Button[] buttons;
-    private int oldMouseX = 0, oldMouseY = 0;
+    private int w, currentChoice = 0, oldMouseX = 0, oldMouseY = 0;
+    private TextButton[] buttons;
     
     private static final Font
         OPTION_FONT = new Font("Verdana", Font.BOLD, 40),
@@ -48,48 +54,43 @@ public class Menu {
     Menu(String title, int w, int h) {
         this.title = title;
         this.w = w;
-        //this.h = h;
         
         // Create the buttons
         Choice[] choices = Choice.values();
-        buttons = new Button[choices.length];
+        buttons = new TextButton[choices.length];
         for (int i = 0; i < choices.length; i++) {            
             float bnX = w/2, bnY = TOP_OFFSET + i*BUTTON_SPACING;
             if (bnY >= h) {
                 throw new IllegalStateException("Buttons overflow vertical space in menu");
             }
-            buttons[i] = new Button(bnX, bnY, choices[i].displayName, OPTION_TTF, BUTTON_PADDING, false, Color.white);
-            buttons[i].setCols(NOT_CHOSEN_COL, CHOSEN_COL);
+            TextButton b = new TextButton(bnX, bnY, choices[i].displayName, OPTION_TTF, choices[i].action);
+            b.setPadding(BUTTON_PADDING);
+            b.setColors(NOT_CHOSEN_COL, null, CHOSEN_COL);
+            int myIndex = i;
+            b.highlightWhen(() -> {
+                if (b.contains(App.getMouseX(), App.getMouseY())) {
+                    currentChoice = myIndex;
+                }
+                return currentChoice == myIndex;
+            });
+            b.triggerWhen(() -> App.isLeftClicked() || App.isKeyPressed(Input.KEY_ENTER));
+            buttons[i] = b;
         }
     }
     
-    /** 
-     * Updates menu based on player input.
-     * @param input Obtained from App's GameContainer
-     * @return The action taken as an enum (e.g. Menu.Choice.QUIT to exit game). Defaults to null.
-     */
-    public Choice update(Input input) {
-        int mouseX = input.getMouseX(), mouseY = input.getMouseY();
-        boolean clicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
-        
-        // Decide whether to work with mouse or keyboard input
-        if (mouseX != oldMouseX || mouseY != oldMouseY) {
-            // Mouse was moved; use mouse input
-            for (int i = 0; i < buttons.length; i++) {
-                if (buttons[i].contains(mouseX, mouseY)) {
-                    currentChoice = i;
-                    break;
-                }
-            }
-        } else {
-            // No mouse movement; use keyboard input
-            if (input.isKeyPressed(Input.KEY_DOWN)) {
+    /** Updates menu based on player input. */
+    public void update() {
+        int mouseX = App.getMouseX(), mouseY = App.getMouseY();
+
+        // No mouse movement; use keyboard input
+        if (mouseX == oldMouseX || mouseY == oldMouseY) {
+            if (App.isKeyPressed(Input.KEY_DOWN)) {
                 if (currentChoice == buttons.length-1) {
                     currentChoice = 0;
                 } else {
                     currentChoice++;
                 }
-            } else if (input.isKeyPressed(Input.KEY_UP)) {
+            } else if (App.isKeyPressed(Input.KEY_UP)) {
                 if (currentChoice == 0) {
                     currentChoice = buttons.length-1;
                 } else {
@@ -99,11 +100,8 @@ public class Menu {
         }
         oldMouseX = mouseX;
         oldMouseY = mouseY;
-        
-        if (clicked || input.isKeyPressed(Input.KEY_ENTER)) {
-            return Choice.fromDisplayName(buttons[currentChoice].getText());
-        }
-        return null; // default value for no action
+
+        Arrays.stream(buttons).forEach(Button::update);
     }
     
     public void render(Graphics g) {
@@ -111,15 +109,7 @@ public class Menu {
         TITLE_TTF.drawString((w/2) - (TITLE_TTF.getWidth(title)/2), 125, title, TITLE_COL);
         
         // Options
-        for (int i = 0; i < buttons.length; i++) {                
-            if (currentChoice == i) {
-                buttons[i].setHover(true);
-                buttons[i].drawSelf(g);
-            } else {
-                buttons[i].setHover(false);
-                buttons[i].drawSelf(g);
-            }
-        }
+        Arrays.stream(buttons).forEach(b -> b.render(g));
     }
 }
 

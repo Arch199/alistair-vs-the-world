@@ -5,8 +5,11 @@ package control;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.*;
 import org.newdawn.slick.tiled.TiledMap;
 
@@ -15,17 +18,18 @@ import org.newdawn.slick.tiled.TiledMap;
  * Creates a World to handle the gameplay itself.
  */
 public final class App extends BasicGame {
-    static final float SCALE_FACTOR = 1.33f;
-    static final float
-        WINDOW_W = 1488, WINDOW_H = 1008, TILE_SIZE = 64/SCALE_FACTOR, SIDEBAR_W = TILE_SIZE*3,
-        GRID_W = (WINDOW_W-SIDEBAR_W) / TILE_SIZE, GRID_H = WINDOW_H / TILE_SIZE;
+    public static final int TILE_SIZE = 48, WINDOW_W = 1488, WINDOW_H = 1008;
+    static final int SIDEBAR_W = TILE_SIZE*3;
     private static Menu menu;
     private static World world;
+    private static Input input;
+    private static Boolean leftClicked, rightClicked;
+    private static Map<Integer,Boolean> keyPresses = new HashMap<>();
 
     public static void main(String[] args) throws SlickException {
         App instance = new App("Alistair vs The World");
         AppGameContainer container = new AppGameContainer(instance);
-        container.setDisplayMode((int)WINDOW_W, (int)WINDOW_H, false);
+        container.setDisplayMode(WINDOW_W, WINDOW_H, false);
         container.start();
     }
 
@@ -40,56 +44,36 @@ public final class App extends BasicGame {
         gc.setShowFPS(false);
 
         // Game update speed. 1 tick every 20 ms (50/sec)
+        // TODO: consider un-setting this and adding delta calculations to DynamicSprite, etc.
         gc.setMaximumLogicUpdateInterval(20);
         gc.setMinimumLogicUpdateInterval(20);
-        
+
+        // Set input
+        input = gc.getInput();
+
         // Open Main Menu
-        menu = new Menu(getTitle(), (int)WINDOW_W, (int)WINDOW_H);
+        menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
     }
 
     /** Should be called every 20ms. Executes a 'tick' operation. */
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
-        Input input = gc.getInput();
+        input = gc.getInput();
+        leftClicked = rightClicked = null;
+        keyPresses = new HashMap<>();
 
         if (menu != null) {
-            Menu.Choice action = menu.update(input);
-            if (action != null) {
-                switch (action) {
-                    case START:
-                        openLevel("fourbythree2"); // TODO: add level select
-                        break;
-                    case OPTIONS:
-                        // TODO: Add options (what settings would we have?) or just remove this
-                        break;
-                    case QUIT:
-                        closeRequested();
-                        break;
-                }
-            }
+            menu.update();
         } else if (world != null) {
-            // Can only call inputs once
-            boolean rightClick = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON),
-                    leftClick = input.isMousePressed(Input.MOUSE_LEFT_BUTTON),
-                    escape = input.isKeyPressed(Input.KEY_ESCAPE);
-            // Input is relative to the window, scale back up to the 'full' coordinates
-            int mouseX = (int) (input.getMouseX() * SCALE_FACTOR), mouseY = (int) (input.getMouseY() * SCALE_FACTOR);
-
-            if (rightClick) {
-                world.deselect();
-            }
-            if (escape) {
-                // TODO: put this in a function or something? (processInput() probs shouldn't return a string too)
+            if (isKeyPressed(Input.KEY_ESCAPE)) {
                 AudioController.stopAll();
                 world = null;
-                menu = new Menu(getTitle(), (int) WINDOW_W, (int) WINDOW_H);
+                menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
             } else {
-                // TODO: replace with world.update(delta)
-                world.tick(delta);
-                world.processEnemies();
-                world.processProjectiles();
-                world.processTowers(mouseX, mouseY, leftClick);
-                world.processButtons(mouseX, mouseY, leftClick);
+                if (isRightClicked()) {
+                    world.deselect(); // may want to move this
+                }
+                world.update(delta);
             }
         }
     }
@@ -101,20 +85,26 @@ public final class App extends BasicGame {
             menu.render(g);
         }
         if (world != null) {
-            // Draw the map in half scale. Sprite images will be scaled back up.
-            // Sprite coordinates are in the default scale.
-            g.scale(1f/SCALE_FACTOR, 1f/SCALE_FACTOR);
             world.render(g);
-            g.scale(SCALE_FACTOR, SCALE_FACTOR);
         }
     }
-    
+
+    static void openLevel() {
+        openLevel("fourbythree2");
+    }
+
     /** Opens a new level and creates a World to manage it.
      * Also minimises the current menu and changes focus to the level.
      */
-    private void openLevel(String levelName) throws SlickException{
+    static void openLevel(String levelName) {
         // Initialize the tiled map for the level
-        TiledMap tiledMap = new TiledMap("assets/levels/" + levelName + ".tmx");
+        TiledMap tiledMap = null;
+        try {
+            tiledMap = new TiledMap("assets/levels/" + levelName + ".tmx");
+        } catch (SlickException e) {
+            e.printStackTrace();
+            exit();
+        }
         
         // Load in wave info
         try (Scanner scanner = new Scanner(new File("assets/waves/game1.txt"))) {            
@@ -129,11 +119,9 @@ public final class App extends BasicGame {
                 Wave currWave = new Wave();
                 waves.add(currWave);
 
-                // Split into spawn sequences - enemytype/enemynum/spawnrate/starttime
+                // Split into spawn sequences (format is enemyType/enemyNum/spawnRate/startTime)
                 String[] spawnSequences = wave.split(" ");
-                int seqs = spawnSequences.length;
-
-                for (int i = seqs-1; i >= 0; i--) {
+                for (int i = spawnSequences.length - 1; i >= 0; i--) {
                     String seq = spawnSequences[i];
 
                     // Extract info
@@ -149,24 +137,37 @@ public final class App extends BasicGame {
                     }
                 }
             }
-            
+
             // Create World and get rid of Menu
-            world = new World((int)WINDOW_W, (int)WINDOW_H, (int)SIDEBAR_W, tiledMap, waves);
+            world = new World(tiledMap, waves);
             menu = null;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Closes the game.
-     */
-    @Override
-    public boolean closeRequested() {
+    /** Exit the game. */
+    static void exit() {
         System.out.println("GAME STATE: Exiting game");
         System.exit(0);
-        return false; // only here to placate the compiler
     }
 
     public static World getWorld() { return world; }
+
+    // TODO: figure out if there should be a SCALE_FACTOR here (no, I think?)
+    // Don't really understand how the scaling works: the main menu works without the factor, but the world breaks completely with it
+    public static int getMouseX() { return input.getMouseX(); }
+    public static int getMouseY() { return input.getMouseY(); }
+    public static boolean isLeftClicked() {
+        if (leftClicked == null) leftClicked = input.isMousePressed(Input.MOUSE_LEFT_BUTTON);
+        return leftClicked;
+    }
+    public static boolean isRightClicked() {
+        if (rightClicked == null) rightClicked = input.isMousePressed(Input.MOUSE_RIGHT_BUTTON);
+        return rightClicked;
+    }
+    public static boolean isKeyPressed(int code) {
+        if (!keyPresses.containsKey(code)) keyPresses.put(code, input.isKeyPressed(code));
+        return keyPresses.get(code);
+    }
 }

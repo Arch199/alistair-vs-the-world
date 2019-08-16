@@ -1,83 +1,69 @@
 package ui;
 
+import control.App;
+import game.Entity;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.geom.Rectangle;
 
-/**
- * Rectangular button with text.
- */
-public class Button extends Rectangle {
-    private static final long serialVersionUID = 1L; // necessary as Rectangle implements java.io.serializable
-    private String text;
-    private TrueTypeFont ttf;
+import java.util.function.Supplier;
+
+public abstract class Button extends Entity {
+    private boolean border = false;
     private int padding;
-    private boolean hasBorder;
-    private Color defaultCol, disabledCol, hoverCol;
-    private Boolean disabled = false , hovered = false;
+    private Color defaultColor = Color.white, disabledColor = Color.gray, highlightedColor = Color.lightGray;
+    private Supplier<Boolean>
+        disabled = () -> false,
+        highlighted = () -> contains(App.getMouseX(), App.getMouseY()),
+        triggered = App::isLeftClicked;
+    private Runnable action;
 
-    /**
-     * Draws a simple clickable button in a single colour.
-     *
-     * @param x x-position to center around
-     * @param y y-position
-     * @param text String to display
-     * @param ttf String font
-     * @param padding Spacing between text and border on all sides
-     * @param hasBorder Display the border
-     * @param col The default colour for all states (call setCols to expand)
-     */
-    public Button(float x, float y, String text, TrueTypeFont ttf, int padding, boolean hasBorder, Color col) {
-        super(x - ttf.getWidth(text)/2-padding, y, ttf.getWidth(text)+padding*2, ttf.getHeight()+padding*2);
-        setCols(col, col, col);
-        this.text = text;
-        this.ttf = ttf;
+    /** Create a clickable button. */
+    public Button(float x, float y, int w, int h, int padding, Runnable action) {
+        super(x, y, w, h);
         this.padding = padding;
-        this.hasBorder = hasBorder;
+        this.action = action;
     }
 
-    /** Draw the button with the current colour */
-    public void drawSelf(Graphics g) {
-        Color currentCol;
-        // Find the draw colour
-        if (disabled) {
-            currentCol = disabledCol;
-        } else if (hovered){
-            currentCol = hoverCol;
-        } else {
-            currentCol = defaultCol;
-        }
-
-        ttf.drawString(x+padding, y+padding, text, currentCol);
-        if (hasBorder) {
-            g.setColor(currentCol);
-            g.drawRect(getX(), getY(), getWidth(), getHeight());
+    /** Have the button check for triggers. */
+    public void update() {
+        if (!disabled.get() && highlighted.get() && triggered.get()) {
+            action.run();
         }
     }
 
-    /**
-     * Set the colours of a button that can be hovered and disabled.
-     *
-     * Simple buttons do not need to call this.
-     *
-     * @param defaultCol Default colour
-     * @param disabledCol Colour when disabled
-     * @param hoverCol Colour on hover
+    /** Draw the button. */
+    public void render(Graphics g) {
+        if (border) {
+            // Consider moving this to a drawing object to avoid having to pass in graphics?
+            g.setColor(getCurrentColor());
+            g.drawRect(getLeft() - padding, getTop() - padding, getWidth() + 2 * padding, getHeight() + 2 * padding);
+        }
+    }
+
+    /** Set the colours of a button that can be highlighted and disabled.
+     * If null is passed as an argument, that color is left unchanged.
+     * @param defaultColor Default color.
+     * @param disabledColor Color when disabled.
+     * @param highlightedColor Color on highlight.
      */
-    public void setCols(Color defaultCol, Color disabledCol, Color hoverCol) {
-        this.defaultCol = defaultCol;
-        this.disabledCol = disabledCol;
-        this.hoverCol = hoverCol;
+    public void setColors(Color defaultColor, Color disabledColor, Color highlightedColor) {
+        if (defaultColor != null) this.defaultColor = defaultColor;
+        if (disabledColor != null) this.disabledColor = disabledColor;
+        if (highlightedColor != null) this.highlightedColor = highlightedColor;
     }
 
-    public void setCols(Color defaultCol, Color hoverCol) {
-        setCols(defaultCol, defaultCol, hoverCol);
+    protected Color getCurrentColor() {
+        if (disabled.get()) {
+            return disabledColor;
+        } else if (highlighted.get()) {
+            return highlightedColor;
+        }
+        return defaultColor;
     }
 
-    public String getText() { return text; }
-    public Boolean getDisabled() { return disabled; }
-    
-    public void setDisabled(Boolean state) { disabled = state; }
-    public void setHover(Boolean hovered) { this.hovered = hovered; }
+    public void disableWhen(Supplier<Boolean> condition) { disabled = condition; }
+    public void highlightWhen(Supplier<Boolean> condition) { highlighted = condition; }
+    public void triggerWhen(Supplier<Boolean> condition) { triggered = condition; }
+    public void setPadding(int padding) { this.padding = padding; }
+    public void setBorder(boolean border) { this.border = border; }
 }

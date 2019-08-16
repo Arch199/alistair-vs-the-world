@@ -3,6 +3,7 @@ package game;
 import java.util.List;
 
 import control.App;
+import control.Util;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -31,8 +32,8 @@ public abstract class Tower extends Sprite {
             return title;
         }
         public int getCost() { return cost; }
-        public Image getImage() throws SlickException {
-            return new Image(SPRITE_PATH + imName);
+        public Image getImage() {
+            return Util.newImage(SPRITE_PATH + imName);
         }
         public static Type fromTitle(String title) {
             for (Type t : values()) {
@@ -57,7 +58,7 @@ public abstract class Tower extends Sprite {
      * @param y y-position
      * @param type the type of tower to create
      */
-    public Tower(float x, float y, Type type) throws SlickException {
+    public Tower(float x, float y, Type type) {
         super(x, y, type.getImage());
         this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
         this.range = type.range;
@@ -67,7 +68,7 @@ public abstract class Tower extends Sprite {
     /** Fires a projectile in the given direction. */
     protected abstract void shoot(Vector2f dir) throws SlickException;
     
-    public static Tower create(Type type, float x, float y) throws SlickException {
+    public static Tower create(Type type, float x, float y) {
         switch (type) {
             case BUBBLE:
                 return new BubbleSortTower(x, y, type);

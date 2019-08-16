@@ -2,8 +2,7 @@ package control;
 
 import java.util.Random;
 
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.*;
 
 /** Contains utility methods for use throughout the project. */
 public final class Util {
@@ -39,5 +38,28 @@ public final class Util {
     public static void writeCentered(TrueTypeFont ttf, String str, float x, float y) {
         int offset = ttf.getWidth(str) / 2;
         ttf.drawString(x - offset, y, str);
+    }
+
+    /** Write horizontally centered text.
+     * @param ttf True Type Font.
+     * @param str String to write.
+     * @param x X position.
+     * @param y Y position.
+     * @param col Color to write in.
+     */
+    public static void writeCentered(TrueTypeFont ttf, String str, float x, float y, Color col) {
+        int offset = ttf.getWidth(str) / 2;
+        ttf.drawString(x - offset, y, str, col);
+    }
+
+    /** Create a new image, ignoring the SlickException. */
+    public static Image newImage(String path) {
+        try {
+            return new Image(path);
+        } catch (SlickException e) {
+            e.printStackTrace();
+            App.exit();
+        }
+        return null; // to soothe the compiler
     }
 }

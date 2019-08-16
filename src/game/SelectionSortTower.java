@@ -1,14 +1,13 @@
 package game;
 
-import control.App;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
-import control.World;
+import control.App;
 
 public class SelectionSortTower extends Tower {
-    public SelectionSortTower(float x, float y, Type type) throws SlickException {
+    public SelectionSortTower(float x, float y, Type type) {
         super(x, y, type);
     }
 

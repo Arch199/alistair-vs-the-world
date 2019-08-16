@@ -1,11 +1,11 @@
 package game;
 
+import control.App;
+
 /** On-screen object with a position and size. */
 public abstract class Entity {
-    private float x, y;
-    private float w, h;
-    private float scale = 1;
-    
+    private float x, y, w, h, scale = 1f;
+
     public Entity(float x, float y, int w, int h) {
         this.x = x;
         this.y = y;
@@ -19,9 +19,8 @@ public abstract class Entity {
      * @return Returns true if touching
      */
     public boolean checkCollision(Entity other) {
-        int w = getWidth() / 2, h = getHeight() / 2, w2 = other.getWidth() / 2, h2 = other.getHeight() / 2;
-        float x2 = other.x, y2 = other.y;
-        return ((x + w >= x2 - w2) && (x2 + w2 >= x - w) && (y + h >= y2 - h2) && (y2 + h2 >= y - h));
+        return getRight() >= other.getLeft() && other.getRight() >= getLeft()
+            && getBottom() >= other.getTop() && other.getBottom() >= getTop();
     }
     
     /**
@@ -61,6 +60,14 @@ public abstract class Entity {
         x = destX;
         y = destY;
     }
+
+    /**
+     * Check the entity's position against the game boundaries.
+     * @return Whether the entity is completely outside of the screen.
+     */
+    public boolean isOffScreen() {
+        return getLeft() >= App.WINDOW_W || getRight() < 0 || getTop() >= App.WINDOW_H || getBottom() < 0;
+    }
     
     public float getX() { return x; }
     public float getY() { return y; }
@@ -70,18 +77,13 @@ public abstract class Entity {
     public float getRight() { return x + w / 2; }
     public float getTop() { return y - h / 2; }
     public float getBottom() { return y + h / 2; }
+    public float getScale() { return scale; }
     
     protected void setWidth(int width) { w = width; }
     protected void setHeight(int height) { h = height; }
-
     protected void setScale(float scale) {
-        // Reset width and height to default
-        w = w/this.scale;
-        h = h/this.scale;
-
-        // Find new width and height under new scale
+        w *= scale / this.scale;
+        h *= scale / this.scale;
         this.scale = scale;
-        w = (w*scale);
-        h = (h*scale);
     }
 }

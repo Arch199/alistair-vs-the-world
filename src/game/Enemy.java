@@ -60,10 +60,9 @@ public class Enemy extends DynamicSprite {
         // See if we are in the process of turning (our position, plus the entire width/height of the sprite is at the edge)
         if (world.getTile(nextX, nextY).isWall()) {
             // Optimally turn at the center of the tile (small buffer in case of lag/fast sprites)
-            int tileSize = world.getTileSize();
             final int BUFFER = 5;
-            if (Math.floorMod((int)getX(), tileSize*gridX + tileSize/2) < BUFFER &&
-                Math.floorMod((int)getY(), tileSize*gridY + tileSize/2) < BUFFER) {
+            if (Math.floorMod((int)getX(), App.TILE_SIZE*gridX + App.TILE_SIZE/2) < BUFFER &&
+                Math.floorMod((int)getY(), App.TILE_SIZE*gridY + App.TILE_SIZE/2) < BUFFER) {
                 // Turn
                 if (world.inGridBounds(gridX, gridY)) {
                     setV(speed * world.getPathXDir(gridX, gridY), speed * world.getPathYDir(gridX, gridY));

@@ -26,7 +26,7 @@ public abstract class Projectile extends DynamicSprite {
     
     @Override
     public boolean isDead() {
-        return super.isDead() || isOffScreen(App.getWorld().getWidth(), App.getWorld().getHeight());
+        return super.isDead() || isOffScreen();
     }
 
     public void pop() {

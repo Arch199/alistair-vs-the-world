@@ -9,7 +9,7 @@ import org.newdawn.slick.geom.Vector2f;
 import control.World;
 
 public class BubbleSortTower extends Tower {
-    public BubbleSortTower(float x, float y, Type type) throws SlickException {
+    public BubbleSortTower(float x, float y, Type type) {
         super(x, y, type);
     }
 

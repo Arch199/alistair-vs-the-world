@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import game.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -16,12 +17,10 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.tiled.TileSet;
 import org.newdawn.slick.tiled.TiledMap;
 
-import game.Enemy;
-import game.Projectile;
-import game.StaticEntity;
-import game.Tower;
 import ui.Button;
-import ui.TextSprite;
+import ui.TextButton;
+import ui.SpriteButton;
+import ui.TextUI;
 
 /** Handles all the game logic for a level. Created by App. */
 public class World {
@@ -36,45 +35,37 @@ public class World {
             MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
             LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true);
 
-    private int w, h, tileSize, sidebarW;
     private float startX, startY;
     private int health = 1, waveNum = 0, money = 100;
     private long timer = 0;
     private Tile alistair;
-    private Tower myTower = null,       // Tower currently being placed
-            selectedTower = null; // Placed tower that has been selected
+    private Tower
+        myTower = null,       // Tower currently being placed
+        selectedTower = null; // Placed tower that has been selected
     private boolean waveComplete = true, gameOver = false;
-    private Button nextWave; // TODO: make a list of menu buttons?
 
     private TiledMap map;
     private Tile[][] tiles;
+    private TextUI textUI = new TextUI();
     private List<Wave> waves;
     private List<Projectile> projectiles = new LinkedList<>();
     private List<Tower> towers = new LinkedList<>();
-    private List<TextSprite> sidebarIcons = new ArrayList<>();
     private List<Button> buttons = new ArrayList<>();
-    /** Enemy path. 3D array for x-coord, y-coord and direction for enemy to move in. */
-    private int[][][] path;
+    /** Enemy path. 3D array for x-coordinate, y-coordinate and direction for enemy to move in. */
+    private int[][][] path; // TODO: add a path object for better aiming at moving enemies?
     /** List of enemies in order of creation (oldest first). */
     private List<Enemy> enemies = new LinkedList<>();
 
-    /**
-     * Creates the world.
-     * @param w Map width
-     * @param h Map height
-     * @param map The tiled map to render
-     * @param waves Data on waves and enemy spawn timing
+    /** Creates the world.
+     * @param map The tiled map to render.
+     * @param waves Data on waves and enemy spawn timing.
      */
-    World(int w, int h, int sidebarW, TiledMap map, List<Wave> waves) {
+    World(TiledMap map, List<Wave> waves) {
         // Assert that the map has square tiles
         if (map.getTileWidth() != map.getTileHeight()) {
             throw new IllegalArgumentException("Tiled map must have square tiles");
         }
-        this.tileSize = map.getTileWidth();
 
-        this.w = w;
-        this.h = h;
-        this.sidebarW = sidebarW;
         this.map = map;
         this.waves = waves;
 
@@ -94,12 +85,12 @@ public class World {
             alistairX = Integer.parseInt(alistairPos[0]);
             alistairY = Integer.parseInt(alistairPos[1]);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("Tiled map must have Alistair on it (with his position given)");
+            throw new IllegalArgumentException("Tiled map must have Alistair on it (with his position given)", e);
         }
 
         // Extract the tile data into an array for easy access
         tiles = new Tile[map.getWidth()][map.getHeight()];
-        TileSet kenneyTileSet = map.getTileSet(0);
+        TileSet kenneyTileSet = map.getTileSet(0); // TODO: refactor this hard-coding
         TileSet customTileSet = map.getTileSet(1);
 
         for (int x = 0; x < map.getWidth(); x++) {
@@ -151,24 +142,25 @@ public class World {
 
         // Create sidebar icons for buying towers
         // TODO: add cost in currency
-
-        final float centerX = w * App.SCALE_FACTOR - sidebarW * App.SCALE_FACTOR/2;
-        float yPos = 100;
-        for (Tower.Type t : Tower.Type.values()) {
-            try {
-                TextSprite icon = new TextSprite(centerX, yPos, t.getImage());
-                icon.setText(TextSprite.Mode.BELOW, t.toString(), SMALL_TTF);
-                icon.setText(TextSprite.Mode.HOVER, String.valueOf(t.getCost()), MEDIUM_TTF);
-                sidebarIcons.add(icon);
-                yPos += 100;
-            } catch (SlickException e) {
-                e.printStackTrace();
-            }
+        final int centerX = App.WINDOW_W - App.SIDEBAR_W / 2;
+        var towerTypes = Tower.Type.values();
+        for (i = 0; i < towerTypes.length; i++) {
+            var t = towerTypes[i];
+            int yPos = (i + 1) * 100;
+            var s = new Sprite(centerX, yPos, t.getImage());
+            var icon = new SpriteButton(s, () -> myTower = Tower.create(t, centerX, yPos));
+            icon.setColors(Color.white, Color.red, Color.lightGray);
+            icon.disableWhen(() -> money < t.getCost());
+            buttons.add(icon);
+            textUI.add(() -> String.valueOf(t.getCost()), centerX + s.getWidth(), yPos - s.getHeight() / 4, SMALL_TTF, TextUI.Mode.LEFT);
+            textUI.add(t::toString, centerX, yPos + s.getWidth() / 2, TINY_TTF, TextUI.Mode.CENTER);
         }
 
         // New wave button
-        nextWave = new Button(centerX, 500, "Next wave", MEDIUM_TTF, 5, true, Color.green);
-        nextWave.setCols(Color.green, Color.black, Color.white);
+        TextButton nextWave = new TextButton(centerX, 500, "Next wave", MEDIUM_TTF, this::newWave);
+        nextWave.setColors(Color.green, Color.black, Color.white);
+        nextWave.setBorder(true);
+        nextWave.disableWhen(() -> !waveComplete);
         buttons.add(nextWave);
 
         // Play intro sound
@@ -181,12 +173,10 @@ public class World {
         selectedTower = null;
     }
 
-    /**
-     * Keep track of the time (in ms) from the start of the wave.
-     * Spawn enemies and projectiles accordingly.
-     * @param delta ms from last tick
+    /** Update the world state.
+     * @param delta Time in ms since the last update.
      */
-    public void tick(int delta) throws SlickException {
+    public void update(int delta) throws SlickException {
         timer += delta;
 
         // Enemy spawning (based on the current wave)
@@ -197,10 +187,8 @@ public class World {
             if (enemyType != null) {
                 spawnEnemy(startX, startY, enemyType);
                 // Play enemy sounds
-                // TODO: refactor this
-                if (enemyType.toString().toLowerCase().equals("python") ||
-                    enemyType.toString().toLowerCase().equals("commerce")) {
-                    AudioController.play(enemyType.toString().toLowerCase(), false);
+                if (enemyType == Enemy.Type.PYTHON || enemyType == Enemy.Type.COMMERCE) {
+                    AudioController.play(enemyType.toString(), false);
                 }
             }
 
@@ -212,10 +200,15 @@ public class World {
         for (Tower t : towers) {
             t.update(delta);
         }
+
+        processEnemies();
+        processProjectiles();
+        processTowers();
+        processButtons();
     }
 
     /** Update enemy positions. */
-    public void processEnemies() {
+    private void processEnemies() {
         Iterator<Enemy> itr = enemies.iterator();
         while (itr.hasNext()) {
             Enemy e = itr.next();
@@ -229,7 +222,7 @@ public class World {
     }
 
     /** Update projectile positions. */
-    void processProjectiles() {
+    private void processProjectiles() {
         Iterator<Projectile> itr = projectiles.iterator();
         while (itr.hasNext()) {
             Projectile p = itr.next();
@@ -257,17 +250,20 @@ public class World {
         }
     }
 
-    /** Handle selecting / placing towers. */
-    public void processTowers(int mouseX, int mouseY, boolean clicked) throws SlickException {
+    /** Handle selecting and placing towers. */
+    private void processTowers() {
+        int mouseX = App.getMouseX(), mouseY = App.getMouseY();
+        boolean leftClicked = App.isLeftClicked();
+
         // If we're placing a tower, move it to the mouse position
-        if (isPlacingTower()) {
+        if (myTower != null) {
             myTower.setColor(Color.white);
             myTower.teleport(mouseX, mouseY);
 
             // Set color to red if out of game bounds, or if it cannot be afforded
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
                 myTower.setColor(Color.red);
-                if (clicked) {
+                if (leftClicked) {
                     // Cancel the placement
                     deselect();
                     return;
@@ -288,7 +284,7 @@ public class World {
             }
 
             // If the user clicked and it's not colliding with anything, place it
-            if (clicked/* && myTower.getColor() == Color.white*/) {
+            if (leftClicked/* && myTower.getColor() == Color.white*/) {
                 myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
                 towers.add(myTower);
                 money -= myTower.getType().getCost();
@@ -298,7 +294,7 @@ public class World {
 
                 deselect();
             }
-        } else if (clicked) {
+        } else if (leftClicked) {
             // Click on a tower to display its range
             for (Tower t: towers) {
                 if (t.contains(mouseX, mouseY) && t != myTower) {
@@ -313,94 +309,41 @@ public class World {
 
             // Deselect a selected tower
             deselect();
-
-            // Process selecting towers from the sidebar
-            for (TextSprite s : sidebarIcons) {
-                if (s.contains(mouseX, mouseY)) {
-                    myTower = Tower.create(Tower.Type.fromTitle(s.getText(TextSprite.Mode.BELOW)), mouseX, mouseY);
-                    return;
-                }
-            }
         }
     }
 
-    /** Button updates and colour changes. */
-    public void processButtons(int mouseX, int mouseY, boolean clicked) {
-        for (Button b: buttons) {
-            // Button disabling
-
-            // New wave button disabling
-            if (b == nextWave && !waveComplete) {
-                nextWave.setDisabled(true);
-            } else {
-                nextWave.setDisabled(false);
-            }
-
-            // Button clicking
-            if (b.contains(mouseX, mouseY)) {
-                b.setHover(true);
-                if (clicked && !b.getDisabled()) {
-                    // New wave button
-                    if (b == nextWave) {
-                        newWave();
-                    }
-                }
-            } else {
-                b.setHover(false);
-            }
-        }
-
-        for (TextSprite textSprite: sidebarIcons) {
-            if (textSprite.contains(mouseX, mouseY)) {
-                textSprite.setHovered(true);
-            } else {
-                textSprite.setHovered(false);
-            }
+    /** Update button status. */
+    private void processButtons() {
+        for (Button b : buttons) {
+            b.update();
         }
     }
 
     /** Render the game world. */
     public void render(Graphics g) {
-        // Tiles
-        renderTiles(g);
-
-        // Enemies
-        for (Enemy e : enemies) {
-            e.drawSelf();
-        }
-
-        // Towers
-        for (Tower t : towers) {
-            t.drawSelf();
-        }
-
-        // Projectiles
-        for (Projectile p : projectiles) {
-            p.drawSelf();
-        }
+        // Tiles, enemies, towers, and projectiles
+        float scale = (float)App.TILE_SIZE / map.getTileWidth();
+        g.scale(scale, scale);
+        map.render(0, 0);
+        g.scale(1 / scale, 1 / scale);
+        enemies.forEach(Sprite::render);
+        towers.forEach(Sprite::render);
+        projectiles.forEach(Sprite::render);
 
         // GUI elements
         drawGUI(g);
+        textUI.render(g);
     }
-        
-    /** Draw game interface. */
-    public void drawGUI(Graphics g){
-        float scale = App.SCALE_FACTOR;
 
+    /** Draw game interface. */
+    private void drawGUI(Graphics g){
         // Sidebar
         g.setColor(Color.darkGray);
-        g.fillRect(w * scale - sidebarW * scale, 0, sidebarW * scale, h * scale);
-
-        // Sidebar icons
-        // Draw sidebar icons (set back the scale for the call to sprite)
-        g.setColor(Color.white);
-        for (TextSprite s : sidebarIcons) {
-            s.drawSelf();
-        }
+        g.fillRect(App.WINDOW_W - App.SIDEBAR_W, 0, App.SIDEBAR_W, App.WINDOW_H);
 
         // Tower being placed
         if (myTower != null) {
-            myTower.drawSelf();
+            myTower.render();
             myTower.drawRange(g);
         }
 
@@ -411,21 +354,20 @@ public class World {
 
         // Buttons
         g.setColor(Color.white);
-        for (Button b : buttons) {
-            b.drawSelf(g);
-        }
+        buttons.forEach(b -> b.render(g));
 
         // Display wave number and Alistair's health
+        // TODO: move to TextUI
         g.setColor(Color.white);
         g.setFont(SMALL_TTF);
-        Util.writeCentered(g, "Wave: " + waveNum, (w - (sidebarW / 2)) * scale, 20);
-        Util.writeCentered(g, "Money: " + money, (w - (sidebarW / 2)) * scale, 40);
+        Util.writeCentered(g, "Wave: " + waveNum, App.WINDOW_W - App.SIDEBAR_W / 2, 20);
+        Util.writeCentered(g, "Money: " + money, App.WINDOW_W - App.SIDEBAR_W / 2, 40);
         g.setFont(MEDIUM_TTF);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
 
         // Tower being placed
         if (myTower != null) {
-            myTower.drawSelf();
+            myTower.render();
             myTower.drawRange(g);
         }
 
@@ -441,34 +383,12 @@ public class World {
         }
     }
 
-    public void renderTiles(Graphics g) {
-        map.render(0, 0);
-    }
-
-    public void renderEnemies() {
-        for (Enemy e : enemies) {
-            e.drawSelf();
-        }
-    }
-
-    public void renderTowers(Graphics g) {
-        for (Tower t : towers) {
-            t.drawSelf();
-        }
-    }
-
-    public void renderProjectiles() {
-        for (Projectile p : projectiles) {
-            p.drawSelf();
-        }
-    }
-
     /**
      * Make alistair take damage
      * @param damage Health reduction, <=100
      */
     public void takeDamage(int damage) {
-        if (!gameOver) {
+        if (!gameOver) { // TODO: consider writing a damageable entity type and making alistair one of them
             if (health - damage < 0) { health = 0; } else { health -= damage; }
             if (health == 0) {
                 endGame();
@@ -476,7 +396,7 @@ public class World {
         }
     }
 
-    /** Create the end game splash */
+    /** Create the end game splash. */
     public void endGame() {
         deselect();
         AudioController.play("gameover");
@@ -491,22 +411,17 @@ public class World {
     /** Convert from literal position to position on grid. */
     public int toGrid(float pos) {
         // Choose closest grid position
-        return Math.round((pos - tileSize / 2) / tileSize);
+        return Math.round((pos - App.TILE_SIZE / 2) / App.TILE_SIZE);
     }
 
     /** Convert from grid position to literal coordinates. */
-    public float toPos(int gridval) {
-        return gridval * tileSize + tileSize / 2;
+    public float toPos(int gridVal) {
+        return gridVal * App.TILE_SIZE + App.TILE_SIZE / 2;
     }
 
     /** Check grid coordinates against game boundaries. */
     public boolean inGridBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
-    }
-
-    /** Check literal coordinates against game boundaries. */
-    public boolean inGridBounds(float x, float y) {
-        return x >= 0 && y >= 0 && x < map.getWidth() * tileSize && y < map.getHeight() * tileSize;
     }
 
     /** Calculate a horizontal grid direction to point inwards from the current position. */
@@ -516,7 +431,7 @@ public class World {
 
     /** Calculate a horizontal literal direction to point inwards. */
     public float inwardDirX(float posX) {
-        return posX < 0 ? 1 : (posX >= map.getWidth() * tileSize ? -1 : 0);
+        return posX < 0 ? 1 : (posX >= map.getWidth() * App.TILE_SIZE ? -1 : 0);
     }
 
     /** Calculate a vertical grid direction to point inwards from the current position. */
@@ -526,24 +441,19 @@ public class World {
 
     /** Calculate a vertical literal direction to point inwards. */
     public float inwardDirY(float posY) {
-        return posY < 0 ? 1 : (posY >= map.getHeight() * tileSize ? -1 : 0);
+        return posY < 0 ? 1 : (posY >= map.getHeight() * App.TILE_SIZE ? -1 : 0);
     }
 
     /** Add a projectile to the list of monitored projectiles. */
-    public void addProjectile(Projectile proj) {
-        projectiles.add(proj);
+    public void addProjectile(Projectile projectile) {
+        projectiles.add(projectile);
     }
 
-    /**
-     * Increment the wave number and reset the timer.
-     * Called every time a new wave starts.
-     */
+    /** Increment the wave number and reset the timer. Called every time a new wave starts. */
     private void newWave() {
         waveNum++;
         timer = 0;
-        for (Tower t : towers) {
-            t.waveReset();
-        }
+        towers.forEach(Tower::waveReset);
     }
 
     /** Create a new enemy at the given position. */
@@ -551,28 +461,16 @@ public class World {
         enemies.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
     }
 
-    /** Check if a tower is currently being held. */
-    private boolean isPlacingTower() {
-        // TODO: consider removing this method (also maybe rename myTower to heldTower or something)
-        return myTower != null;
-    }
-
-    public int getWidth() { return w; }
-    public int getHeight() { return h; }
-    public int getGridWidth() { return map.getWidth(); }
-    public int getGridHeight() { return map.getHeight(); }
-    public int getTileSize() { return tileSize; }
     public int getPathXDir(int x, int y) { return path[x][y][0]; }
     public int getPathYDir(int x, int y) { return path[x][y][1]; }
     public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
-    public List<Projectile> getProjectiles() { return Collections.unmodifiableList(projectiles); }
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
         private boolean isWall, holdsDefence;
 
         private Tile(int gridX, int gridY, Properties properties) {
-            super(toPos(gridX), toPos(gridY), tileSize, tileSize);
+            super(toPos(gridX), toPos(gridY), App.TILE_SIZE, App.TILE_SIZE);
             try {
                 isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
                 holdsDefence = Boolean.parseBoolean(properties.getProperty("holdsDefence"));
@@ -583,11 +481,6 @@ public class World {
                 isWall = true;
                 holdsDefence = false;
             }
-        }
-
-        @Override
-        public String toString() {
-            return "Tile(" + toGrid(getX()) + ", " + toGrid(getY()) + "): {isWall: " + isWall + "}";
         }
 
         public boolean isWall() { return isWall; }
