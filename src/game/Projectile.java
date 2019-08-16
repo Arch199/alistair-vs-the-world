@@ -31,7 +31,7 @@ public abstract class Projectile extends DynamicSprite {
             kill();
         } else {
             // Hitting enemies
-            App.getWorld().getEnemies().filter(this::checkCollision).findAny().ifPresent(other -> {
+            App.getWorld().getAll(Enemy.class).filter(this::checkCollision).findAny().ifPresent(other -> {
                 other.takeDamage(getDamage());
                 takeDamage(other.getDamage());
             });

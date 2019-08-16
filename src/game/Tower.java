@@ -79,7 +79,7 @@ public abstract class Tower extends Sprite {
     
     /** Choose an enemy to target (the first enemy in range by default). */
     protected Optional<Enemy> chooseTarget() {
-        return App.getWorld().getEnemies().filter(e -> distanceTo(e) <= range).findFirst();
+        return App.getWorld().getAll(Enemy.class).filter(e -> distanceTo(e) <= range).findFirst();
     }
     
     /** Calculate a direction vector aiming at the target enemy. */

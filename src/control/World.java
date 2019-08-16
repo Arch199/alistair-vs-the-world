@@ -219,7 +219,7 @@ public class World {
             }
         } else if (leftClicked) {
             // Click on a tower to display its range
-            getTowers().filter(t -> t.contains(mouseX, mouseY)).findAny().ifPresentOrElse(t -> {
+            getAll(Tower.class).filter(t -> t.contains(mouseX, mouseY)).findAny().ifPresentOrElse(t -> {
                 if (t == selectedTower) {
                     selectedTower = null;
                 } else {
@@ -332,7 +332,7 @@ public class World {
     private void newWave() {
         waveNum++;
         timer = 0;
-        getTowers().forEach(Tower::waveReset);
+        getAll(Tower.class).forEach(Tower::waveReset);
     }
 
     /** Create a new enemy at the given position. */
@@ -343,8 +343,9 @@ public class World {
     public Tile getAlistair() { return alistair; }
     public int getPathXDir(int x, int y) { return path[x][y][0]; }
     public int getPathYDir(int x, int y) { return path[x][y][1]; }
-    public Stream<Enemy> getEnemies() { return entities.stream().filter(e -> e instanceof Enemy).map(e -> (Enemy)e); }
-    public Stream<Tower> getTowers() { return entities.stream().filter(e -> e instanceof Tower).map(e -> (Tower)e); }
+    public <T extends Entity> Stream<T> getAll(Class<T> type) {
+        return entities.stream().filter(type::isInstance).map(type::cast);
+    }
 
     public void addMoney(int amount) { money += amount; }
 
