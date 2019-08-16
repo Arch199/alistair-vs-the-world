@@ -203,7 +203,7 @@ public class World {
             // TODO: consider refactoring tower placing to creating a kind of SpriteButton
             selectedTower.teleport(mouseX, mouseY);
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))
-                || !getTile(mouseX, mouseY).holdsDefence || money < selectedTower.getType().getCost()
+                || !getTile(mouseX, mouseY).canBuild || money < selectedTower.getType().getCost()
                 || entities.stream().anyMatch(e -> e instanceof Tower && e.checkCollision(selectedTower))) {
                 selectedTower.setColor(Color.red);
             } else {
@@ -350,23 +350,23 @@ public class World {
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
-        private boolean wall, holdsDefence;
+        private boolean wall, canBuild;
 
         private Tile(int gridX, int gridY, Properties properties) {
             super(toPos(gridX), toPos(gridY), App.TILE_SIZE, App.TILE_SIZE);
             try {
                 wall = Boolean.parseBoolean(properties.getProperty("isWall"));
-                holdsDefence = Boolean.parseBoolean(properties.getProperty("holdsDefence"));
+                canBuild = Boolean.parseBoolean(properties.getProperty("canBuild"));
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 System.err.println("Could not parse the properties of the tile at " + gridX + " " + gridY + "" +
                                    "assumed a wall that cannot hold a defence.");
                 wall = true;
-                holdsDefence = false;
+                canBuild = false;
             }
         }
 
         public boolean isWall() { return wall; }
-        public boolean holdsDefence() { return holdsDefence; }
+        public boolean canBuild() { return canBuild; }
     }
 }

@@ -111,6 +111,7 @@ public final class App extends BasicGame {
 
             // Wave-by-wave
             while (scanner.hasNext()) {
+                // TODO: switch to some kind of standard format e.g. JSON or XML
                 String wave = scanner.next();
                 Wave currWave = new Wave();
                 waves.add(currWave);
