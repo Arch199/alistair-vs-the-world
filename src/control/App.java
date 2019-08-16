@@ -12,8 +12,9 @@ import java.util.*;
  * Creates a World to handle the gameplay itself.
  */
 public final class App extends BasicGame {
-    public static final int TILE_SIZE = 48, WINDOW_W = 1366, WINDOW_H = 760;
-    static final int SIDEBAR_W = TILE_SIZE*3;
+    private static final int MAP_W = 28, MAP_H = 21, SIDE_TILES = 4;
+    public static final int TILE_SIZE = 40, WINDOW_W = TILE_SIZE * (MAP_W + SIDE_TILES), WINDOW_H = TILE_SIZE * MAP_H;
+    static final int SIDEBAR_W = TILE_SIZE * SIDE_TILES;
     @NotNull private static Optional<Menu> menu = Optional.empty();
     @NotNull private static Optional<World> world = Optional.empty();
     private static Input input;

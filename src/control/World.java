@@ -20,15 +20,15 @@ import java.util.stream.Stream;
 /** Handles all the game logic for a level. Created by App. */
 public class World {
     private static final Font
-            TINY_FONT = new Font("Verdana", Font.PLAIN, 11),
-            SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
-            MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20),
-            LARGE_FONT = new Font("Verdana", Font.BOLD, 40);
+        TINY_FONT = new Font("Verdana", Font.PLAIN, 11),
+        SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
+        MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20),
+        LARGE_FONT = new Font("Verdana", Font.BOLD, 40);
     private static final TrueTypeFont
-            TINY_TTF = new TrueTypeFont(TINY_FONT, true),
-            SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
-            MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
-            LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true);
+        TINY_TTF = new TrueTypeFont(TINY_FONT, true),
+        SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
+        MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
+        LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true);
 
     private float startX, startY;
     private int health = 1, waveNum = 0, money = 100;
@@ -47,7 +47,7 @@ public class World {
     /** Enemy path. 3D array for x-coordinate, y-coordinate and direction for enemy to move in. */
     private int[][][] path; // TODO: add a path object for better aiming at moving enemies?
 
-    /** Creates the world.
+    /** Create the world.
      * @param map The tiled map to render.
      * @param waves Data on waves and enemy spawn timing.
      */
@@ -132,7 +132,6 @@ public class World {
         }
 
         // Create sidebar icons for buying towers
-        // TODO: add cost in currency
         final int centerX = App.WINDOW_W - App.SIDEBAR_W / 2;
         var towerTypes = Tower.Type.values();
         for (i = 0; i < towerTypes.length; i++) {
@@ -143,7 +142,8 @@ public class World {
             icon.setColors(Color.white, Color.red, Color.lightGray);
             icon.disableWhen(() -> money < t.getCost());
             entities.add(icon);
-            textUI.add(() -> String.valueOf(t.getCost()), centerX + s.getWidth(), yPos - s.getHeight() / 4, SMALL_TTF, TextUI.Mode.LEFT);
+            textUI.add(() -> String.valueOf(t.getCost()), centerX + s.getWidth(), yPos - s.getHeight() / 3,
+                SMALL_TTF, TextUI.Mode.LEFT);
             textUI.add(t::toString, centerX, yPos + s.getWidth() / 2, TINY_TTF, TextUI.Mode.CENTER);
         }
 
@@ -205,7 +205,11 @@ public class World {
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))
                 || !getTile(mouseX, mouseY).canBuild || money < selectedTower.getType().getCost()
                 || entities.stream().anyMatch(e -> e instanceof Tower && e.checkCollision(selectedTower))) {
-                selectedTower.setColor(Color.red);
+                if (leftClicked && selectedTower.getColor() == Color.red) {
+                    selectedTower = null;
+                } else {
+                    selectedTower.setColor(Color.red);
+                }
             } else {
                 selectedTower.setColor(Color.white);
                 if (leftClicked) {
