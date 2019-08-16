@@ -41,16 +41,7 @@ public final class App extends BasicGame {
     public void init(GameContainer gc) {
         System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
-
-        // Game update speed. 1 tick every 20 ms (50/sec)
-        // TODO: consider un-setting this and adding delta calculations to DynamicSprite, etc.
-        gc.setMaximumLogicUpdateInterval(20);
-        gc.setMinimumLogicUpdateInterval(20);
-
-        // Set input
         input = gc.getInput();
-
-        // Open Main Menu
         menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
     }
 
