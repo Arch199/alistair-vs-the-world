@@ -39,9 +39,7 @@ public class World {
     private int health = 1, waveNum = 0, money = 100;
     private long timer = 0;
     private Tile alistair;
-    private Tower
-        myTower = null,       // Tower currently being placed
-        selectedTower = null; // Placed tower that has been selected
+    private Tower selectedTower = null;
     private boolean waveComplete = true, gameOver = false;
 
     private TiledMap map;
@@ -148,7 +146,7 @@ public class World {
             var t = towerTypes[i];
             int yPos = (i + 1) * 100;
             var s = new Sprite(centerX, yPos, t.getImage());
-            var icon = new SpriteButton(s, () -> myTower = Tower.create(t, centerX, yPos));
+            var icon = new SpriteButton(s, () -> selectedTower = Tower.create(t, centerX, yPos));
             icon.setColors(Color.white, Color.red, Color.lightGray);
             icon.disableWhen(() -> money < t.getCost());
             buttons.add(icon);
@@ -165,12 +163,6 @@ public class World {
 
         // Play intro sound
         AudioController.play("intro");
-    }
-
-    /** Deselect the item being carried */
-    public void deselect() {
-        myTower = null;
-        selectedTower = null;
     }
 
     /** Update the world state.
@@ -255,49 +247,51 @@ public class World {
         int mouseX = App.getMouseX(), mouseY = App.getMouseY();
         boolean leftClicked = App.isLeftClicked();
 
-        // If we're placing a tower, move it to the mouse position
-        if (myTower != null) {
-            myTower.setColor(Color.white);
-            myTower.teleport(mouseX, mouseY);
+        if (App.isRightClicked()) {
+            selectedTower = null;
+        } else if (selectedTower != null && !selectedTower.isPlaced()) {
+            // If we're placing a tower, move it to the mouse position
+            selectedTower.setColor(Color.white);
+            selectedTower.teleport(mouseX, mouseY);
 
             // Set color to red if out of game bounds, or if it cannot be afforded
             if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
-                myTower.setColor(Color.red);
+                selectedTower.setColor(Color.red);
                 if (leftClicked) {
                     // Cancel the placement
-                    deselect();
-                    return;
+                    selectedTower = null;
+                    return; // TODO: consider refactoring this usage of returns as it's effectively a goto
                 }
             } else {
                 // Also set color to red if touching a non-wall tile or tower, or if the player has insufficient funds
-                if (!getTile(mouseX, mouseY).holdsDefence || money < myTower.getType().getCost()) {
-                    myTower.setColor(Color.red);
+                if (!getTile(mouseX, mouseY).holdsDefence || money < selectedTower.getType().getCost()) {
+                    selectedTower.setColor(Color.red);
                     return;
                 }
 
                 for (Tower t : towers) {
-                    if (t.checkCollision(myTower)) {
-                        myTower.setColor(Color.red);
+                    if (t.checkCollision(selectedTower)) {
+                        selectedTower.setColor(Color.red);
                         return;
                     }
                 }
             }
 
             // If the user clicked and it's not colliding with anything, place it
-            if (leftClicked/* && myTower.getColor() == Color.white*/) {
-                myTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
-                towers.add(myTower);
-                money -= myTower.getType().getCost();
+            if (leftClicked) {
+                selectedTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
+                towers.add(selectedTower);
+                money -= selectedTower.getType().getCost();
 
                 // Play a sound effect
-                AudioController.play(myTower.getType().toString(), false);
+                AudioController.play(selectedTower.getType().toString(), false);
 
-                deselect();
+                selectedTower = null;
             }
         } else if (leftClicked) {
             // Click on a tower to display its range
             for (Tower t: towers) {
-                if (t.contains(mouseX, mouseY) && t != myTower) {
+                if (t.contains(mouseX, mouseY) && t != selectedTower) {
                     if (t == selectedTower) {
                         selectedTower = null;
                     } else {
@@ -308,7 +302,7 @@ public class World {
             }
 
             // Deselect a selected tower
-            deselect();
+            selectedTower = null;
         }
     }
 
@@ -341,14 +335,11 @@ public class World {
         g.setColor(Color.darkGray);
         g.fillRect(App.WINDOW_W - App.SIDEBAR_W, 0, App.SIDEBAR_W, App.WINDOW_H);
 
-        // Tower being placed
-        if (myTower != null) {
-            myTower.render();
-            myTower.drawRange(g);
-        }
-
-        // Selected tower draws its range
+        // Selected tower draws its range, and if being held, has to be rendered separately
         if (selectedTower != null) {
+            if (!selectedTower.isPlaced()) {
+                selectedTower.render();
+            }
             selectedTower.drawRange(g);
         }
 
@@ -364,16 +355,6 @@ public class World {
         Util.writeCentered(g, "Money: " + money, App.WINDOW_W - App.SIDEBAR_W / 2, 40);
         g.setFont(MEDIUM_TTF);
         Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
-
-        // Tower being placed
-        if (myTower != null) {
-            myTower.render();
-            myTower.drawRange(g);
-        }
-
-        if (selectedTower != null) {
-            selectedTower.drawRange(g);
-        }
 
         // Game over splash
         if (gameOver) {
@@ -398,7 +379,7 @@ public class World {
 
     /** Create the end game splash. */
     public void endGame() {
-        deselect();
+        selectedTower = null;
         AudioController.play("gameover");
         gameOver = true;
     }
