@@ -17,7 +17,7 @@ import java.util.Scanner;
  * Creates a World to handle the gameplay itself.
  */
 public final class App extends BasicGame {
-    public static final int TILE_SIZE = 48, WINDOW_W = 1488, WINDOW_H = 1008;
+    public static final int TILE_SIZE = 48, WINDOW_W = 1366, WINDOW_H = 760;
     static final int SIDEBAR_W = TILE_SIZE*3;
     private static Menu menu;
     private static World world;

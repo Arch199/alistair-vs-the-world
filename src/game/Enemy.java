@@ -48,6 +48,7 @@ public class Enemy extends DynamicSprite {
     /** Move the enemy along the pre-calculated path. */
     @Override
     public void update(int delta) {
+        // TODO: remake pathfinding and selection sort aiming
         World world = App.getWorld();
         int nextX = world.toGrid(getX() + getWidth() * Math.signum(getV().x));
         int nextY = world.toGrid(getY() + getHeight() * Math.signum(getV().y));
@@ -77,13 +78,13 @@ public class Enemy extends DynamicSprite {
         }
     }
 
-    /** Destroy the enemy and reward the player with money. */
     @Override
-    public void kill() {
-        if (!isDead()) {
+    public void takeDamage(int damage) {
+        boolean wasDead = isDead();
+        super.takeDamage(damage);
+        if (isDead() && !wasDead) {
             App.getWorld().addMoney(type.money);
         }
-        super.kill();
     }
 
     public Type getType() { return type; }

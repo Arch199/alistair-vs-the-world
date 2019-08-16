@@ -267,7 +267,7 @@ public class World {
     }
 
     /** Deal damage to alistair.
-     * @param damage Health reduction, <=100
+     * @param damage Health reduction
      */
     public void damageAlistair(int damage) {
         if (!gameOver) { // TODO: consider writing a damageable entity type and making alistair one of them
