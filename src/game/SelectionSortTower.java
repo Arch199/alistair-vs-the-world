@@ -1,10 +1,10 @@
 package game;
 
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
 import control.App;
+
+import static control.Util.newImage;
 
 public class SelectionSortTower extends Tower {
     public SelectionSortTower(float x, float y, Type type) {
@@ -12,9 +12,9 @@ public class SelectionSortTower extends Tower {
     }
 
     @Override
-    protected void shoot(Vector2f dir) throws SlickException {
+    protected void shoot(Vector2f dir) {
         // This assumes that the given dir is already scaled by speed
-        App.getWorld().addProjectile(new Ball(getX(), getY(), dir));
+        App.getWorld().addEntity(new Ball(getX(), getY(), dir));
     }
     
     @Override
@@ -24,11 +24,10 @@ public class SelectionSortTower extends Tower {
     }
     
     private static class Ball extends Projectile {
-        private static final int DAMAGE = 1;
-        private static final float SPEED = 6f;
+        private static final float SPEED = 0.3f;
         
-        public Ball(float startX, float startY, Vector2f vec) throws SlickException {
-            super(startX, startY, vec, new Image(Projectile.SPRITE_PATH + "defaultproj.png"), DAMAGE);
+        public Ball(float startX, float startY, Vector2f vec) {
+            super(startX, startY, vec, newImage(Projectile.SPRITE_PATH + "defaultproj.png"), 1, 1);
         }
         
     }

@@ -1,6 +1,7 @@
 package ui;
 
 import game.Entity;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 
@@ -24,6 +25,7 @@ public class TextUI {
      * @param g The Slick graphics object.
      */
     public void render(Graphics g) {
+        g.setColor(Color.white); // TODO: add text color customization (currently defaults to white)
         permText.forEach(Text::render);
         tempText.forEach(Text::render);
         tempText.clear();

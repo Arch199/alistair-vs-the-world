@@ -10,10 +10,9 @@ import game.Enemy;
 public class Wave {
     private List<SpawnInstruction> instructions = new LinkedList<>();
     
-    /**
-     * Check if enemies are due to be spawned.
-     * @param timer The time since the start of the wave
-     * @return The name of the enemy to be spawned as an enum
+    /** Check if enemies are due to be spawned.
+     * @param timer The time since the start of the wave.
+     * @return The type of enemy to be spawned as an enum.
      */
     Enemy.Type trySpawn(long timer) {
         Iterator<SpawnInstruction> itr = instructions.iterator();

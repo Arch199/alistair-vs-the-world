@@ -78,8 +78,10 @@ public class Menu {
         }
     }
     
-    /** Updates menu based on player input. */
-    public void update() {
+    /** Updates menu based on player input.
+     * @param delta Time in ms since last update.
+     */
+    public void update(int delta) {
         int mouseX = App.getMouseX(), mouseY = App.getMouseY();
 
         // No mouse movement; use keyboard input
@@ -101,7 +103,7 @@ public class Menu {
         oldMouseX = mouseX;
         oldMouseY = mouseY;
 
-        Arrays.stream(buttons).forEach(Button::update);
+        Arrays.stream(buttons).forEach(b -> b.update(delta));
     }
     
     public void render(Graphics g) {

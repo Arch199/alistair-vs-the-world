@@ -1,6 +1,7 @@
 package game;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 /** On-screen object with an image. */
@@ -19,10 +20,14 @@ public class Sprite extends Entity {
         this.im = im;
     }
 
-    /** Draw the sprite. */
-    public void render() {
+    @Override
+    public void render(Graphics g) {
         im.draw(getLeft(), getTop(), getScale(), col);
     }
+
+    /** Dummy update method that does nothing. */
+    @Override
+    public void update(int delta) {}
 
     public Color getColor() { return col; }
 

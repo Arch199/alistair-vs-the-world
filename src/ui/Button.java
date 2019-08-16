@@ -25,13 +25,14 @@ public abstract class Button extends Entity {
     }
 
     /** Have the button check for triggers. */
-    public void update() {
+    @Override
+    public void update(int delta) {
         if (!disabled.get() && highlighted.get() && triggered.get()) {
             action.run();
         }
     }
 
-    /** Draw the button. */
+    @Override
     public void render(Graphics g) {
         if (border) {
             // Consider moving this to a drawing object to avoid having to pass in graphics?

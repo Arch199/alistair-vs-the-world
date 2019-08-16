@@ -1,22 +1,19 @@
 package game;
 
-import java.util.List;
-
 import control.App;
 import control.Util;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
-/**
- * Towers are placed on a grid and shoot projectiles at enemies.
- */
+import java.util.Optional;
+
+/** Towers are placed on a grid and shoot projectiles at enemies. */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 2000, 350f, 50),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 1500, 224f, 80) ;
+        SELECTION("Selection Sort Alistair", "selection.png", 2000, 250f, 50),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80);
         private final String title, imName;
         private final int fireRate;
         private final float range;
@@ -43,6 +40,8 @@ public abstract class Tower extends Sprite {
             }
             throw new IllegalArgumentException("No tower type for title '" + title + "'");
         }
+        public int getFireRate() { return fireRate; }
+        public float getRange() { return range; }
     }
     protected static final String SPRITE_PATH = "assets/sprites/towers/";
 
@@ -66,7 +65,7 @@ public abstract class Tower extends Sprite {
     }
 
     /** Fires a projectile in the given direction. */
-    protected abstract void shoot(Vector2f dir) throws SlickException;
+    protected abstract void shoot(Vector2f dir);
     
     public static Tower create(Type type, float x, float y) {
         switch (type) {
@@ -79,16 +78,8 @@ public abstract class Tower extends Sprite {
     }
     
     /** Choose an enemy to target (the first enemy in range by default). */
-    protected Enemy chooseTarget(List<Enemy> enemies) {
-        // Target the first enemy in range
-        Enemy target = null;
-        for (Enemy e : enemies) {
-            if (distanceTo(e) <= range) {
-                target = e;
-                break;
-            }
-        }
-        return target;
+    protected Optional<Enemy> chooseTarget() {
+        return App.getWorld().getEnemies().filter(e -> distanceTo(e) <= range).findFirst();
     }
     
     /** Calculate a direction vector aiming at the target enemy. */
@@ -105,26 +96,15 @@ public abstract class Tower extends Sprite {
         placed = true;
     }
 
-    // TODO: refactor this to encapsulate it (don't have world shoot for it), and integrate with DynamicSprite::advance
-    /**
-     * Count down the shot timer.
-     * @param delta Time in ms since the last update.
-     */
-    public void update(int delta) throws SlickException {
+    @Override
+    public void update(int delta) {
         nextShot -= delta;
         if (nextShot <= 0) {
             // Target the next enemy in range
-            Enemy target = chooseTarget(App.getWorld().getEnemies());
-            if (target == null) {
-                // Instead of firing, just wait and try again next tick
-                return;
-            }
-            
-            // Aim at the target and shoot
-            shoot(aimAt(target));
-            
-            // Reset the timer for the next shot
-            nextShot = fireRate;
+            chooseTarget().ifPresent(target -> {
+                shoot(aimAt(target));
+                nextShot = fireRate;
+            });
         }
     }
 

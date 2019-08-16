@@ -1,13 +1,5 @@
 package control;
 
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import game.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -16,11 +8,14 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.tiled.TileSet;
 import org.newdawn.slick.tiled.TiledMap;
-
-import ui.Button;
-import ui.TextButton;
 import ui.SpriteButton;
+import ui.TextButton;
 import ui.TextUI;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Stream;
 
 /** Handles all the game logic for a level. Created by App. */
 public class World {
@@ -29,7 +24,7 @@ public class World {
             SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
             MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20),
             LARGE_FONT = new Font("Verdana", Font.BOLD, 40);
-    public static final TrueTypeFont
+    private static final TrueTypeFont
             TINY_TTF = new TrueTypeFont(TINY_FONT, true),
             SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
             MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
@@ -46,13 +41,11 @@ public class World {
     private Tile[][] tiles;
     private TextUI textUI = new TextUI();
     private List<Wave> waves;
-    private List<Projectile> projectiles = new LinkedList<>();
-    private List<Tower> towers = new LinkedList<>();
-    private List<Button> buttons = new ArrayList<>();
+    private List<Entity> entities = new LinkedList<>();
+    private List<Entity> entityBuffer = new ArrayList<>();
+
     /** Enemy path. 3D array for x-coordinate, y-coordinate and direction for enemy to move in. */
     private int[][][] path; // TODO: add a path object for better aiming at moving enemies?
-    /** List of enemies in order of creation (oldest first). */
-    private List<Enemy> enemies = new LinkedList<>();
 
     /** Creates the world.
      * @param map The tiled map to render.
@@ -149,17 +142,22 @@ public class World {
             var icon = new SpriteButton(s, () -> selectedTower = Tower.create(t, centerX, yPos));
             icon.setColors(Color.white, Color.red, Color.lightGray);
             icon.disableWhen(() -> money < t.getCost());
-            buttons.add(icon);
+            entities.add(icon);
             textUI.add(() -> String.valueOf(t.getCost()), centerX + s.getWidth(), yPos - s.getHeight() / 4, SMALL_TTF, TextUI.Mode.LEFT);
             textUI.add(t::toString, centerX, yPos + s.getWidth() / 2, TINY_TTF, TextUI.Mode.CENTER);
         }
+
+        // Display wave number, money, and Alistair's health
+        textUI.add(() -> "Wave: " + waveNum, App.WINDOW_W - App.SIDEBAR_W / 2, 20, SMALL_TTF, TextUI.Mode.CENTER);
+        textUI.add(() -> "Money: " + money, App.WINDOW_W - App.SIDEBAR_W / 2, 40, SMALL_TTF, TextUI.Mode.CENTER);
+        textUI.add(() -> Integer.toString(health), alistair, MEDIUM_TTF, TextUI.Mode.CENTER);
 
         // New wave button
         TextButton nextWave = new TextButton(centerX, 500, "Next wave", MEDIUM_TTF, this::newWave);
         nextWave.setColors(Color.green, Color.black, Color.white);
         nextWave.setBorder(true);
         nextWave.disableWhen(() -> !waveComplete);
-        buttons.add(nextWave);
+        entities.add(nextWave);
 
         // Play intro sound
         AudioController.play("intro");
@@ -170,6 +168,12 @@ public class World {
      */
     public void update(int delta) throws SlickException {
         timer += delta;
+        entityBuffer.clear();
+
+        // Update all entities and delete dead ones
+        // TODO: check for bugs involving entities not being destroyed until all entities have been updated
+        entities.forEach(e -> e.update(delta));
+        entities.removeIf(Entity::isDead);
 
         // Enemy spawning (based on the current wave)
         if (waveNum > 0 && waveNum - 1 < waves.size()) {
@@ -185,176 +189,71 @@ public class World {
             }
 
             // Set wave status
-            waveComplete = w.isFinished() && enemies.isEmpty();
+            waveComplete = w.isFinished() && entities.stream().noneMatch(e -> e instanceof Enemy);
         }
 
-        // Tower counting down / shooting
-        for (Tower t : towers) {
-            t.update(delta);
-        }
-
-        processEnemies();
-        processProjectiles();
-        processTowers();
-        processButtons();
-    }
-
-    /** Update enemy positions. */
-    private void processEnemies() {
-        Iterator<Enemy> itr = enemies.iterator();
-        while (itr.hasNext()) {
-            Enemy e = itr.next();
-            // Hitting alistair
-            e.advance(e.getSpeed());
-            if (e.checkCollision(alistair)) {
-                takeDamage(e.getDamage());
-                itr.remove();
-            }
-        }
-    }
-
-    /** Update projectile positions. */
-    private void processProjectiles() {
-        Iterator<Projectile> itr = projectiles.iterator();
-        while (itr.hasNext()) {
-            Projectile p = itr.next();
-            p.advance();
-            if (p.isDead()) {
-                itr.remove();
-                continue;
-            }
-
-            // Hitting enemies
-            Iterator<Enemy> eItr = enemies.iterator();
-            while (eItr.hasNext()) {
-                Enemy e = eItr.next();
-                if (p.checkCollision(e)) {
-                    e.takeDamage(p.getDamage());
-                    if (e.isDead()) {
-                        eItr.remove();
-                        money++;
-                    }
-                    p.pop();
-                    itr.remove();
-                    break;
-                }
-            }
-        }
-    }
-
-    /** Handle selecting and placing towers. */
-    private void processTowers() {
+        // Process towers
         int mouseX = App.getMouseX(), mouseY = App.getMouseY();
         boolean leftClicked = App.isLeftClicked();
 
         if (App.isRightClicked()) {
             selectedTower = null;
         } else if (selectedTower != null && !selectedTower.isPlaced()) {
-            // If we're placing a tower, move it to the mouse position
-            selectedTower.setColor(Color.white);
+            // Handle placing a tower
+            // TODO: consider refactoring tower placing to creating a kind of SpriteButton
             selectedTower.teleport(mouseX, mouseY);
-
-            // Set color to red if out of game bounds, or if it cannot be afforded
-            if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))) {
+            if (!inGridBounds(toGrid(mouseX), toGrid(mouseY))
+                || !getTile(mouseX, mouseY).holdsDefence || money < selectedTower.getType().getCost()
+                || entities.stream().anyMatch(e -> e instanceof Tower && e.checkCollision(selectedTower))) {
                 selectedTower.setColor(Color.red);
-                if (leftClicked) {
-                    // Cancel the placement
-                    selectedTower = null;
-                    return; // TODO: consider refactoring this usage of returns as it's effectively a goto
-                }
             } else {
-                // Also set color to red if touching a non-wall tile or tower, or if the player has insufficient funds
-                if (!getTile(mouseX, mouseY).holdsDefence || money < selectedTower.getType().getCost()) {
-                    selectedTower.setColor(Color.red);
-                    return;
+                selectedTower.setColor(Color.white);
+                if (leftClicked) {
+                    // Since the user clicked and the tower isn't colliding with anything, place it
+                    selectedTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
+                    entities.add(selectedTower);
+                    money -= selectedTower.getType().getCost();
+                    AudioController.play(selectedTower.getType().toString(), false);
+                    selectedTower = null;
                 }
-
-                for (Tower t : towers) {
-                    if (t.checkCollision(selectedTower)) {
-                        selectedTower.setColor(Color.red);
-                        return;
-                    }
-                }
-            }
-
-            // If the user clicked and it's not colliding with anything, place it
-            if (leftClicked) {
-                selectedTower.place(toPos(toGrid(mouseX)), toPos(toGrid(mouseY)));
-                towers.add(selectedTower);
-                money -= selectedTower.getType().getCost();
-
-                // Play a sound effect
-                AudioController.play(selectedTower.getType().toString(), false);
-
-                selectedTower = null;
             }
         } else if (leftClicked) {
             // Click on a tower to display its range
-            for (Tower t: towers) {
-                if (t.contains(mouseX, mouseY) && t != selectedTower) {
-                    if (t == selectedTower) {
-                        selectedTower = null;
-                    } else {
-                        selectedTower = t;
-                    }
-                    return;
+            getTowers().filter(t -> t.contains(mouseX, mouseY)).findAny().ifPresentOrElse(t -> {
+                if (t == selectedTower) {
+                    selectedTower = null;
+                } else {
+                    selectedTower = t;
                 }
-            }
-
-            // Deselect a selected tower
-            selectedTower = null;
+            }, () -> selectedTower = null);
         }
-    }
 
-    /** Update button status. */
-    private void processButtons() {
-        for (Button b : buttons) {
-            b.update();
-        }
+        // Add any created enemies from the buffer
+        entities.addAll(entityBuffer);
     }
 
     /** Render the game world. */
     public void render(Graphics g) {
-        // Tiles, enemies, towers, and projectiles
+        // Render the map, scaled to fit the tile size
         float scale = (float)App.TILE_SIZE / map.getTileWidth();
         g.scale(scale, scale);
         map.render(0, 0);
         g.scale(1 / scale, 1 / scale);
-        enemies.forEach(Sprite::render);
-        towers.forEach(Sprite::render);
-        projectiles.forEach(Sprite::render);
 
-        // GUI elements
-        drawGUI(g);
-        textUI.render(g);
-    }
-
-    /** Draw game interface. */
-    private void drawGUI(Graphics g){
-        // Sidebar
+        // Render the sidebar
         g.setColor(Color.darkGray);
         g.fillRect(App.WINDOW_W - App.SIDEBAR_W, 0, App.SIDEBAR_W, App.WINDOW_H);
+
+        // Render each entity
+        entities.forEach(e -> e.render(g));
 
         // Selected tower draws its range, and if being held, has to be rendered separately
         if (selectedTower != null) {
             if (!selectedTower.isPlaced()) {
-                selectedTower.render();
+                selectedTower.render(g);
             }
             selectedTower.drawRange(g);
         }
-
-        // Buttons
-        g.setColor(Color.white);
-        buttons.forEach(b -> b.render(g));
-
-        // Display wave number and Alistair's health
-        // TODO: move to TextUI
-        g.setColor(Color.white);
-        g.setFont(SMALL_TTF);
-        Util.writeCentered(g, "Wave: " + waveNum, App.WINDOW_W - App.SIDEBAR_W / 2, 20);
-        Util.writeCentered(g, "Money: " + money, App.WINDOW_W - App.SIDEBAR_W / 2, 40);
-        g.setFont(MEDIUM_TTF);
-        Util.writeCentered(g, Integer.toString(health), alistair.getX(), alistair.getY());
 
         // Game over splash
         if (gameOver) {
@@ -362,13 +261,15 @@ public class World {
             Util.writeCentered(LARGE_TTF, "Game Over!", App.WINDOW_W / 2, App.WINDOW_H / 2);
             g.setColor(Color.white);
         }
+
+        // Any remaining UI text, to be written at the top
+        textUI.render(g);
     }
 
-    /**
-     * Make alistair take damage
+    /** Deal damage to alistair.
      * @param damage Health reduction, <=100
      */
-    public void takeDamage(int damage) {
+    public void damageAlistair(int damage) {
         if (!gameOver) { // TODO: consider writing a damageable entity type and making alistair one of them
             if (health - damage < 0) { health = 0; } else { health -= damage; }
             if (health == 0) {
@@ -389,9 +290,8 @@ public class World {
         return tiles[toGrid(x)][toGrid(y)];
     }
 
-    /** Convert from literal position to position on grid. */
+    /** Convert from literal position to position on grid, choosing the closest grid position. */
     public int toGrid(float pos) {
-        // Choose closest grid position
         return Math.round((pos - App.TILE_SIZE / 2) / App.TILE_SIZE);
     }
 
@@ -425,46 +325,48 @@ public class World {
         return posY < 0 ? 1 : (posY >= map.getHeight() * App.TILE_SIZE ? -1 : 0);
     }
 
-    /** Add a projectile to the list of monitored projectiles. */
-    public void addProjectile(Projectile projectile) {
-        projectiles.add(projectile);
-    }
+    /** Add an entity to the monitored list. */
+    public void addEntity(Entity e) { entityBuffer.add(e); }
 
     /** Increment the wave number and reset the timer. Called every time a new wave starts. */
     private void newWave() {
         waveNum++;
         timer = 0;
-        towers.forEach(Tower::waveReset);
+        getTowers().forEach(Tower::waveReset);
     }
 
     /** Create a new enemy at the given position. */
     private void spawnEnemy(float x, float y, Enemy.Type type) throws SlickException {
-        enemies.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
+        entities.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
     }
 
+    public Tile getAlistair() { return alistair; }
     public int getPathXDir(int x, int y) { return path[x][y][0]; }
     public int getPathYDir(int x, int y) { return path[x][y][1]; }
-    public List<Enemy> getEnemies() { return Collections.unmodifiableList(enemies); }
+    public Stream<Enemy> getEnemies() { return entities.stream().filter(e -> e instanceof Enemy).map(e -> (Enemy)e); }
+    public Stream<Tower> getTowers() { return entities.stream().filter(e -> e instanceof Tower).map(e -> (Tower)e); }
+
+    public void addMoney(int amount) { money += amount; }
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
-        private boolean isWall, holdsDefence;
+        private boolean wall, holdsDefence;
 
         private Tile(int gridX, int gridY, Properties properties) {
             super(toPos(gridX), toPos(gridY), App.TILE_SIZE, App.TILE_SIZE);
             try {
-                isWall = Boolean.parseBoolean(properties.getProperty("isWall"));
+                wall = Boolean.parseBoolean(properties.getProperty("isWall"));
                 holdsDefence = Boolean.parseBoolean(properties.getProperty("holdsDefence"));
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 System.err.println("Could not parse the properties of the tile at " + gridX + " " + gridY + "" +
                                    "assumed a wall that cannot hold a defence.");
-                isWall = true;
+                wall = true;
                 holdsDefence = false;
             }
         }
 
-        public boolean isWall() { return isWall; }
+        public boolean isWall() { return wall; }
         public boolean holdsDefence() { return holdsDefence; }
     }
 }

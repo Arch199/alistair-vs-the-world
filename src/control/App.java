@@ -2,16 +2,15 @@
 
 package control;
 
+import org.newdawn.slick.*;
+import org.newdawn.slick.tiled.TiledMap;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-
-import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.*;
-import org.newdawn.slick.tiled.TiledMap;
 
 /**
  * Main handler for the game as a program.
@@ -24,7 +23,7 @@ public final class App extends BasicGame {
     private static World world;
     private static Input input;
     private static Boolean leftClicked, rightClicked;
-    private static Map<Integer,Boolean> keyPresses = new HashMap<>();
+    private static final Map<Integer,Boolean> keyPresses = new HashMap<>();
 
     public static void main(String[] args) throws SlickException {
         App instance = new App("Alistair vs The World");
@@ -60,19 +59,16 @@ public final class App extends BasicGame {
     public void update(GameContainer gc, int delta) throws SlickException {
         input = gc.getInput();
         leftClicked = rightClicked = null;
-        keyPresses = new HashMap<>();
+        keyPresses.clear();
 
         if (menu != null) {
-            menu.update();
+            menu.update(delta);
         } else if (world != null) {
             if (isKeyPressed(Input.KEY_ESCAPE)) {
                 AudioController.stopAll();
                 world = null;
                 menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
             } else {
-                if (isRightClicked()) {
-                    world.deselect(); // may want to move this
-                }
                 world.update(delta);
             }
         }

@@ -5,30 +5,41 @@ import control.AudioController;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 
-import control.World;
+import java.util.Iterator;
 
 /** 
  * Moving item fired by a tower.
  */
 public abstract class Projectile extends DynamicSprite {
-    protected static final String SPRITE_PATH = "assets/sprites/projectiles/";
+    static final String SPRITE_PATH = "assets/sprites/projectiles/";
 
     /** Create a projectile.
-     * @param startX Starting x position
-     * @param startY Starting y position
-     * @param vec Velocity vector to begin moving with
-     * @param im Projectile image
-     * @param damage Damage it deals
+     * @param x Starting x position.
+     * @param y Starting y position.
+     * @param vec Velocity vector to begin moving with.
+     * @param im Projectile image.
+     * @param damage Damage it deals.
+     * @param health Its health total.
      */
-    public Projectile(float startX, float startY, Vector2f vec, Image im, int damage) {
-        super(startX, startY, vec, im, damage);
-    }
-    
-    @Override
-    public boolean isDead() {
-        return super.isDead() || isOffScreen();
+    public Projectile(float x, float y, Vector2f vec, Image im, int damage, int health) {
+        super(x, y, vec, im, damage, health);
     }
 
+    @Override
+    public void update(int delta) {
+        if (isOffScreen()) {
+            kill();
+        } else {
+            // Hitting enemies
+            App.getWorld().getEnemies().filter(this::checkCollision).findAny().ifPresent(other -> {
+                other.takeDamage(getDamage());
+                takeDamage(other.getDamage());
+            });
+            super.update(delta);
+        }
+    }
+
+    // TODO: standardize sound effect methods
     public void pop() {
         AudioController.play("lowpop");
     }

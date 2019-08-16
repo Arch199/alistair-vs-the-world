@@ -2,11 +2,9 @@ package game;
 
 import control.App;
 import control.AudioController;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
-import control.World;
+import static control.Util.newImage;
 
 public class BubbleSortTower extends Tower {
     public BubbleSortTower(float x, float y, Type type) {
@@ -14,28 +12,26 @@ public class BubbleSortTower extends Tower {
     }
 
     @Override
-    protected void shoot(Vector2f dir) throws SlickException {
-        App.getWorld().addProjectile(new Bubble(getX(), getY()));
+    protected void shoot(Vector2f dir) {
+        App.getWorld().addEntity(new Bubble(getX(), getY()));
     }
     
     private static class Bubble extends Projectile {
-        private static final int DAMAGE = 1;
-        private static final float SCALE_INCR = 0.015f, SCALE_MAX = 0.7f;
+        private static final float SCALE_INCREMENT = 0.0006f;
         
-        public Bubble(float startX, float startY) throws SlickException {
-            super(startX, startY, new Vector2f(0, 0), new Image(Projectile.SPRITE_PATH + "bubble-original.png"), DAMAGE);
-            setScale(.1f);
+        public Bubble(float x, float y) {
+            super(x, y, new Vector2f(0, 0), newImage(Projectile.SPRITE_PATH + "bubble-original.png"), 1, 2);
+            setScale(0.1f);
         }
         
         @Override
-        public void advance() {
-            super.advance();
-            setScale(getScale() + SCALE_INCR);
-        }
-        
-        @Override
-        public boolean isDead() {
-            return super.isDead() || getScale() >= SCALE_MAX;
+        public void update(int delta) {
+            if (getWidth() > Type.BUBBLE.getRange() * 2) {
+                kill();
+            } else {
+                setScale(getScale() + SCALE_INCREMENT * delta);
+                super.update(delta);
+            }
         }
 
         @Override
