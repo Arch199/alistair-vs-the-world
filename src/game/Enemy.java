@@ -7,6 +7,8 @@ import org.newdawn.slick.geom.Vector2f;
 
 import control.World;
 
+import static control.Util.newImage;
+
 /** Sprite that moves down the path and does damage to Alistair. */
 public class Enemy extends DynamicSprite {
     public enum Type {
@@ -39,8 +41,8 @@ public class Enemy extends DynamicSprite {
      * @param v Initial velocity (unscaled).
      * @param type Enemy type as an enum.
      */
-    public Enemy(float x, float y, Vector2f v, Type type) throws SlickException {
-        super(x, y, v, new Image(SPRITE_PATH + type.imPath), type.health, type.health);
+    public Enemy(float x, float y, Vector2f v, Type type) {
+        super(x, y, v, newImage(SPRITE_PATH + type.imPath), type.health, type.health);
         this.type = type;
         setV(v.normalise().scale(type.speed));
     }

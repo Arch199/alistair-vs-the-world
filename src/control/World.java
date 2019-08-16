@@ -166,7 +166,7 @@ public class World {
     /** Update the world state.
      * @param delta Time in ms since the last update.
      */
-    public void update(int delta) throws SlickException {
+    public void update(int delta) {
         timer += delta;
         entityBuffer.clear();
 
@@ -336,7 +336,7 @@ public class World {
     }
 
     /** Create a new enemy at the given position. */
-    private void spawnEnemy(float x, float y, Enemy.Type type) throws SlickException {
+    private void spawnEnemy(float x, float y, Enemy.Type type) {
         entities.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
     }
 

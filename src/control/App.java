@@ -1,26 +1,21 @@
-// Main App handler for Alistair-themed Tower Defence Game
-
 package control;
 
+import org.jetbrains.annotations.NotNull;
 import org.newdawn.slick.*;
 import org.newdawn.slick.tiled.TiledMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
-/**
- * Main handler for the game as a program.
+/** Main handler for the game as a program.
  * Creates a World to handle the gameplay itself.
  */
 public final class App extends BasicGame {
     public static final int TILE_SIZE = 48, WINDOW_W = 1366, WINDOW_H = 760;
     static final int SIDEBAR_W = TILE_SIZE*3;
-    private static Menu menu;
-    private static World world;
+    @NotNull private static Optional<Menu> menu = Optional.empty();
+    @NotNull private static Optional<World> world = Optional.empty();
     private static Input input;
     private static Boolean leftClicked, rightClicked;
     private static final Map<Integer,Boolean> keyPresses = new HashMap<>();
@@ -42,38 +37,31 @@ public final class App extends BasicGame {
         System.out.println("GAME STATE: Initialising game...");
         gc.setShowFPS(false);
         input = gc.getInput();
-        menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+        menu = Optional.of(new Menu(getTitle(), WINDOW_W, WINDOW_H));
     }
 
     /** Should be called every 20ms. Executes a 'tick' operation. */
     @Override
-    public void update(GameContainer gc, int delta) throws SlickException {
+    public void update(GameContainer gc, int delta) {
         input = gc.getInput();
         leftClicked = rightClicked = null;
         keyPresses.clear();
-
-        if (menu != null) {
-            menu.update(delta);
-        } else if (world != null) {
+        menu.ifPresentOrElse(m -> m.update(delta), () -> world.ifPresent(w -> {
             if (isKeyPressed(Input.KEY_ESCAPE)) {
                 AudioController.stopAll();
-                world = null;
-                menu = new Menu(getTitle(), WINDOW_W, WINDOW_H);
+                world = Optional.empty();
+                menu = Optional.of(new Menu(getTitle(), WINDOW_W, WINDOW_H));
             } else {
-                world.update(delta);
+                w.update(delta);
             }
-        }
+        }));
     }
 
     /** Responsible for drawing sprites. Called regularly, automatically. */
     @Override
     public void render(GameContainer gc, Graphics g) {
-        if (menu != null) {
-            menu.render(g);
-        }
-        if (world != null) {
-            world.render(g);
-        }
+        menu.ifPresent(m -> m.render(g));
+        world.ifPresent(w -> w.render(g));
     }
 
     static void openLevel() {
@@ -127,8 +115,8 @@ public final class App extends BasicGame {
             }
 
             // Create World and get rid of Menu
-            world = new World(tiledMap, waves);
-            menu = null;
+            world = Optional.of(new World(tiledMap, waves));
+            menu = Optional.empty();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -140,10 +128,8 @@ public final class App extends BasicGame {
         System.exit(0);
     }
 
-    public static World getWorld() { return world; }
+    public static World getWorld() { return world.orElse(null); }
 
-    // TODO: figure out if there should be a SCALE_FACTOR here (no, I think?)
-    // Don't really understand how the scaling works: the main menu works without the factor, but the world breaks completely with it
     public static int getMouseX() { return input.getMouseX(); }
     public static int getMouseY() { return input.getMouseY(); }
     public static boolean isLeftClicked() {
