@@ -7,10 +7,8 @@ import org.newdawn.slick.geom.Vector2f;
 
 import java.util.Iterator;
 
-/** 
- * Moving item fired by a tower.
- */
-public abstract class Projectile extends DynamicSprite {
+/** Moving item fired by a tower. */
+public class Projectile extends DynamicSprite {
     static final String SPRITE_PATH = "assets/sprites/projectiles/";
 
     /** Create a projectile.

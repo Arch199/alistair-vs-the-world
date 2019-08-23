@@ -13,7 +13,8 @@ import java.util.Optional;
 public abstract class Tower extends Sprite {
     public enum Type {
         SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80);
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80),
+        INSERTION("Insertion Sort Alistair", "insertion.png", 1600, 400f, 100);
         private final String title, imName;
         private final int fireRate;
         private final float range;
@@ -58,15 +59,15 @@ public abstract class Tower extends Sprite {
 
     /** Fires a projectile in the given direction. */
     protected abstract void shoot(Vector2f dir);
-    
+
+    /** Create a tower of a given type. */
     public static Tower create(Type type, float x, float y) {
         switch (type) {
-            case BUBBLE:
-                return new BubbleSortTower(x, y, type);
-            case SELECTION:
-                return new SelectionSortTower(x, y, type);
+            case BUBBLE: return new BubbleSortTower(x, y, type);
+            case SELECTION: return new SelectionSortTower(x, y, type);
+            case INSERTION: return new InsertionSortTower(x, y, type);
         }
-        return null;
+        throw new IllegalArgumentException("Unknown type " + type);
     }
     
     /** Choose an enemy to target (the first enemy in range by default). */

@@ -24,12 +24,14 @@ public class World {
         TINY_FONT = new Font("Verdana", Font.PLAIN, 11),
         SMALL_FONT = new Font("Verdana", Font.PLAIN, 15),
         MEDIUM_FONT = new Font("Verdana", Font.BOLD, 20),
-        LARGE_FONT = new Font("Verdana", Font.BOLD, 40);
+        LARGE_FONT = new Font("Verdana", Font.BOLD, 40),
+        LARGE_FONT_MONO = new Font("Courier", Font.BOLD, 40);
     private static final TrueTypeFont
         TINY_TTF = new TrueTypeFont(TINY_FONT, true),
         SMALL_TTF = new TrueTypeFont(SMALL_FONT, true),
         MEDIUM_TTF = new TrueTypeFont(MEDIUM_FONT, true),
-        LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true);
+        LARGE_TTF =  new TrueTypeFont(LARGE_FONT, true),
+        LARGE_TTF_MONO = new TrueTypeFont(LARGE_FONT_MONO, true);
 
     private float startX, startY;
     private int health = 1, waveNum = 0, money = 100;
@@ -258,8 +260,9 @@ public class World {
 
         // Game over splash
         if (gameOver) {
+            // TODO: replace with going to another screen or something (also use TextUI for this)
             g.setColor(Color.red);
-            Util.writeCentered(LARGE_TTF, "Game Over!", App.WINDOW_W / 2, App.WINDOW_H / 2);
+            Util.writeCentered(LARGE_TTF_MONO, "Segmentation fault: core dumped", App.WINDOW_W / 2, App.WINDOW_H / 2);
             g.setColor(Color.white);
         }
 
