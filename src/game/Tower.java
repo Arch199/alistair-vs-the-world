@@ -14,7 +14,7 @@ public abstract class Tower extends Sprite {
     public enum Type {
         SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
         BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80),
-        INSERTION("Insertion Sort Alistair", "insertion.png", 1600, 400f, 100);
+        INSERTION("Insertion Sort Alistair", "insertion.png", 1400, 400f, 100);
         private final String title, imName;
         private final int fireRate;
         private final float range;

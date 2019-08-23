@@ -1,8 +1,8 @@
 package game;
 
-import control.Util;
 import org.newdawn.slick.geom.Vector2f;
 
+import static control.Util.angleTowards;
 import static control.Util.newImage;
 
 public class InsertionSortTower extends AbstractGunTower<InsertionSortTower.Laser> {
@@ -16,11 +16,12 @@ public class InsertionSortTower extends AbstractGunTower<InsertionSortTower.Lase
     }
 
     @Override
-    protected float getShotSpeed() { return 0.8f; }
+    protected float getShotSpeed() { return 1f; }
 
     public static class Laser extends Projectile {
         private Laser(float x, float y, Vector2f v) {
-            super(x, y, v, newImage(Projectile.SPRITE_PATH + "laser.png"), 2, 3);
+            super(x, y, v, newImage(Projectile.SPRITE_PATH + "laser.png"), 1, 3);
+            setAngle(angleTowards(v));
         }
     }
 }

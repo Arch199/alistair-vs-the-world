@@ -43,7 +43,7 @@ public abstract class DynamicSprite extends Sprite {
         }
     }
 
-    public Vector2f getV() { return v; }
+    public Vector2f getV() { return v; } // note: this actually breaks encapsulation (oh well)
     public int getDamage() { return damage; }
 
     public void setV(Vector2f v) { this.v = v; }

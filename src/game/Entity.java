@@ -2,8 +2,9 @@ package game;
 
 import control.App;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Vector2f;
 
-/** On-screen object with a position, size, and scale. */
+/** On-screen object with a position, size, scale, etc.. */
 public abstract class Entity {
     private float x, y, w, h, scale = 1f;
     private boolean dead = false;
@@ -26,8 +27,8 @@ public abstract class Entity {
     public abstract void render(Graphics g);
 
     /** Check if this entity is touching another (using rectangular collision boxes).
-     * @param other Entity to check against
-     * @return Returns true if touching
+     * @param other Entity to check against.
+     * @return Returns true if touching.
      */
     public boolean checkCollision(Entity other) {
         return getRight() >= other.getLeft() && other.getRight() >= getLeft()

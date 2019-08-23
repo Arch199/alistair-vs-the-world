@@ -29,7 +29,10 @@ public class Sprite extends Entity {
     @Override
     public void update(int delta) {}
 
+    public float getAngle() { return im.getRotation(); }
     public Color getColor() { return col; }
 
+    protected void setAngle(float angle) { im.setRotation(angle); }
+    protected void rotate(float angle) { im.rotate(angle); }
     public void setColor(Color col) { this.col = col; }
 }

@@ -3,6 +3,7 @@ package control;
 import java.util.Random;
 
 import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Vector2f;
 
 /** Contains utility methods for use throughout the project. */
 public final class Util {
@@ -61,5 +62,14 @@ public final class Util {
             App.exit();
         }
         return null; // to soothe the compiler
+    }
+
+    /**
+     * Calculate the angle to a given direction.
+     * @param dir The direction vector.
+     * @return The angle pointing towards that vector, in degrees counted clockwise.
+     */
+    public static float angleTowards(Vector2f dir) {
+        return 360f - (float)Math.toDegrees(Math.atan2(-dir.y, dir.x));
     }
 }
