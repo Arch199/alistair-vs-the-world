@@ -1,11 +1,8 @@
 package game;
 
 import control.App;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
-
 import control.World;
+import org.newdawn.slick.geom.Vector2f;
 
 import static control.Util.newImage;
 
@@ -14,12 +11,12 @@ public class Enemy extends DynamicSprite {
     public enum Type {
         // In order of increasing strength. Note that speed is pixels per ms.
         // Each enemy deals damage equal to its health.
-        PYTHON("python-icon.png", 1, 0.16f, 5), // TODO: balance money values
-        INT_MAX("int_max.png", 1, 0.18f, 7),
-        DO("do.png", 1, 0.21f, 10),
-        COMMERCE("fbe1.png", 2, 0.15f, 21),
-        OVERFLOW("stackoverflow32.png", 3, 0.2f, 30),
-        THOMAS("thomas100.png", 2, 0.3f, 42);
+        PYTHON("python-icon.png", 1, 0.16f, 2), // TODO: balance money values
+        INT_MAX("int_max.png", 2, 0.18f, 4),
+        DO("do.png", 2, 0.22f, 5),
+        COMMERCE("fbe1.png", 3, 0.15f, 8),
+        OVERFLOW("stackoverflow32.png", 4, 0.2f, 15),
+        THOMAS("thomas100.png", 3, 0.3f, 21);
         final String imPath;
         final int health, money;
         final float speed;
@@ -33,7 +30,6 @@ public class Enemy extends DynamicSprite {
     private static final String SPRITE_PATH = "assets/sprites/enemies/";
     
     private Type type;
-    private int health;
 
     /** Create an enemy.
      * @param x Starting x-coordinate.

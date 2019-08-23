@@ -21,7 +21,7 @@ public class BubbleSortTower extends Tower {
         
         public Bubble(float x, float y) {
             super(x, y, new Vector2f(0, 0), newImage(Projectile.SPRITE_PATH + "bubble-original.png"), 1, 2);
-            setScale(0.1f);
+            setScale(0.05f);
         }
         
         @Override
