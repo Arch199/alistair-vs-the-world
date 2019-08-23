@@ -30,7 +30,7 @@ public class Enemy extends DynamicSprite {
             this.money = money;
         }
     }
-    public static final String SPRITE_PATH = "assets/sprites/enemies/";
+    private static final String SPRITE_PATH = "assets/sprites/enemies/";
     
     private Type type;
     private int health;
@@ -50,27 +50,21 @@ public class Enemy extends DynamicSprite {
     /** Move the enemy along the pre-calculated path. */
     @Override
     public void update(int delta) {
-        // TODO: remake pathfinding and selection sort aiming
         World world = App.getWorld();
-        float nextX = getX() + getWidth() * Math.signum(getV().x), nextY = getY() + getHeight() * Math.signum(getV().y);
-        int gridX = world.toGrid(getX()), gridY = world.toGrid(getY());
-
-        // See if we are in the process of turning (our position, plus the entire width/height of the sprite is at the edge)
-        if (world.getTile(nextX, nextY).isWall()) {
-            // Optimally turn at the center of the tile (small buffer in case of lag/fast sprites)
-            final int buffer = 5;
-            if (Math.floorMod((int)getX(), App.TILE_SIZE*gridX + App.TILE_SIZE/2) < buffer &&
-                Math.floorMod((int)getY(), App.TILE_SIZE*gridY + App.TILE_SIZE/2) < buffer) {
-                // Turn
-                if (world.inGridBounds(gridX, gridY)) {
-                    setV(world.pathDir(gridX, gridY).scale(type.speed));
-                }
+        // Go one step at a time to check for collisions
+        for (int i = 0; i < delta; i++) {
+            int gridX = world.toGrid(getX()), gridY = world.toGrid(getY());
+            float nextX = getX() + App.TILE_SIZE * Math.signum(getV().x) / 2,
+                  nextY = getY() + App.TILE_SIZE * Math.signum(getV().y) / 2;
+            if (!world.inGridBounds(gridX, gridY)) {
+                // Head away from the edge of the map
+                setV(world.inwardDir(gridX, gridY).scale(type.speed));
+            } else if (world.getTile(nextX, nextY).isWall() && world.inGridBounds(gridX, gridY)) {
+                // Follow the path
+                setV(world.pathDir(gridX, gridY).scale(type.speed));
             }
-        } else if (!world.inGridBounds(gridX, gridY)) {
-            // Head away from the edge of the map
-            setV(world.inwardDir(gridX, gridY).scale(type.speed));
+            super.update(1);
         }
-        super.update(delta);
 
         // Hitting Alistair
         if (checkCollision(world.getAlistair())) {

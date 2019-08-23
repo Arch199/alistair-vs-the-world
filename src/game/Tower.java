@@ -12,7 +12,7 @@ import java.util.Optional;
 /** Towers are placed on a grid and shoot projectiles at enemies. */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 2000, 250f, 50),
+        SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
         BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80);
         private final String title, imName;
         private final int fireRate;
@@ -32,18 +32,10 @@ public abstract class Tower extends Sprite {
         public Image getImage() {
             return Util.newImage(SPRITE_PATH + imName);
         }
-        public static Type fromTitle(String title) {
-            for (Type t : values()) {
-                if (t.title.equals(title)) {
-                    return t;
-                }
-            }
-            throw new IllegalArgumentException("No tower type for title '" + title + "'");
-        }
         public int getFireRate() { return fireRate; }
         public float getRange() { return range; }
     }
-    protected static final String SPRITE_PATH = "assets/sprites/towers/";
+    private static final String SPRITE_PATH = "assets/sprites/towers/";
 
     private boolean placed = false;
     private float range;
@@ -85,9 +77,7 @@ public abstract class Tower extends Sprite {
     /** Calculate a direction vector aiming at the target enemy. */
     protected Vector2f aimAt(Enemy target) {
         Vector2f vec = new Vector2f(target.getX() - getX(), target.getY() - getY());
-        vec.add(target.getV());
-        vec.normalise();
-        return vec;
+        return vec.add(target.getV()).normalise();
     }
     
     /** Places the tower. */
@@ -108,7 +98,7 @@ public abstract class Tower extends Sprite {
         }
     }
 
-    /** Draws a range circle around towers. */
+    /** Draw a range circle around towers. */
     public void drawRange(Graphics g) {
         // Top-left corner of the circle
         float xCorner = getX() - range, yCorner = getY() - range;
@@ -127,6 +117,5 @@ public abstract class Tower extends Sprite {
     }
 
     public boolean isPlaced() { return placed; }
-
     public Type getType() { return type; }
 }

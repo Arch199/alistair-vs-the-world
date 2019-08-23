@@ -42,8 +42,7 @@ public class World {
     private Tile[][] tiles;
     private TextUI textUI = new TextUI();
     private List<Wave> waves;
-    private List<Entity> entities = new LinkedList<>();
-    private List<Entity> entityBuffer = new ArrayList<>();
+    private List<Entity> entities = new LinkedList<>(), entityBuffer = new ArrayList<>();
 
     /** Create the world.
      * @param map The tiled map to render.
