@@ -3,7 +3,6 @@ package control;
 import game.*;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.tiled.TileSet;
@@ -13,8 +12,10 @@ import ui.TextButton;
 import ui.TextUI;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 /** Handles all the game logic for a level. Created by App. */
@@ -39,13 +40,11 @@ public class World {
 
     private TiledMap map;
     private Tile[][] tiles;
+    private Path path;
     private TextUI textUI = new TextUI();
     private List<Wave> waves;
     private List<Entity> entities = new LinkedList<>();
     private List<Entity> entityBuffer = new ArrayList<>();
-
-    /** Enemy path. 3D array for x-coordinate, y-coordinate and direction for enemy to move in. */
-    private int[][][] path; // TODO: add a path object for better aiming at moving enemies?
 
     /** Create the world.
      * @param map The tiled map to render.
@@ -96,45 +95,13 @@ public class World {
         }
         alistair = tiles[alistairX][alistairY];
 
-        // Traverse the enemy path and store direction values in a grid
-        path = new int[map.getWidth()][map.getHeight()][2];
-        int x = toGrid(startX), y = toGrid(startY);
-        int i = inwardDirX(x);
-        int j = inwardDirY(y);
-        if (i == 0 && j == 0) {
-            throw new IllegalArgumentException("Starting position must be outside grid");
-        }
-        while (!inGridBounds(x, y)) {
-            x += i;
-            y += j;
-        }
-        while (x != alistairX || y != alistairY) {
-            // Move along the path
-            // Check if we've hit a wall yet
-            if (!inGridBounds(x + i, y + j) || tiles[x + i][y + j].isWall()) {
-                // OK, try turning left (anti-clockwise)
-                int old_i = i;
-                i = j;
-                j = -old_i;
-
-                // Check again
-                if (!inGridBounds(x + i, y + j) || tiles[x + i][y + j].isWall()) {
-                    // Failed, turn right then (need to do a 180)
-                    i = -i;
-                    j = -j;
-                }
-            }
-            // Update x, y and our direction
-            path[x][y][0] = i;
-            path[x][y][1] = j;
-            x += i;
-            y += j;
-        }
+        // Initialize the enemy path
+        path = new Path(this, map, toGrid(startX), toGrid(startY));
 
         // Create sidebar icons for buying towers
         final int centerX = App.WINDOW_W - App.SIDEBAR_W / 2;
         var towerTypes = Tower.Type.values();
-        for (i = 0; i < towerTypes.length; i++) {
+        for (int i = 0; i < towerTypes.length; i++) {
             var t = towerTypes[i];
             int yPos = (i + 1) * 100;
             var s = new Sprite(centerX, yPos, t.getImage());
@@ -289,11 +256,6 @@ public class World {
         gameOver = true;
     }
 
-    /** Get the tile data at a specific position. */
-    public Tile getTile(float x, float y) {
-        return tiles[toGrid(x)][toGrid(y)];
-    }
-
     /** Convert from literal position to position on grid, choosing the closest grid position. */
     public int toGrid(float pos) {
         return Math.round((pos - App.TILE_SIZE / 2) / App.TILE_SIZE);
@@ -309,24 +271,12 @@ public class World {
         return x >= 0 && y >= 0 && x < map.getWidth() && y < map.getHeight();
     }
 
-    /** Calculate a horizontal grid direction to point inwards from the current position. */
-    public int inwardDirX(int gridX) {
-        return gridX < 0 ? 1 : (gridX >= map.getWidth() ? -1 : 0);
-    }
-
-    /** Calculate a horizontal literal direction to point inwards. */
-    public float inwardDirX(float posX) {
-        return posX < 0 ? 1 : (posX >= map.getWidth() * App.TILE_SIZE ? -1 : 0);
-    }
-
-    /** Calculate a vertical grid direction to point inwards from the current position. */
-    public int inwardDirY(int gridY) {
-        return gridY < 0 ? 1 : (gridY >= map.getHeight() ? -1 : 0);
-    }
-
-    /** Calculate a vertical literal direction to point inwards. */
-    public float inwardDirY(float posY) {
-        return posY < 0 ? 1 : (posY >= map.getHeight() * App.TILE_SIZE ? -1 : 0);
+    /** Calculate a unit grid direction to point inwards from the current position. */
+    public Vector2f inwardDir(int gridX, int gridY) {
+        return new Vector2f(
+            gridX < 0 ? 1 : (gridX >= map.getWidth() ? -1 : 0),
+            gridY < 0 ? 1 : (gridY >= map.getHeight() ? -1 : 0)
+        );
     }
 
     /** Add an entity to the monitored list. */
@@ -341,12 +291,21 @@ public class World {
 
     /** Create a new enemy at the given position. */
     private void spawnEnemy(float x, float y, Enemy.Type type) {
-        entities.add(new Enemy(x, y, new Vector2f(inwardDirX(x), inwardDirY(y)), type));
+        entities.add(new Enemy(x, y, inwardDir(toGrid(x), toGrid(y)), type));
+    }
+
+    /** Get the tile data at a specific literal position. */
+    public Tile getTile(float x, float y) {
+        return tiles[toGrid(x)][toGrid(y)];
+    }
+
+    /** Get the tile data at a specific grid position. */
+    public Tile getGridTile(int gridX, int gridY) {
+        return tiles[gridX][gridY];
     }
 
     public Tile getAlistair() { return alistair; }
-    public int getPathXDir(int x, int y) { return path[x][y][0]; }
-    public int getPathYDir(int x, int y) { return path[x][y][1]; }
+    public Path getPath() { return path; }
     public <T extends Entity> Stream<T> getAll(Class<T> type) {
         return entities.stream().filter(type::isInstance).map(type::cast);
     }

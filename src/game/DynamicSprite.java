@@ -47,7 +47,6 @@ public abstract class DynamicSprite extends Sprite {
     public int getDamage() { return damage; }
 
     public void setV(Vector2f v) { this.v = v; }
-    public void setV(float x, float y) { v.x = x; v.y = y; }
     protected void setDamage(int d) {
         if (d < 0) {
             throw new IllegalArgumentException("Damage must be >= 0");

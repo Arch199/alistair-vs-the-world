@@ -64,12 +64,12 @@ public class Enemy extends DynamicSprite {
                 Math.floorMod((int)getY(), App.TILE_SIZE*gridY + App.TILE_SIZE/2) < buffer) {
                 // Turn
                 if (world.inGridBounds(gridX, gridY)) {
-                    setV(type.speed * world.getPathXDir(gridX, gridY), type.speed * world.getPathYDir(gridX, gridY));
+                    setV(world.getPath().getDir(gridX, gridY).scale(type.speed));
                 }
             }
         } else if (!world.inGridBounds(gridX, gridY)) {
             // Head away from the edge of the map
-            setV(type.speed * world.inwardDirX(gridX), type.speed * world.inwardDirY(gridY));
+            setV(world.inwardDir(gridX, gridY).scale(type.speed));
         }
         super.update(delta);
 
