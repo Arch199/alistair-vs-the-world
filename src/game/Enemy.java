@@ -52,8 +52,7 @@ public class Enemy extends DynamicSprite {
     public void update(int delta) {
         // TODO: remake pathfinding and selection sort aiming
         World world = App.getWorld();
-        int nextX = world.toGrid(getX() + getWidth() * Math.signum(getV().x));
-        int nextY = world.toGrid(getY() + getHeight() * Math.signum(getV().y));
+        float nextX = getX() + getWidth() * Math.signum(getV().x), nextY = getY() + getHeight() * Math.signum(getV().y);
         int gridX = world.toGrid(getX()), gridY = world.toGrid(getY());
 
         // See if we are in the process of turning (our position, plus the entire width/height of the sprite is at the edge)
@@ -64,7 +63,7 @@ public class Enemy extends DynamicSprite {
                 Math.floorMod((int)getY(), App.TILE_SIZE*gridY + App.TILE_SIZE/2) < buffer) {
                 // Turn
                 if (world.inGridBounds(gridX, gridY)) {
-                    setV(world.getPath().getDir(gridX, gridY).scale(type.speed));
+                    setV(world.pathDir(gridX, gridY).scale(type.speed));
                 }
             }
         } else if (!world.inGridBounds(gridX, gridY)) {

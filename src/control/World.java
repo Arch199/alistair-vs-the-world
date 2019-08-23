@@ -12,10 +12,10 @@ import ui.TextButton;
 import ui.TextUI;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
+import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 /** Handles all the game logic for a level. Created by App. */
@@ -40,7 +40,6 @@ public class World {
 
     private TiledMap map;
     private Tile[][] tiles;
-    private Path path;
     private TextUI textUI = new TextUI();
     private List<Wave> waves;
     private List<Entity> entities = new LinkedList<>();
@@ -95,13 +94,45 @@ public class World {
         }
         alistair = tiles[alistairX][alistairY];
 
-        // Initialize the enemy path
-        path = new Path(this, map, toGrid(startX), toGrid(startY));
+        // Link up the tiles along the path
+        int x = toGrid(startX), y = toGrid(startY);
+        Vector2f dir = inwardDir(x, y);
+        int i = (int)dir.x, j = (int)dir.y;
+        if (i == 0 && j == 0) {
+            throw new IllegalArgumentException("Starting position must be outside grid");
+        }
+        while (!inGridBounds(x, y)) {
+            x += i;
+            y += j;
+        }
+        BiFunction<Integer,Integer,Boolean> hitWall = (x1, y1) -> !inGridBounds(x1, y1) || tiles[x1][y1].isWall();
+        while (x != alistairX || y != alistairY) {
+            // Move along the path
+            // Check if we've hit a wall yet
+            if (hitWall.apply(x + i, y + j)) {
+                // OK, try turning left (anti-clockwise)
+                int old_i = i;
+                i = j;
+                j = -old_i;
+
+                // Check again
+                if (hitWall.apply(x + i, y + j)) {
+                    // Failed, turn right then (need to do a 180)
+                    i = -i;
+                    j = -j;
+                }
+            }
+            // Update x, y and our direction
+            tiles[x][y].next = tiles[x + i][y + j];
+            x += i;
+            y += j;
+        }
 
         // Create sidebar icons for buying towers
+        // TODO: consider delegating this to another object e.g. TextUI
         final int centerX = App.WINDOW_W - App.SIDEBAR_W / 2;
         var towerTypes = Tower.Type.values();
-        for (int i = 0; i < towerTypes.length; i++) {
+        for (i = 0; i < towerTypes.length; i++) {
             var t = towerTypes[i];
             int yPos = (i + 1) * 100;
             var s = new Sprite(centerX, yPos, t.getImage());
@@ -249,11 +280,10 @@ public class World {
         }
     }
 
-    /** Create the end game splash. */
-    public void endGame() {
-        selectedTower = null;
-        AudioController.play("gameover");
-        gameOver = true;
+    /** Get the unit direction to move in along the path. */
+    public Vector2f pathDir(int gridX, int gridY) {
+        Tile current = tiles[gridX][gridY], next = current.getNext();
+        return new Vector2f(next.getX() - current.getX(), next.getY() - current.getY()).normalise();
     }
 
     /** Convert from literal position to position on grid, choosing the closest grid position. */
@@ -289,6 +319,13 @@ public class World {
         getAll(Tower.class).forEach(Tower::waveReset);
     }
 
+    /** Create the end game splash. */
+    private void endGame() {
+        selectedTower = null;
+        AudioController.play("gameover");
+        gameOver = true;
+    }
+
     /** Create a new enemy at the given position. */
     private void spawnEnemy(float x, float y, Enemy.Type type) {
         entities.add(new Enemy(x, y, inwardDir(toGrid(x), toGrid(y)), type));
@@ -299,13 +336,7 @@ public class World {
         return tiles[toGrid(x)][toGrid(y)];
     }
 
-    /** Get the tile data at a specific grid position. */
-    public Tile getGridTile(int gridX, int gridY) {
-        return tiles[gridX][gridY];
-    }
-
     public Tile getAlistair() { return alistair; }
-    public Path getPath() { return path; }
     public <T extends Entity> Stream<T> getAll(Class<T> type) {
         return entities.stream().filter(type::isInstance).map(type::cast);
     }
@@ -314,10 +345,12 @@ public class World {
 
     /** A data container for each tile on the map. */
     public class Tile extends StaticEntity {
-        private boolean wall, canBuild;
+        private final boolean wall, canBuild;
+        private Tile next;
 
         private Tile(int gridX, int gridY, Properties properties) {
             super(toPos(gridX), toPos(gridY), App.TILE_SIZE, App.TILE_SIZE);
+            boolean wall, canBuild;
             try {
                 wall = Boolean.parseBoolean(properties.getProperty("isWall"));
                 canBuild = Boolean.parseBoolean(properties.getProperty("canBuild"));
@@ -328,9 +361,12 @@ public class World {
                 wall = true;
                 canBuild = false;
             }
+            this.wall = wall;
+            this.canBuild = canBuild;
         }
 
         public boolean isWall() { return wall; }
         public boolean canBuild() { return canBuild; }
+        public Tile getNext() { return next; }
     }
 }
