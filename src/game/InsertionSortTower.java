@@ -20,7 +20,7 @@ public class InsertionSortTower extends AbstractGunTower<InsertionSortTower.Lase
 
     public static class Laser extends Projectile {
         private Laser(float x, float y, Vector2f v) {
-            super(x, y, v, newImage(Projectile.SPRITE_PATH + "laser.png"), 1, 3);
+            super(x, y, v, newImage(Projectile.SPRITE_PATH + "laser.png"), 1, 5);
             setAngle(angleTowards(v));
         }
     }

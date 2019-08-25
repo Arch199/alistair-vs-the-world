@@ -15,9 +15,9 @@ import static control.Util.newImage;
 public abstract class Tower extends Sprite {
     public enum Type {
         SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80),
         INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100),
-        QUICK("Quicksort Alistair", "quick.png", 2200, 150f, 125);
+        QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150);
         private final String title, imName;
         private final int cooldown, cost;
         private final float range;
@@ -44,8 +44,7 @@ public abstract class Tower extends Sprite {
     private long nextShot = 0L; // Time until next fire (in ms)
     private Type type;
 
-    /**
-     * Create a tower.
+    /** Create a tower.
      * @param x x-position
      * @param y y-position
      * @param type the type of tower to create
