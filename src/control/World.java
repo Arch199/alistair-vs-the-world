@@ -136,7 +136,7 @@ public class World {
         for (i = 0; i < towerTypes.length; i++) {
             var t = towerTypes[i];
             int yPos = (i + 1) * 100;
-            var s = new Sprite(centerX, yPos, t.getImage());
+            var s = Tower.create(t, centerX, yPos);
             var icon = new SpriteButton(s, () -> selectedTower = Tower.create(t, centerX, yPos));
             icon.setColors(Color.white, Color.red, Color.lightGray);
             icon.disableWhen(() -> money < t.getCost());

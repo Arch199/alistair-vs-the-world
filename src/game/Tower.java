@@ -15,7 +15,7 @@ import static control.Util.newImage;
 public abstract class Tower extends Sprite {
     public enum Type {
         SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50, Color.black),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80, Color.blue),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80, Util.LIGHT_BLUE),
         INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100, Color.black),
         QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150, Color.yellow);
         private final String title, imName;
@@ -53,6 +53,7 @@ public abstract class Tower extends Sprite {
     public Tower(float x, float y, Type type) {
         super(x, y, type.getImage());
         this.type = type;
+        setBorderColor(type.borderColor);
     }
 
     /** Fire a projectile at a given target. */
@@ -84,7 +85,6 @@ public abstract class Tower extends Sprite {
     public void place(float x, float y) {
         teleport(x, y);
         placed = true;
-        setBorderColor(type.borderColor);
     }
 
     @Override
@@ -115,6 +115,15 @@ public abstract class Tower extends Sprite {
 
     public void waveReset() {
         nextShot = 0;
+    }
+
+    @Override
+    public Color getBorderColor() {
+        if (placed) {
+            return super.getBorderColor();
+        } else {
+            return getColor() == Color.white ? super.getBorderColor() : Color.black;
+        }
     }
 
     public boolean isPlaced() { return placed; }
