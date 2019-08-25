@@ -16,9 +16,9 @@ public abstract class AbstractGunTower<T extends Projectile> extends Tower {
     protected abstract float getShotSpeed();
 
     @Override
-    protected void shoot(Vector2f dir) {
-        // This assumes that the given dir is already scaled by speed
-        App.getWorld().addEntity(newShot(getX(), getY(), dir));
+    protected void shoot(Enemy target) {
+        // This assumes that the given dir from aimAt() is already scaled by speed
+        App.getWorld().addEntity(newShot(getX(), getY(), aimAt(target)));
     }
 
     @Override

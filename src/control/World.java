@@ -262,7 +262,7 @@ public class World {
         if (gameOver) {
             // TODO: replace with going to another screen or something (also use TextUI for this)
             g.setColor(Color.red);
-            Util.writeCentered(LARGE_TTF_MONO, "Segmentation fault: core dumped", App.WINDOW_W / 2, App.WINDOW_H / 2);
+            Util.writeCentered(LARGE_TTF_MONO, "Segmentation fault (core dumped)", App.WINDOW_W / 2, App.WINDOW_H / 2);
             g.setColor(Color.white);
         }
 

@@ -12,7 +12,7 @@ public class BubbleSortTower extends Tower {
     }
 
     @Override
-    protected void shoot(Vector2f dir) {
+    protected void shoot(Enemy target) {
         App.getWorld().addEntity(new Bubble(getX(), getY()));
     }
     

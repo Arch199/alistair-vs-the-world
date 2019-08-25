@@ -16,7 +16,8 @@ public abstract class Tower extends Sprite {
     public enum Type {
         SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
         BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80),
-        INSERTION("Insertion Sort Alistair", "insertion.png", 1400, 400f, 100);
+        INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100),
+        QUICK("Quicksort Alistair", "quick.png", 2200, 150f, 125);
         private final String title, imName;
         private final int cooldown, cost;
         private final float range;
@@ -54,8 +55,8 @@ public abstract class Tower extends Sprite {
         this.type = type;
     }
 
-    /** Fires a projectile in the given direction. */
-    protected abstract void shoot(Vector2f dir);
+    /** Fire a projectile at a given target. */
+    protected abstract void shoot(Enemy target);
 
     /** Create a tower of a given type. */
     public static Tower create(Type type, float x, float y) {
@@ -63,6 +64,7 @@ public abstract class Tower extends Sprite {
             case BUBBLE: return new BubbleSortTower(x, y, type);
             case SELECTION: return new SelectionSortTower(x, y, type);
             case INSERTION: return new InsertionSortTower(x, y, type);
+            case QUICK: return new QuickSortTower(x, y, type);
         }
         throw new IllegalArgumentException("Unknown type " + type);
     }
@@ -90,7 +92,7 @@ public abstract class Tower extends Sprite {
         if (nextShot <= 0) {
             // Target the next enemy in range
             chooseTarget().ifPresent(target -> {
-                shoot(aimAt(target));
+                shoot(target);
                 nextShot = type.cooldown;
             });
         }
