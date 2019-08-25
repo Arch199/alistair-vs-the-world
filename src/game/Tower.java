@@ -14,19 +14,21 @@ import static control.Util.newImage;
 /** Towers are placed on a grid and shoot projectiles at enemies. */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80),
-        INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100),
-        QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150);
+        SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50, Color.black),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80, Color.blue),
+        INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100, Color.black),
+        QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150, Color.yellow);
         private final String title, imName;
         private final int cooldown, cost;
         private final float range;
-        Type(String title, String imName, int cooldown, float range, int cost) {
+        private final Color borderColor;
+        Type(String title, String imName, int cooldown, float range, int cost, Color borderColor) {
             this.title = title;
             this.imName = imName;
             this.cooldown = cooldown;
             this.range = range;
             this.cost = cost;
+            this.borderColor = borderColor;
         }
         public String toString() {
             return title;
@@ -34,7 +36,6 @@ public abstract class Tower extends Sprite {
         public Image getImage() {
             return newImage(SPRITE_PATH + imName);
         }
-        public int getCooldown() { return cooldown; }
         public float getRange() { return range; }
         public int getCost() { return cost; }
     }
@@ -83,6 +84,7 @@ public abstract class Tower extends Sprite {
     public void place(float x, float y) {
         teleport(x, y);
         placed = true;
+        setBorderColor(type.borderColor);
     }
 
     @Override

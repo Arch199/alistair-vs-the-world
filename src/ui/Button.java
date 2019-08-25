@@ -52,6 +52,8 @@ public abstract class Button extends Entity {
         }
         return super.getColor();
     }
+    @Override
+    public Color getBorderColor() { return getColor(); }
     public int getPadding() { return padding; }
 
     public void disableWhen(Supplier<Boolean> condition) { disabled = condition; }

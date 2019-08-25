@@ -8,8 +8,8 @@ import org.newdawn.slick.geom.Vector2f;
 /** On-screen object with a position, size, scale, etc.. */
 public abstract class Entity {
     private float x, y, w, h, scale = 1f;
-    private Color color = Color.white;
-    private boolean border = false, dead = false;
+    private Color color = Color.white, borderColor;
+    private boolean dead = false;
 
     /** Create an entity.
      * @param x X-position.
@@ -33,8 +33,8 @@ public abstract class Entity {
      * @param g The current graphics context.
      */
     public void render(Graphics g) {
-        if (border) {
-            g.setColor(getColor());
+        if (borderColor != null) {
+            g.setColor(getBorderColor());
             g.drawRect(getLeft(), getTop(), getWidth(), getHeight());
         }
     }
@@ -99,6 +99,7 @@ public abstract class Entity {
     public float getBottom() { return y + h / 2; }
     public float getScale() { return scale; }
     public Color getColor() { return color; }
+    public Color getBorderColor() { return borderColor; }
     public boolean isDead() { return dead; }
     
     protected void setWidth(int width) { w = width; }
@@ -109,6 +110,9 @@ public abstract class Entity {
         this.scale = scale;
     }
     public void setColor(Color color) { this.color = color; }
-    public void setBorder(boolean border) { this.border = border; }
+    /** Set the border color. Null will be interpreted as no border. */
+    public void setBorderColor(Color color) { this.borderColor = color; }
+    /** Toggle the border on an entity. The color will be set to the entity's current color. */
+    public void setBorder(boolean border) { this.borderColor = border ? getColor() : null; }
     protected void kill() { dead = true; }
 }
