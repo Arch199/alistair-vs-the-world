@@ -9,6 +9,8 @@ import org.newdawn.slick.geom.Vector2f;
 
 import java.util.Optional;
 
+import static control.Util.newImage;
+
 /** Towers are placed on a grid and shoot projectiles at enemies. */
 public abstract class Tower extends Sprite {
     public enum Type {
@@ -16,31 +18,28 @@ public abstract class Tower extends Sprite {
         BUBBLE("Bubble Sort Alistair", "bubble.png", 2400, 175f, 80),
         INSERTION("Insertion Sort Alistair", "insertion.png", 1400, 400f, 100);
         private final String title, imName;
-        private final int fireRate;
+        private final int cooldown, cost;
         private final float range;
-        private final int cost;
-        Type(String text, String imName, int fireRate, float range, int cost) {
-            this.title = text;
+        Type(String title, String imName, int cooldown, float range, int cost) {
+            this.title = title;
             this.imName = imName;
-            this.fireRate = fireRate;
+            this.cooldown = cooldown;
             this.range = range;
             this.cost = cost;
         }
         public String toString() {
             return title;
         }
-        public int getCost() { return cost; }
         public Image getImage() {
-            return Util.newImage(SPRITE_PATH + imName);
+            return newImage(SPRITE_PATH + imName);
         }
-        public int getFireRate() { return fireRate; }
+        public int getCooldown() { return cooldown; }
         public float getRange() { return range; }
+        public int getCost() { return cost; }
     }
     private static final String SPRITE_PATH = "assets/sprites/towers/";
 
     private boolean placed = false;
-    private float range;
-    private int fireRate; // In ms
     private long nextShot = 0L; // Time until next fire (in ms)
     private Type type;
 
@@ -52,8 +51,6 @@ public abstract class Tower extends Sprite {
      */
     public Tower(float x, float y, Type type) {
         super(x, y, type.getImage());
-        this.fireRate = type.fireRate; // could also remove these instance variables and just get from the type
-        this.range = type.range;
         this.type = type;
     }
 
@@ -72,7 +69,7 @@ public abstract class Tower extends Sprite {
     
     /** Choose an enemy to target (the first enemy in range by default). */
     protected Optional<Enemy> chooseTarget() {
-        return App.getWorld().getAll(Enemy.class).filter(e -> distanceTo(e) <= range).findFirst();
+        return App.getWorld().getAll(Enemy.class).filter(e -> distanceTo(e) <= type.range).findFirst();
     }
     
     /** Calculate a direction vector aiming at the target enemy. */
@@ -94,7 +91,7 @@ public abstract class Tower extends Sprite {
             // Target the next enemy in range
             chooseTarget().ifPresent(target -> {
                 shoot(aimAt(target));
-                nextShot = fireRate;
+                nextShot = type.cooldown;
             });
         }
     }
@@ -102,15 +99,15 @@ public abstract class Tower extends Sprite {
     /** Draw a range circle around towers. */
     public void drawRange(Graphics g) {
         // Top-left corner of the circle
-        float xCorner = getX() - range, yCorner = getY() - range;
+        float xCorner = getX() - type.range, yCorner = getY() - type.range;
 
         // Draw circumference
         g.setColor(new Color(110, 110, 110, 110));
-        g.drawOval(xCorner, yCorner, range * 2, range * 2);
+        g.drawOval(xCorner, yCorner, type.range * 2, type.range * 2);
         
         // Fill with a shade of grey (can change values depending on contrast w/ textures)
         g.setColor(new Color(80, 80, 80, 80));
-        g.fillOval(xCorner, yCorner, range * 2, range * 2);
+        g.fillOval(xCorner, yCorner, type.range * 2, type.range * 2);
     }
 
     public void waveReset() {
