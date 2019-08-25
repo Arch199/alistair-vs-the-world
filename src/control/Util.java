@@ -8,7 +8,7 @@ import org.newdawn.slick.geom.Vector2f;
 /** Contains utility methods for use throughout the project. */
 public final class Util {
     private static final Random RANDOM = new Random(System.nanoTime());
-    public static final Color LIGHT_BLUE = new Color(133, 231, 228);
+    public static final Color LIGHT_AQUA = new Color(100, 240, 255), AQUA = new Color(130, 200, 220);
     
     private Util() {} // prevents instantiation from outside the class
     

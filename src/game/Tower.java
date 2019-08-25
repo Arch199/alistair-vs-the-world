@@ -14,20 +14,21 @@ import static control.Util.newImage;
 /** Towers are placed on a grid and shoot projectiles at enemies. */
 public abstract class Tower extends Sprite {
     public enum Type {
-        SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50, Color.black),
-        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80, Util.LIGHT_BLUE),
-        INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100, Color.black),
-        QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150, Color.yellow);
+        SELECTION("Selection Sort Alistair", "selection.png", 2000, 200f, 50, Color.white, Color.black),
+        BUBBLE("Bubble Sort Alistair", "bubble.png", 2200, 175f, 80, Util.LIGHT_AQUA, Util.AQUA),
+        INSERTION("Insertion Sort Alistair", "insertion.png", 2100, 400f, 100, Color.white, Color.black),
+        QUICK("Quicksort Alistair", "quick.png", 2400, 150f, 150, Color.white, Color.yellow);
         private final String title, imName;
         private final int cooldown, cost;
         private final float range;
-        private final Color borderColor;
-        Type(String title, String imName, int cooldown, float range, int cost, Color borderColor) {
+        private final Color color, borderColor;
+        Type(String title, String imName, int cooldown, float range, int cost, Color color, Color borderColor) {
             this.title = title;
             this.imName = imName;
             this.cooldown = cooldown;
             this.range = range;
             this.cost = cost;
+            this.color = color;
             this.borderColor = borderColor;
         }
         public String toString() {
@@ -118,11 +119,21 @@ public abstract class Tower extends Sprite {
     }
 
     @Override
+    public Color getColor() {
+        if (placed) {
+            return type.color;
+        } else {
+            Color c = super.getColor();
+            return c == Color.white ? type.color : c;
+        }
+    }
+
+    @Override
     public Color getBorderColor() {
         if (placed) {
             return super.getBorderColor();
         } else {
-            return getColor() == Color.white ? super.getBorderColor() : Color.black;
+            return super.getColor() == Color.white ? super.getBorderColor() : Color.black;
         }
     }
 
