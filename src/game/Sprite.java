@@ -7,7 +7,6 @@ import org.newdawn.slick.Image;
 /** On-screen object with an image. */
 public class Sprite extends Entity {
     private Image im;
-    private Color col = Color.white;
 
     /**
      * Create a sprite.
@@ -22,7 +21,8 @@ public class Sprite extends Entity {
 
     @Override
     public void render(Graphics g) {
-        im.draw(getLeft(), getTop(), getScale(), col);
+        im.draw(getLeft(), getTop(), getScale(), getColor());
+        super.render(g);
     }
 
     /** Dummy update method that does nothing. */
@@ -30,9 +30,7 @@ public class Sprite extends Entity {
     public void update(int delta) {}
 
     public float getAngle() { return im.getRotation(); }
-    public Color getColor() { return col; }
 
     protected void setAngle(float angle) { im.setRotation(angle); }
     protected void rotate(float angle) { im.rotate(angle); }
-    public void setColor(Color col) { this.col = col; }
 }

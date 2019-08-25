@@ -25,7 +25,7 @@ public class TextButton extends Button {
 
     /** Draw the button. */
     public void render(Graphics g) {
-        Util.writeCentered(ttf, text, getX(), getTop(), getCurrentColor());
+        Util.writeCentered(ttf, text, getX(), getTop() + getPadding(), getColor());
         super.render(g);
     }
 

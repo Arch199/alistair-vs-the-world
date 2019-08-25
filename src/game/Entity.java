@@ -1,14 +1,22 @@
 package game;
 
 import control.App;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 
 /** On-screen object with a position, size, scale, etc.. */
 public abstract class Entity {
     private float x, y, w, h, scale = 1f;
-    private boolean dead = false;
+    private Color color = Color.white;
+    private boolean border = false, dead = false;
 
+    /** Create an entity.
+     * @param x X-position.
+     * @param y Y-position.
+     * @param w Width of the entity.
+     * @param h Height of the entity.
+     */
     public Entity(float x, float y, int w, int h) {
         this.x = x;
         this.y = y;
@@ -21,10 +29,15 @@ public abstract class Entity {
      */
     public abstract void update(int delta);
 
-    /** Render the entity to the screen
+    /** Render the entity to the screen.
      * @param g The current graphics context.
      */
-    public abstract void render(Graphics g);
+    public void render(Graphics g) {
+        if (border) {
+            g.setColor(getColor());
+            g.drawRect(getLeft(), getTop(), getWidth(), getHeight());
+        }
+    }
 
     /** Check if this entity is touching another (using rectangular collision boxes).
      * @param other Entity to check against.
@@ -85,6 +98,7 @@ public abstract class Entity {
     public float getTop() { return y - h / 2; }
     public float getBottom() { return y + h / 2; }
     public float getScale() { return scale; }
+    public Color getColor() { return color; }
     public boolean isDead() { return dead; }
     
     protected void setWidth(int width) { w = width; }
@@ -94,5 +108,7 @@ public abstract class Entity {
         h *= scale / this.scale;
         this.scale = scale;
     }
+    public void setColor(Color color) { this.color = color; }
+    public void setBorder(boolean border) { this.border = border; }
     protected void kill() { dead = true; }
 }

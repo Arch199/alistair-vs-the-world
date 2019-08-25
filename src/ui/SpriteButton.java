@@ -15,7 +15,7 @@ public class SpriteButton extends Button {
 
     @Override
     public void render(Graphics g) {
-        sprite.setColor(getCurrentColor());
+        sprite.setColor(getColor());
         sprite.render(g);
         super.render(g);
     }
